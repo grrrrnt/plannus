@@ -1,5 +1,4 @@
 import React from "react";
-import { CardMedia } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import RouterLinkButton from "../util/RouterLinkButton";
 import logo from "../assets/logo.png";
@@ -7,48 +6,54 @@ import logo from "../assets/logo.png";
 const useStyles = makeStyles({
     navbar: {
         display: 'flex',
-        background: 'linear-gradient(45deg, #F1F1F1 30%, #AED3E6 90%)',
-        color: 'white',
-        height: '7em',
+        background: 'linear-gradient(43deg, #4158D0  0%, #C850C0 100% )',
+        color: '#FFCC70',
     },
     'navbar-logo-holder': {
         display: 'flex',
-        flex: 1,
         flexDirection: 'row',
-        margin: '1em',
+        margin: '10px',
     },
     'navbar-logo': {
-        display: 'inline',
-        flex: 1,
-        width:'auto',
-        'height': '100%',
-        'object-fit': 'cover',
-        marginRight: '1em',
+        display: 'flex',
+        marginLeft: '10px',
+        marginRight: '10px',
+        maxWidth: '15%',
+        height: 'auto',
+        objectFit: 'contain',
     },
     'navbar-logo-name': {
-        display: 'inline',
-        position: 'relative',
-        flex: 3,
-        color: '#2F131A',
+        display: 'flex',
         '& h1': {
-            position: 'absolute',
-            bottom: '0px',
             'text-align': 'left',
-            marginBottom: '0',
-            'font-size': '300%',
+            marginBottom: '15px',
+            'font-size': '200%',
             'font-family': 'Comfortaa',
             'font-weight': 'normal',
         },
     },
     'nav-buttons': {
         display: 'flex',
-        position: 'relative',
+        flexGrow: 1,
+        flexDirection: 'row-reverse',
+        alignSelf: 'stretch',
+        alignItems: 'flex-end',
+        '& div': {
+            padding: '10px',
+        }
     },
     'nav-button': {
-        display: 'inline-flex',
-        positon: 'absolute',
-        bottom: 0,
-        right: 0,
+        display: 'inline',
+        padding: '10px',
+        color: 'inherit',
+        '&:hover': {
+            // fontWeight: '600',
+            color: 'white',
+            background: 'none'
+        },
+    },
+    'nav-button-active': {
+        fontWeight: 'bolder'
     }
 });
 
@@ -57,30 +62,28 @@ export default function NavBar() {
     return (
         <React.Fragment>
             <nav className={styles.navbar}>
-                <div className={styles.['navbar-logo-holder']}>
-                    <CardMedia
-                        className={styles.['navbar-logo']}
-                        image={logo}
-                        title="Logo"
-                    />
-                    <span className={styles.['navbar-logo-name']}>
-                        <h1>planNUS</h1>
-                    </span>
-                </div>
-
+                <img className={styles.['navbar-logo']}
+                    src={logo}
+                    alt="Logo"
+                />
+                <span className={styles.['navbar-logo-name']}>
+                    <h1>planNUS</h1>
+                </span>
                 <div className={styles["nav-buttons"]}>
-                    <RouterLinkButton className={styles["nav-button"]} to="/">
-                        Home
-                    </RouterLinkButton>
-                    <RouterLinkButton className={styles["nav-button"]} to="/generate">
-                        Generate
-                    </RouterLinkButton>
-                    <RouterLinkButton className={styles["nav-button"]} to="/compare">
-                        Compare
-                    </RouterLinkButton>
-                    <RouterLinkButton className={styles["nav-button"]} to="/account">
-                        Account
-                    </RouterLinkButton>
+                    <div>
+                        <RouterLinkButton activeClassName={styles.["nav-button-active"]} className={styles["nav-button"]} to="/">
+                            Home
+                        </RouterLinkButton>
+                        <RouterLinkButton activeClassName={styles.["nav-button-active"]} className={styles["nav-button"]} to="/generate">
+                            Generate
+                        </RouterLinkButton>
+                        <RouterLinkButton activeClassName={styles.["nav-button-active"]} className={styles["nav-button"]} to="/compare">
+                            Compare
+                        </RouterLinkButton>
+                        <RouterLinkButton activeClassName={styles.["nav-button-active"]} className={styles["nav-button"]} to="/account">
+                            Account
+                        </RouterLinkButton>
+                    </div>
                 </div>
             </nav>
         </React.Fragment>
