@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-class Generate extends Component {
+class SelectModules extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -52,4 +52,4 @@ class Generate extends Component {
     }
 }
 
-export default Generate;
+export default SelectModules;

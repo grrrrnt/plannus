@@ -1,0 +1,58 @@
+.navbar {
+    display: flex;
+    background: linear-gradient(43deg, #4158D0  0%, #C850C0 100% );
+    color: #FFCC70;
+}
+
+.navbar-logo-holder {
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+}
+
+.navbar-logo {
+    display: flex;
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: 15%;
+    height: auto;
+    object-fit: contain;
+}
+
+.navbar-logo-name {
+    display: flex;
+    
+    h1: {
+        text-align: left;
+        margin-bottom: 15px;
+        font-size: 200%;
+        font-family: Comfortaa;
+        font-weight: normal;
+    }
+}
+
+.nav-buttons {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: row-reverse;
+    align-self: stretch;
+    align-items: flex-end;
+    div {
+        padding: 10px;
+    }
+}
+
+.nav-button {
+    display: inline;
+    padding: 10px;
+    color: inherit;
+    
+    &:hover {
+        color: white;
+        background: none
+    }
+}
+
+nav-button-active {
+    font-weight: bolder;
+}

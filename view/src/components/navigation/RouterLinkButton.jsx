@@ -15,7 +15,7 @@ function RouterLinkButton(props) {
             href={href}
             to={to}
             activeClassName={activeClassName}
-            exact="true"
+            exact={true}
         >
             {props.children}
         </Button>
