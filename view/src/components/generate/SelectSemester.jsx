@@ -26,6 +26,9 @@ class SelectSemester extends Component {
             alert('Please Select a valid semester');
         } else {
             //alert('Sem ' + this.state.semester);
+            const year = this.state.semester.split(" ")[0];
+            const term = this.state.semester.split(" ")[1];
+            alert(year + ' ' + term);
             this.props.history.push('/sigloginnin');
         }
         event.preventDefault();
@@ -45,10 +48,10 @@ class SelectSemester extends Component {
                     <select
                         onChange={this.handleChange}>
                         <option value="">Select Semester</option>
-                        <option value="AY 20/21 Sem 1">AY 20/21 Sem 1</option>
-                        <option value="AY 20/21 Sem 2">AY 20/21 Sem 2</option>
-                        <option value="AY 20/21 Special Term 1">AY 20/21 Special Term 1</option>
-                        <option value="AY 20/21 Special Term 2">AY 20/21 Special Term 2</option>
+                        <option value="2020/2021 1">AY 20/21 Sem 1</option>
+                        <option value="2020/2021 2">AY 20/21 Sem 2</option>
+                        <option value="2020/2021 3">AY 20/21 Special Term 1</option>
+                        <option value="2020/2021 4">AY 20/21 Special Term 2</option>
                     </select>
                     </div>
                 <input type="submit" value="Done" />
