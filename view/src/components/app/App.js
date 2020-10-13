@@ -8,6 +8,8 @@ import Compare from "../compare/Compare";
 import Account from "../account/Account";
 import { Login, Register, withAuthentication } from "../authentication";
 
+import SelectModules from '../generate/SelectModules';
+
 import * as ROUTES from '../../util/Routes';
 
 class App extends Component {
@@ -22,6 +24,7 @@ class App extends Component {
           <Route path={ROUTES.ACCOUNT} component={Account} exact />
           <Route path={ROUTES.REGISTER} component={Register} exact />
           <Route path={ROUTES.LOGIN} component={Login} exact />
+          <Route path={ROUTES.SELECTMODULES} component={SelectModules} exact />
         </Switch>
       </div>
     );

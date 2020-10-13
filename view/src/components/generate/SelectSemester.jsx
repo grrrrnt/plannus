@@ -2,8 +2,7 @@ import React, { Component } from "react";
 import selectsemheader from "../../assets/SelectSemester.png";
 import { withRouter } from 'react-router-dom'
 import * as ROUTES from '../../util/Routes';
-
-
+import { withFirebase } from '../firebase';
 
 class SelectSemester extends Component {
     constructor(props) {
@@ -22,22 +21,23 @@ class SelectSemester extends Component {
     }
     
     handleSubmit(event) {
-        if (this.state.semester == '') {
+        event.preventDefault();
+        if (this.state.semester == '' ||this.state.semester == null) {
             alert('Please Select a valid semester');
         } else {
             //alert('Sem ' + this.state.semester);
             const year = this.state.semester.split(" ")[0];
-            const term = this.state.semester.split(" ")[1];
-            alert(year + ' ' + term);
-            this.props.history.push('/sigloginnin');
+            const sem = this.state.semester.split(" ")[1];
+            alert(year + ' ' + sem);
+            this.props.history.push(ROUTES.SELECTMODULES);
         }
-        event.preventDefault();
-         //save into firebase, if guest, dont save?
+         //save year and sem into firebase sanq
     }
 
     render() {
         return (
             <div>
+                <h1>Generate Timetables</h1>
                 <img className="headerpic"
                     src={selectsemheader}
                     alt="selectsemheader"
@@ -61,4 +61,4 @@ class SelectSemester extends Component {
     }
 }
 
-export default withRouter(SelectSemester);
+export default withRouter(withFirebase(SelectSemester));
