@@ -1,13 +1,13 @@
 import React, { Component } from "react";
-
+import RankPriorities from "./RankPriorities";
 import SelectModules from "./SelectModules";
+import SelectSemester from "./SelectSemester";
 
 class Generate extends Component {
     render() {
         return (
             <div>
-                <h1>Generate</h1>
-                <SelectModules />
+                <SelectSemester />
             </div>
         )
     }

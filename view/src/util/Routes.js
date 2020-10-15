@@ -4,3 +4,5 @@ export const COMPARE = '/compare';
 export const ACCOUNT = '/account';
 export const REGISTER = '/register';
 export const LOGIN = '/sigloginnin';
+export const SELECTMODULES = '/generate/selectmodules';
+

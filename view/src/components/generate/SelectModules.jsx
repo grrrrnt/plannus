@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { withRouter } from 'react-router-dom'
+
 
 class SelectModules extends Component {
     constructor(props) {
@@ -52,4 +54,4 @@ class SelectModules extends Component {
     }
 }
 
-export default SelectModules;
+export default withRouter(SelectModules);
