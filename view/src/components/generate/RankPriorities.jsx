@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { withRouter } from 'react-router-dom'
 import { withFirebase } from '../firebase';
-import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
+import {DragDropContext} from "react-beautiful-dnd";
 import './priorities.css';
 import {v4} from 'uuid';
+import PriorityList from './PriorityList'
 
 
 const item = {
@@ -43,7 +44,9 @@ class RankPriorities extends Component {
 
         this.handleDragEnd = this.handleDragEnd.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.deletePriority = this.deletePriority.bind(this);
         this.addItem = this.addItem.bind(this);
+        this.toggleStarPriority = this.toggleStarPriority.bind(this);
     }
 
     handleDragEnd(data) {
@@ -76,6 +79,7 @@ class RankPriorities extends Component {
             items: [{
                 id: v4(),
                 name: this.state.input,
+                mustHave: "0",
                 },
             ...this.state.items
             ],
@@ -90,47 +94,38 @@ class RankPriorities extends Component {
         })
     }
 
+    deletePriority(ind) {
+        var updatedItems = this.state.items;
+        updatedItems.splice(ind, 1);
+        this.setState({
+            items: updatedItems,
+        });
+    }
+
+    toggleStarPriority(ind) {
+        var updatedItems = this.state.items;
+        const isMustHave = updatedItems[ind].mustHave;
+        if (isMustHave === "0") {
+            updatedItems[ind].mustHave = "1";
+        } else {
+            updatedItems[ind].mustHave = "0";
+        }
+        this.setState({
+            items: updatedItems,
+        })
+    }
+
     render() {
         return (
             <div className = {"rank-priorities"}>
                 <div>
-                    <input type="text" onChange={this.handleChange}/> 
+                    <input type="text" value={this.state.input} onChange={this.handleChange}/> 
                     <button onClick = {this.addItem}> Add Priority</button>  
                 </div>
                 <DragDropContext onDragEnd = {this.handleDragEnd}>
                     <div className = {"column"}>
                         <h3>Rank your priorities</h3>
-                        <Droppable droppableId={this.state.title}>  
-                            {(provided) => {
-                                return(
-                                    <div
-                                        ref = {provided.innerRef}
-                                        {...provided.droppableProps}
-                                        className = {"droppable-col"}
-                                    >
-                                        {this.state.items.map((el, index) => {
-                                            return(
-                                                <Draggable key = {el.id} index = {index} draggableId = {el.id}>
-                                                    {(provided) => {
-                                                        return(
-                                                            <div
-                                                                className = {"item"}
-                                                                ref = {provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                                {...provided.dragHandleProps}
-                                                            >
-                                                                {el.name}
-                                                            </div>
-                                                        )
-                                                    }}
-                                                </Draggable>
-                                            )  
-                                            })}
-                                            {provided.placeholder}
-                                    </div>
-                                )
-                            }}
-                        </Droppable>
+                        <PriorityList priorities = {this.state.items} title = {this.state.title} deletePriority = {this.deletePriority} toggleStarPriority = {this.toggleStarPriority} />
                     </div>
                 </DragDropContext>
             </div>
