@@ -8,6 +8,7 @@ class Generate extends Component {
         return (
             <div>
                 <SelectSemester />
+                <RankPriorities />
             </div>
         )
     }

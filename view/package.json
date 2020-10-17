@@ -10,9 +10,11 @@
     "firebase": "^7.23.0",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
+    "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.3"
+    "react-scripts": "3.4.3",
+    "uuid": "^8.3.1"
   },
   "scripts": {
     "start": "react-scripts start",
