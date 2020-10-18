@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { withRouter } from 'react-router-dom'
-import { withFirebase } from '../firebase';
+import { withFirebase } from '../../firebase';
 import {DragDropContext} from "react-beautiful-dnd";
 import './priorities.css';
 import {v4} from 'uuid';
 import PriorityList from './PriorityList'
+import AddPriority from './AddPriority'
 
 
 const item = {
@@ -46,6 +47,7 @@ class RankPriorities extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.deletePriority = this.deletePriority.bind(this);
         this.addItem = this.addItem.bind(this);
+        this.addPriority = this.addPriority.bind(this);
         this.toggleStarPriority = this.toggleStarPriority.bind(this);
     }
 
@@ -88,6 +90,18 @@ class RankPriorities extends Component {
        
     }
 
+    addPriority(name) {
+        this.setState({
+            items: [{
+                id: v4(),
+                name: name,
+                mustHave: "0",
+                },
+            ...this.state.items
+            ],
+        });
+    }
+
     handleChange(e) {
         this.setState({
             input: e.target.value,
@@ -119,12 +133,15 @@ class RankPriorities extends Component {
         return (
             <div className = {"rank-priorities"}>
                 <div>
+                    <AddPriority addPriority = {this.addPriority} />
+                </div>
+                <div>
                     <input type="text" value={this.state.input} onChange={this.handleChange}/> 
                     <button onClick = {this.addItem}> Add Priority</button>  
                 </div>
                 <DragDropContext onDragEnd = {this.handleDragEnd}>
                     <div className = {"column"}>
-                        <h3>Rank your priorities</h3>
+                        <h3>Drag to rank your priorities</h3>
                         <PriorityList priorities = {this.state.items} title = {this.state.title} deletePriority = {this.deletePriority} toggleStarPriority = {this.toggleStarPriority} />
                     </div>
                 </DragDropContext>
