@@ -14,7 +14,7 @@ const options = [
             value: "Avoid lessons after (time) every day."
         },
         {
-            value: "Avoid lessons between (time 1) and (time 2) every day."
+            value: "Avoid lessons between (time1) and (time2) every day."
         },    
         {
             value: "Have a maximum number of free days."
@@ -40,8 +40,9 @@ class AddPriority extends Component {
             duration: "02",
         }
         this.handleChange = this.handleChange.bind(this);
-        this.handleTimeChange = this.handleTimeChange.bind(this);
+        this.handleTime1Change = this.handleTime1Change.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleTime2Change = this.handleTime2Change.bind(this);
     }
 
     handleChange(e) {
@@ -49,13 +50,24 @@ class AddPriority extends Component {
         console.log(val);
         this.setState({
             priority: val,
+            time1: new Date('2014-08-18T21:11:54'),
+            time2: new Date('2014-08-18T21:11:54'),
+            duration: "02",
         });
     }
 
-    handleTimeChange(time) {
+    handleTime1Change(time) {
         this.setState({
             time1: time,
         });
+
+    }
+
+    handleTime2Change(time) {
+        this.setState({
+            time2: time,
+        });
+
     }
 
     handleSubmit() {
@@ -66,7 +78,35 @@ class AddPriority extends Component {
         }
 
         if (!priority.includes("(")) {
-            this.props.addPriority(this.state.priority);
+            this.props.addPriority(priority);
+            this.setState({
+                priority: 'Select a Priority',
+                time1: new Date('2014-08-18T21:11:54'),
+                time2: new Date('2014-08-18T21:11:54'),
+                duration: "02",
+            }); 
+        }
+        if (priority.includes("(time)")) {
+            const time = this.state.time1.getHours() + ":" + this.state.time1.getMinutes();
+            const updatedPriority = priority.replace("(time)", time);
+            console.log(updatedPriority);
+            this.props.addPriority(updatedPriority);
+            this.setState({
+                priority: 'Select a Priority',
+                time1: new Date('2014-08-18T21:11:54'),
+                time2: new Date('2014-08-18T21:11:54'),
+                duration: "02",
+            }); 
+        }
+
+        if (priority.includes("(time1)")) {
+            const time1 = this.state.time1.getHours() + ":" + this.state.time1.getMinutes();
+            const time2 = this.state.time2.getHours() + ":" + this.state.time2.getMinutes();
+            const updatedTime1 = priority.replace("(time1)", time1);
+            const updatedTime2 = updatedTime1.replace("(time2)", time2);
+            console.log(updatedTime2);
+            this.props.addPriority(updatedTime2);
+            
             this.setState({
                 priority: 'Select a Priority',
                 time1: new Date('2014-08-18T21:11:54'),
@@ -90,14 +130,23 @@ class AddPriority extends Component {
                 </select>
                 
                 {
-                    priority === "Avoid lessons before (time) every day." ?
+                    priority.includes("(time)") ?
                         <div>
                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                           <KeyboardTimePicker label="(time)" value = {this.state.time1}onChange={this.handleTimeChange}/>
+                           <KeyboardTimePicker label="(time)" value = {this.state.time1}onChange={this.handleTime1Change}/>
                            </MuiPickersUtilsProvider>
                             <button onClick = {this.handleSubmit}> Add Priority </button>
                         </div>
-                        : <button onClick = {this.handleSubmit}> Add Priority </button>
+                        : priority.includes("(time1)") ?
+                        <div>
+                           <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                           <KeyboardTimePicker label="(time1)" value = {this.state.time1} onChange={this.handleTime1Change}/>
+                           <KeyboardTimePicker label="(time2)" value = {this.state.time2} onChange={this.handleTime2Change}/>
+                           </MuiPickersUtilsProvider>
+                            <button onClick = {this.handleSubmit}> Add Priority </button>
+                        </div>
+                        :
+                        <button onClick = {this.handleSubmit}> Add Priority </button>
                 }
             </div>
         );
