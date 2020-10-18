@@ -6,24 +6,29 @@ import './priorities.css';
 import {v4} from 'uuid';
 import PriorityList from './PriorityList'
 import AddPriority from './AddPriority'
+import Grid from '@material-ui/core/Grid';
+
 
 
 const item = {
     id: v4(),
     name: "more free days",
     mustHave: "1",
+    rank: 0
 }
 
 const item2 = {
     id: v4(),
     name: "free after 2pm",
     mustHave: "1",
+    rank: 0
 }
 
 const item3 = {
     id: v4(),
     name: "free after 3pm",
     mustHave: "0",
+    rank: 0
 }
 
 
@@ -31,6 +36,7 @@ const item4 = {
     id: v4(),
     name: "free after 5pm",
     mustHave: "0",
+    rank: 0
 }
 
 
@@ -40,15 +46,14 @@ class RankPriorities extends Component {
         this.state = {
             title: "Priorities",
             items: [item, item2, item3, item4],
-            input: "",
         };
 
         this.handleDragEnd = this.handleDragEnd.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.deletePriority = this.deletePriority.bind(this);
-        this.addItem = this.addItem.bind(this);
         this.addPriority = this.addPriority.bind(this);
         this.toggleStarPriority = this.toggleStarPriority.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleDragEnd(data) {
@@ -76,26 +81,13 @@ class RankPriorities extends Component {
         console.log(this.state);
     }
 
-    addItem(e) {
-        this.setState({
-            items: [{
-                id: v4(),
-                name: this.state.input,
-                mustHave: "0",
-                },
-            ...this.state.items
-            ],
-            input:"",
-        });
-       
-    }
-
     addPriority(name) {
         this.setState({
             items: [{
                 id: v4(),
                 name: name,
                 mustHave: "0",
+                rank: 0
                 },
             ...this.state.items
             ],
@@ -129,22 +121,41 @@ class RankPriorities extends Component {
         })
     }
 
+    handleSubmit() {
+        const updatedRank = this.state.items;
+        for (var i = 0; i < updatedRank.length; i ++) {
+            updatedRank[i].rank = i + 1;
+        }
+        this.setState({
+            items: updatedRank
+        })
+
+        console.log(updatedRank);
+    }
+
     render() {
         return (
+            <div>
+                <Grid container justify = "center">
+                    <h1 className = {"title"}> Generate Timetables</h1>
+                </Grid>
+                <Grid container justify = "center">
+                    <h2 className = {"title"}> What priorities are important to you?</h2>
+                </Grid>
             <div className = {"rank-priorities"}>
-                <div>
+                <Grid container justify = "center">
                     <AddPriority addPriority = {this.addPriority} />
-                </div>
-                <div>
-                    <input type="text" value={this.state.input} onChange={this.handleChange}/> 
-                    <button onClick = {this.addItem}> Add Priority</button>  
-                </div>
+                </Grid>
                 <DragDropContext onDragEnd = {this.handleDragEnd}>
                     <div className = {"column"}>
                         <h3>Drag to rank your priorities</h3>
                         <PriorityList priorities = {this.state.items} title = {this.state.title} deletePriority = {this.deletePriority} toggleStarPriority = {this.toggleStarPriority} />
                     </div>
                 </DragDropContext>
+                <div>
+                <button onClick = {this.handleSubmit}> Submit </button>
+                </div>
+            </div>
             </div>
         )}
 }

@@ -119,7 +119,6 @@ class AddPriority extends Component {
 
     render() {
         const { priority } = this.state;
-        console.log(this.state.time1);
         return (
             <div>
                 <select value = {this.state.priority} onChange = {this.handleChange}>
