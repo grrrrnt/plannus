@@ -1,9 +1,20 @@
+import { auth } from "firebase";
 import React, { Component } from "react";
-import RankPriorities from "./priority/RankPriorities";
+
+import { AuthUserContext, withAuthenticationConsumer } from "../authentication"
+import { withFirebase } from "../firebase"
 import SelectModules from "./SelectModules";
 import SelectSemester from "./SelectSemester";
+import RankPriorities from "./priority/RankPriorities";
 
 class Generate extends Component {
+    constructor(props) {
+        super(props)
+
+        if (!props.authUser) {
+            props.firebase.loginAnonymously()
+        }
+    }
     render() {
         return (
             <div>
@@ -14,4 +25,4 @@ class Generate extends Component {
     }
 }
 
-export default Generate;
+export default withAuthenticationConsumer(withFirebase(Generate));

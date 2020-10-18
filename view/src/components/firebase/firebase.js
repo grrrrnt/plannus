@@ -22,6 +22,9 @@ class Firebase {
         this.db = app.firestore();
     }
 
+    loginAnonymously = () =>
+        this.auth.signInAnonymously()
+
     doRegisterUserWithEmailAndPassword = (email, password) =>
         this.auth.createUserWithEmailAndPassword(email, password);
 

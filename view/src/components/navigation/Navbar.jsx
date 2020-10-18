@@ -32,7 +32,7 @@ export default function NavBar() {
 
                         <AuthUserContext.Consumer>
                             {authUser =>
-                                authUser ? <NavigationAuth /> : <NavigationNonAuth />
+                                (authUser && !authUser.isAnonymous) ? <NavigationAuth /> : <NavigationNonAuth />
                             }
                         </AuthUserContext.Consumer>
                     </div>
