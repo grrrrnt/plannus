@@ -1,13 +1,11 @@
 import Login from "./Login"
-import Register from "./Register"
 import LogoutButton from "./Logout"
-import AuthUserContext from './context';
-import withAuthentication from './withAuthentication';
+import AuthUserContext, { withAuthenticationProvider, withAuthenticationConsumer } from './context';
 
 export {
     Login,
-    Register,
     LogoutButton,
     AuthUserContext,
-    withAuthentication
+    withAuthenticationProvider,
+    withAuthenticationConsumer
 }

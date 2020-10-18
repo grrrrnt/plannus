@@ -6,7 +6,7 @@ import Home from "../home/Home";
 import Generate from "../generate";
 import Compare from "../compare/Compare";
 import Account from "../account/Account";
-import { Login, Register, withAuthentication } from "../authentication";
+import { Login, withAuthenticationProvider } from "../authentication";
 
 import SelectModules from '../generate/SelectModules';
 
@@ -22,7 +22,6 @@ class App extends Component {
           <Route path={ROUTES.GENERATE} component={Generate} exact />
           <Route path={ROUTES.COMPARE} component={Compare} exact />
           <Route path={ROUTES.ACCOUNT} component={Account} exact />
-          <Route path={ROUTES.REGISTER} component={Register} exact />
           <Route path={ROUTES.LOGIN} component={Login} exact />
           <Route path={ROUTES.SELECTMODULES} component={SelectModules} exact />
         </Switch>
@@ -31,4 +30,4 @@ class App extends Component {
   }
 }
 
-export default withAuthentication(App);
+export default withAuthenticationProvider(App);
