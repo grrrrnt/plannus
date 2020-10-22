@@ -25,11 +25,17 @@ class FirebaseAuth extends React.Component {
                     // For merge conflicts, the error.code will be
                     // 'firebaseui/anonymous-upgrade-merge-conflict'.
                     if (error.code != 'firebaseui/anonymous-upgrade-merge-conflict') {
+                        console.log("anon upgrade merge conflict")
                         return Promise.resolve();
                     }
-                    var cred = error.credential; // credential the user tried to sign in with
+                    const cred = error.credential; // credential the user tried to sign in with
+                    const anonUser = auth.currentUser;
                     // TODO: Copy data from anon user to acct user
-                    return auth.signInWithCredential(cred);
+                    
+                    return auth.signInWithCredential(cred)
+                    .then((function() {
+                        anonUser.delete()
+                    }));
                 }
             }
         }

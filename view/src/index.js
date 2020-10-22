@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
+import { StylesProvider } from '@material-ui/core/styles';
 
 import App from './components/app/App';
 import Firebase, { FirebaseContext } from './components/firebase';
@@ -9,11 +10,13 @@ import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <FirebaseContext.Provider value={new Firebase()}>
-        <App />
-      </FirebaseContext.Provider>
-    </BrowserRouter>
+    <StylesProvider injectFirst>
+      <BrowserRouter>
+        <FirebaseContext.Provider value={new Firebase()}>
+          <App />
+        </FirebaseContext.Provider>
+      </BrowserRouter>
+    </StylesProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

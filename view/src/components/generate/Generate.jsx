@@ -8,13 +8,12 @@ import SelectSemester from "./SelectSemester";
 import RankPriorities from "./priority/RankPriorities";
 
 class Generate extends Component {
-    constructor(props) {
-        super(props)
-
-        if (!props.authUser) {
-            props.firebase.loginAnonymously()
+    componentDidMount() {
+        if (!this.props.authUser) {
+            this.props.firebase.loginAnonymously()
         }
     }
+
     render() {
         return (
             <div>
