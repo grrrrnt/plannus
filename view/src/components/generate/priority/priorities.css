@@ -11,7 +11,7 @@
     margin-bottom: 10px;
     padding: 15px;
     font-family: Helvetica;
-    background-color: lavenderblush;
+    background: linear-gradient(43deg, #f2f2f2  0%, #a8d1e7 100% );
 }
 
 .title {
