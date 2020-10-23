@@ -1,7 +1,7 @@
 .navbar {
     display: flex;
-    background: linear-gradient(43deg, #4158D0  0%, #C850C0 100% );
-    color: #FFCC70;
+    background: linear-gradient(43deg, #f2f2f2  0%, #a8d1e7 100% );
+    color: #383838;
 }
 
 .navbar-logo-holder {
@@ -53,6 +53,6 @@
     }
 }
 
-nav-button-active {
+.nav-button-active {
     font-weight: bolder;
 }

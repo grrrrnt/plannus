@@ -47,13 +47,12 @@ const NavigationAuth = () => (
         <RouterLinkButton activeClassName="nav-button-active" className="nav-button" to={ROUTES.ACCOUNT}>
             Account
         </RouterLinkButton>
-        <LogoutButton />
     </React.Fragment>
 );
 
 const NavigationNonAuth = () => (
     <RouterLinkButton activeClassName="nav-button-active" className="nav-button" to={ROUTES.LOGIN}>
-        Login
+        Login/Register
     </RouterLinkButton>
 );
 
