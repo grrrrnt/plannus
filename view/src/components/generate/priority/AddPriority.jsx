@@ -2,105 +2,216 @@ import React, {Component} from "react";
 import {KeyboardTimePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import 'date-fns';
+import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import options from './options'
 
-const options = [
-        {
-            value: "Select a Priority"
-        },
-        {
-            value: "Avoid lessons before (time) every day."
-        },
-        {
-            value: "Avoid lessons after (time) every day."
-        },
-        {
-            value: "Avoid lessons between (time 1) and (time 2) every day."
-        },    
-        {
-            value: "Have a maximum number of free days."
-        },    
-        {
-            value: "Minimise travelling across campus."
-        },    
-        {
-            value: "Minimise breaks between classes."
-        },    
-        {
-            value: "Include a lunch break for (duration) every day."
-        }
-    ]
+
+const defaultDate = new Date('2014-08-18T21:11:54');
+
+const initialState = {
+    name: "",
+    type: "",
+    fields: {
+        time: defaultDate,
+        fromTime: defaultDate,
+        toTime: defaultDate,
+        hours: 0,
+    }            
+}
 
 class AddPriority extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            priority: 'Select a Priority',
-            time1: new Date('2014-08-18T21:11:54'),
-            time2: new Date('2014-08-18T21:11:54'),
-            duration: "02",
+            name: "",
+            type: "",
+            fields: {
+                time: defaultDate,
+                fromTime: defaultDate,
+                toTime: defaultDate,
+                hours: 0,
+            },            
         }
-        this.handleChange = this.handleChange.bind(this);
-        this.handleTimeChange = this.handleTimeChange.bind(this);
+
+        this.handleOptionChange = this.handleOptionChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleTimeChange = this.handleTimeChange.bind(this);
+        this.handleDurationChange = this.handleDurationChange.bind(this);
+
     }
 
-    handleChange(e) {
-        const val = e.target.value;
-        console.log(val);
+    handleOptionChange(e) {
+        const selectedOp = e.target.value;    
+        var selectedType;    
+        for (var op of options) { //loop to get type of priority
+            if (op.value === selectedOp) {
+                selectedType = op.type;
+            }
+        }
+
         this.setState({
-            priority: val,
+            name: selectedOp,
+            type: selectedType,
+            fields: {
+                time: defaultDate,
+                fromTime: defaultDate,
+                toTime: defaultDate,
+                hours: 0,
+            },
         });
     }
 
-    handleTimeChange(time) {
+    handleTimeChange = id => (changedTime) => {
+        if (id === 1) {
+            this.setState({
+                fields: {
+                    ...this.state.fields,
+                    time: changedTime,
+                }
+            });
+        }
+
+        if (id === 2) {
+            this.setState({
+                fields: {
+                    ...this.state.fields,
+                    fromTime: changedTime,
+                }
+            });
+        }
+
+        if (id === 3) {
+            this.setState({
+                fields: {
+                    ...this.state.fields,
+                    toTime: changedTime,
+                }
+            });
+        }
+
+    };
+
+    handleDurationChange(e) {
+        const duration = e.target.value;
         this.setState({
-            time1: time,
+            fields: {
+                ...this.state.fields,
+                hours: parseInt(duration),
+            }
         });
     }
+
 
     handleSubmit() {
-        const { priority } = this.state;
-        if (priority === "Select a Priority") {
-            alert("Please select a valid priority!");
+        const { type, fields, name} = this.state;
+        const toAdd = this.state;
+        
+        if (name === "") {
+            alert("Please select a valid priority");
             return;
         }
+        
+        if (type === 'FreePeriodPriority') {
+            if (fields.fromTime >= fields.toTime) {
+                alert("For priority 'Avoid lessons between (Time 1) and (Time 2) every day.' Time 2 should be after Time 1. Please select your desired time(s) again.");
+                return;
+            } 
+            
+            toAdd.fields = {
+                toTime: parseInt(fields.toTime.getHours() + "" + fields.toTime.getMinutes()),
+                fromTime: parseInt(fields.fromTime.getHours() + "" + fields.fromTime.getMinutes())
+            }
 
-        if (!priority.includes("(")) {
-            this.props.addPriority(this.state.priority);
-            this.setState({
-                priority: 'Select a Priority',
-                time1: new Date('2014-08-18T21:11:54'),
-                time2: new Date('2014-08-18T21:11:54'),
-                duration: "02",
-            }); 
+            toAdd.name = name.replace('(Time 1)', toAdd.fields.fromTime);
+            toAdd.name = toAdd.name.replace('(Time 2)', toAdd.fields.toTime);
+                    
+            
+        } else if (type === 'AvoidBeforePriority' || type === 'AvoidAfterPriority' ) {
+            toAdd.fields = {
+                time: parseInt(fields.time.getHours() + "" + fields.time.getMinutes())
+            }
+
+            toAdd.name = name.replace('(Time)', toAdd.fields.time);
+
+        } else if (type === 'LunchBreakPriority') {
+            toAdd.fields = {
+                hours: fields.hours,
+            }
+
+            toAdd.name = name.replace('(duration)', fields.hours + " hours");
+
+        } else {
+            toAdd.fields = {};
         }
-              
+
+        this.props.addPriority(toAdd);
+        this.setState(initialState);
     }
+    
+
 
     render() {
-        const { priority } = this.state;
-        console.log(this.state.time1);
+        const { name, type, fields } = this.state;
         return (
             <div>
-                <select value = {this.state.priority} onChange = {this.handleChange}>
-                    {options.map((option) => (
-                        <option key = {option.value} value={option.value}>{option.value}</option>
+                <Grid container justify = "center">
+                <TextField style={{width: "50%"}}
+                    select label="Select"
+                    onChange={this.handleOptionChange}
+                    helperText="Please select your priority"
+                    variant="outlined"
+                    value={name}
+                >
+                    {options.map((op) => (
+                        <MenuItem key = {op.value} value={op.value}> {op.value} </MenuItem>
                     ))}
-                    
-                </select>
                 
+                </TextField>
+                </Grid>
+
                 {
-                    priority === "Avoid lessons before (time) every day." ?
-                        <div>
-                           <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                           <KeyboardTimePicker label="(time)" value = {this.state.time1}onChange={this.handleTimeChange}/>
-                           </MuiPickersUtilsProvider>
-                            <button onClick = {this.handleSubmit}> Add Priority </button>
-                        </div>
-                        : <button onClick = {this.handleSubmit}> Add Priority </button>
+                    (type === 'AvoidBeforePriority' || type === 'AvoidAfterPriority') ?
+                        
+                        <Grid container justify = "center">
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <KeyboardTimePicker label="(Time)" value = {fields.time} onChange={this.handleTimeChange(1)}/>
+                            </MuiPickersUtilsProvider>
+                        </Grid>
+
+                    : (type === 'FreePeriodPriority') ?
+                            <Grid container justify = "center">
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <KeyboardTimePicker label="(Time1)" value = {fields.fromTime} onChange={this.handleTimeChange(2)}/>
+                                <KeyboardTimePicker label="(Time2)" value = {fields.toTime} onChange={this.handleTimeChange(3)}/>
+                                </MuiPickersUtilsProvider>
+                            </Grid>
+                    
+                    : (type === 'LunchBreakPriority') ?
+                            <Grid container justify = "center">
+                                <TextField
+                                    id="outlined-number"
+                                    label="(duration)"
+                                    type="number"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    variant="outlined"
+                                    onChange = {this.handleDurationChange}
+                                /> 
+                            </Grid> 
+                    :
+                    <div></div>
                 }
+                 <Grid container justify = "center">
+                            <Button variant="outlined" color="primary" onClick = {this.handleSubmit}>
+                                Add Priority
+                            </Button>
+                </Grid>
             </div>
-        );
+        )
     }
 }
 

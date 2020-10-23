@@ -4,51 +4,176 @@ import { withFirebase } from '../../firebase';
 import {DragDropContext} from "react-beautiful-dnd";
 import './priorities.css';
 import {v4} from 'uuid';
-import PriorityList from './PriorityList'
-import AddPriority from './AddPriority'
+import PriorityList from './PriorityList';
+import AddPriority from './AddPriority';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import options from './options';
 
 
-const item = {
+const fromDB = [
+{
     id: v4(),
-    name: "more free days",
-    mustHave: "1",
-}
-
-const item2 = {
+    type: "MinTravellingPriority",
+    fields: {},
+    rank: 1,
+    mustHave: false,
+},
+{
     id: v4(),
-    name: "free after 2pm",
-    mustHave: "1",
-}
-
-const item3 = {
+    type: "AvoidBeforePriority",
+    fields: {time: 1030},
+    rank: 2,
+    mustHave: true,
+}, 
+{
     id: v4(),
-    name: "free after 3pm",
-    mustHave: "0",
-}
-
-
-const item4 = {
+    type: "AvoidAfterPriority",
+    fields: {time: 1400},
+    rank: 3,
+    mustHave: true,
+}, 
+{
     id: v4(),
-    name: "free after 5pm",
-    mustHave: "0",
-}
+    type: "FreePeriodPriority",
+    fields: {fromTime: 911, toTime: 1411},
+    rank: 4,
+    mustHave: true,
+}, 
+{
+    id: v4(),
+    type: "MaxFreeDaysPriority",
+    fields: {},
+    rank: 5,
+    mustHave: true,
+},
+{
+    id: v4(),
+    type: "MinBreaksPriority",
+    fields: {},
+    rank: 6,
+    mustHave: true,
+}, 
+{
+    id: v4(),
+    type: "LunchBreakPriority",
+    fields: {hours: 2},
+    rank: 7,
+    mustHave: true,
+}];
 
+
+/*
+format of items
+id: v4(),
+    type: "LunchBreakPriority",
+    name: "",
+    fields: {hours: 2},
+    rank: 7,
+    mustHave: true,
+}
+*/
 
 class RankPriorities extends Component {
     constructor(props) {
         super(props);
         this.state = {
             title: "Priorities",
-            items: [item, item2, item3, item4],
-            input: "",
+            items: [],
+            loaded: false
         };
-
-        this.handleDragEnd = this.handleDragEnd.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.deletePriority = this.deletePriority.bind(this);
-        this.addItem = this.addItem.bind(this);
+        
         this.addPriority = this.addPriority.bind(this);
-        this.toggleStarPriority = this.toggleStarPriority.bind(this);
+        this.delPriority = this.delPriority.bind(this);
+        this.toggleMH = this.toggleMH.bind(this);
+        this.handleDragEnd = this.handleDragEnd.bind(this);
+        this.handleSubmit  = this.handleSubmit.bind(this);
+    }
+
+    componentDidMount() {
+        var initItems = fromDB;
+        for(var x of initItems) {
+            for (var i of options) {
+                if (x.type === i.type) {
+                   var name = i.value;
+                   if (x.type === 'AvoidBeforePriority' || x.type === 'AvoidAfterPriority') {
+                        x.name = name.replace('(Time)', x.fields.time);
+                    }
+
+                    if (x.type === 'FreePeriodPriority') {
+                        x.name = name.replace('(Time 1)', x.fields.fromTime);
+                        x.name = x.name.replace('(Time 2)', x.fields.toTime);
+                    }
+
+                    if (x.type === 'LunchBreakPriority') {
+                        x.name = name.replace('(duration)', x.fields.hours + " hours");
+                    }
+
+                    if (x.type === 'MaxFreeDaysPriority' || x.type === 'MinTravellingPriority' || x.type === 'MinBreaksPriority') {
+                        x.name = name;
+                    }
+                } 
+            }
+        }
+        this.setState({
+            items: initItems,
+            loaded: true,
+        });
+    }
+/*
+this.state = {
+            name: 'Select a Priority',
+            type: "",
+            fields: {
+                time: defaultDate,
+                fromTime: defaultDate,
+                toTime: defaultDate,
+                hours: 0,
+            },   */
+    addPriority(priority) {        
+        const priorities = this.state.items;
+        
+        const duplicate = priorities.some(p => p.name === priority.name);
+        
+        if (duplicate) {
+            alert("Priority was already selected.");
+            return;
+        }
+        
+        this.setState({
+            items: [{
+                id:v4(),
+                type: priority.type,
+                fields: priority.fields,
+                name:priority.name,
+                rank: 0,
+                mustHave: false
+                },
+                ...this.state.items
+            ],
+        });
+    }
+
+    delPriority(index) {
+        var updatedP = this.state.items;
+        updatedP.splice(index, 1);
+        this.setState({
+            items: updatedP,
+        });
+    }
+
+    toggleMH(index) {
+        var updatedP = this.state.items;
+        const isMustHave = updatedP[index].mustHave;
+        if (isMustHave) {
+            updatedP[index].mustHave = false;
+        } else {
+            updatedP[index].mustHave = true;
+        }
+
+        this.setState({
+            items: updatedP,
+        })
     }
 
     handleDragEnd(data) {
@@ -62,92 +187,74 @@ class RankPriorities extends Component {
             console.log("dropped in same place") 
             return; 
         }
-        
+
         if (destination.index !== source.index && destination.droppableId === source.droppableId) {
             console.log("dropped in same place but different index")
         }
 
         //changing index of items if dropped into different index
-        const itemCopy = {...this.state.items[source.index]};
-        var updateState = this.state;
-        updateState.items.splice(source.index, 1);
-        updateState.items.splice(destination.index, 0, itemCopy);
-        this.setState(updateState);
-        console.log(this.state);
+        const pCopy = {...this.state.items[source.index]};
+        var updatedState = this.state;
+        updatedState.items.splice(source.index, 1);
+        updatedState.items.splice(destination.index, 0, pCopy);
+        this.setState(updatedState);
     }
 
-    addItem(e) {
-        this.setState({
-            items: [{
-                id: v4(),
-                name: this.state.input,
-                mustHave: "0",
-                },
-            ...this.state.items
-            ],
-            input:"",
-        });
-       
-    }
-
-    addPriority(name) {
-        this.setState({
-            items: [{
-                id: v4(),
-                name: name,
-                mustHave: "0",
-                },
-            ...this.state.items
-            ],
-        });
-    }
-
-    handleChange(e) {
-        this.setState({
-            input: e.target.value,
-        })
-    }
-
-    deletePriority(ind) {
-        var updatedItems = this.state.items;
-        updatedItems.splice(ind, 1);
-        this.setState({
-            items: updatedItems,
-        });
-    }
-
-    toggleStarPriority(ind) {
-        var updatedItems = this.state.items;
-        const isMustHave = updatedItems[ind].mustHave;
-        if (isMustHave === "0") {
-            updatedItems[ind].mustHave = "1";
-        } else {
-            updatedItems[ind].mustHave = "0";
+    handleSubmit() {
+        var toSubmit = this.state.items;
+        for (var i = 0; i < toSubmit.length; i ++) {
+            toSubmit[i].rank = i + 1;
+            delete toSubmit[i].name;
         }
-        this.setState({
-            items: updatedItems,
-        })
+
+        console.log(toSubmit);
     }
+
+    
 
     render() {
-        return (
-            <div className = {"rank-priorities"}>
-                <div>
-                    <AddPriority addPriority = {this.addPriority} />
-                </div>
-                <div>
-                    <input type="text" value={this.state.input} onChange={this.handleChange}/> 
-                    <button onClick = {this.addItem}> Add Priority</button>  
-                </div>
-                <DragDropContext onDragEnd = {this.handleDragEnd}>
-                    <div className = {"column"}>
-                        <h3>Drag to rank your priorities</h3>
-                        <PriorityList priorities = {this.state.items} title = {this.state.title} deletePriority = {this.deletePriority} toggleStarPriority = {this.toggleStarPriority} />
+        const { loaded, items, title } = this.state;
+        return( 
+            <div>
+                <Grid container justify = "center">
+                    <h2 className = {"title"}> What priorities are important to you?</h2>
+                </Grid> 
+                
+                <AddPriority addPriority = {this.addPriority} />
+                
+                {
+                    loaded ?
+                    <div>
+                    
+                        
+                    <DragDropContext onDragEnd = {this.handleDragEnd}>
+                        <Grid container justify = "center">
+                        <h3 className = {"title"} > Drag to rank your priorities </h3>
+                        </Grid>
+
+                        <Grid container justify = "center">
+                        <PriorityList priorities = {items} title = {title} delPriority = {this.delPriority} toggleMH = {this.toggleMH} />
+                        </Grid>
+                    </DragDropContext>
                     </div>
-                </DragDropContext>
+
+                    :
+                    <div> loading ... </div>
+                }
+
+                <Grid container justify = "center">
+                    <Button variant="outlined" color="primary" onClick = {this.handleSubmit}>
+                        Submit
+                    </Button>
+                </Grid>
+
             </div>
-        )}
+
+    )}
 }
 
 export default withRouter(withFirebase(RankPriorities));
+
+
+
 

@@ -1,18 +1,5 @@
-.rank-priorities {
-    display: flex;
-    width: 100%;
-    justify-content: space-around;
-
-}
-
-.rank-priorities .column {
-    width: 30%;
-
-}
-
 .droppable-col {
-    width: 100%;
-    background-color: lavenderblush;
+    width: 50%;
     padding: 10px 10px 0 10px;
     border-radius: 7px;
     display: flex;
@@ -20,12 +7,16 @@
 }
 
 .item {
-    border: 1px solid skyblue;
+    border: 1px solid black;
     margin-bottom: 10px;
-    padding: 5px;
-    border-radius: 7px;
+    padding: 15px;
+    font-family: Helvetica;
+    background: linear-gradient(43deg, #f2f2f2  0%, #a8d1e7 100% );
 }
 
-.item.drop-animating {
-    background-color: aquamarine;
+.title {
+    font-family: Helvetica; 
+    color: DimGray;
 }
+
+

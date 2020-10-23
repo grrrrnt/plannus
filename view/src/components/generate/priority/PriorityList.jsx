@@ -3,9 +3,9 @@ import {Droppable} from "react-beautiful-dnd";
 import Priority from './Priority'
 import './priorities.css';
 
-const PriorityList = ({priorities, title, deletePriority, toggleStarPriority}) => {
+const PriorityList = ({priorities, title, delPriority, toggleMH}) => {
     return (
-        <Droppable droppableId={title}>  
+        <Droppable droppableId={title}>
             {(provided) => {
                 return(
                     <div
@@ -13,9 +13,9 @@ const PriorityList = ({priorities, title, deletePriority, toggleStarPriority}) =
                         {...provided.droppableProps}
                         className = {"droppable-col"}
                     >
-                        {priorities.map((el, index) => {
+                        {priorities.map((p, index) => {
                             return(
-                                <Priority key = {el.id} el = {el} index = {index} deletePriority = {deletePriority} toggleStarPriority = {toggleStarPriority} />
+                                <Priority key = {p.id} p = {p} index = {index} delPriority = {delPriority} toggleMH = {toggleMH} />
                             )  
                             })}
                             {provided.placeholder}

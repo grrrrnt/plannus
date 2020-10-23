@@ -3,7 +3,6 @@ import React, { Component } from "react";
 
 import { AuthUserContext, withAuthenticationConsumer } from "../authentication"
 import { withFirebase } from "../firebase"
-import SelectModules from "./SelectModules";
 import SelectSemester from "./SelectSemester";
 import RankPriorities from "./priority/RankPriorities";
 
