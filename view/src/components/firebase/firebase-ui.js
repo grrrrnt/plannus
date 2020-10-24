@@ -14,7 +14,14 @@ class FirebaseAuth extends React.Component {
             autoUpgradeAnonymousUsers: true,
             signInFlow: 'popup',
             signInOptions: [
-                firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                {
+                    provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                    customParameters: {
+                        // Forces account selection even when one account
+                        // is available.
+                        prompt: 'select_account'
+                    }
+                },
                 firebase.auth.EmailAuthProvider.PROVIDER_ID
             ],
             signInSuccessUrl: "/",
@@ -24,6 +31,7 @@ class FirebaseAuth extends React.Component {
                 signInFailure: function (error) {
                     // For merge conflicts, the error.code will be
                     // 'firebaseui/anonymous-upgrade-merge-conflict'.
+                    console.log("anon upgrade error")
                     if (error.code != 'firebaseui/anonymous-upgrade-merge-conflict') {
                         console.log("anon upgrade merge conflict")
                         return Promise.resolve();
@@ -31,11 +39,11 @@ class FirebaseAuth extends React.Component {
                     const cred = error.credential; // credential the user tried to sign in with
                     const anonUser = auth.currentUser;
                     // TODO: Copy data from anon user to acct user
-                    
+
                     return auth.signInWithCredential(cred)
-                    .then((function() {
-                        anonUser.delete()
-                    }));
+                        .then((function () {
+                            anonUser.delete()
+                        }));
                 }
             }
         }
