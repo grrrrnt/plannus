@@ -8,4 +8,15 @@ class Module extends Component {
             title: this.props.title,
         };
     }
+
+    render() {
+        var {moduleCode, title} = this.state;
+        return(
+            <div>
+                {moduleCode} {title}
+            </div>
+        )
+    }
+
 }
+export default Module

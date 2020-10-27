@@ -1,19 +1,40 @@
-import React, { Component } from "react";
+import React, { Component, useCallback } from "react";
 import TextField from '@material-ui/core/TextField';
+import _ from 'lodash';
 
-
+/*
+moduleCode, title
+*/
 
 class SearchBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            input:""
+            input:"",
         };
+
+        this.updateFilter = this.updateFilter.bind(this);
+        this.delayedUpdateFilter = _.debounce(q => this.props.onChange(q), 500);
+    }
+
+    componentWillUnmount() {
+        this.delayedUpdateFilter.cancel();
+    }
+
+
+    updateFilter(e) {
+        const val = e.target.value
+        this.setState({
+            input: val
+        });
+
+        this.delayedUpdateFilter(val);
     }
 
     render() {
         return (
-            <TextField style={{width : "50%"}} id="outlined-search" label="Enter Module Code" type="search" variant="outlined" />
+            <TextField style={{width : "50%"}} id="outlined-search" label="Enter Module Code" type="search" variant="outlined" value={this.state.input} 
+            onChange = {this.updateFilter} />
         );
     }
 }

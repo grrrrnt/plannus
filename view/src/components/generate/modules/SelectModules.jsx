@@ -1,7 +1,15 @@
 import React, { Component } from "react";
 import { withRouter } from 'react-router-dom'
 import { withFirebase } from "../../firebase";
+import ModuleDisplay from "./ModuleDisplay";
 import SearchBar from './SearchBar'
+
+
+const asyncFilter = async (arr, predicate) => {
+    const results = await Promise.all(arr.map(predicate));
+  
+    return arr.filter((_v, index) => results[index]);
+}
 
 class SelectModules extends Component {
     constructor(props) {
@@ -9,9 +17,45 @@ class SelectModules extends Component {
         this.state = {
             error: null,
             isLoaded: false,
-            items: []
+            modules: [],
+            selected:[],
+            display: [],
         };
+
+        this.filterDisplay = this.filterDisplay.bind(this);
     }
+
+
+    
+    async filterDisplay(filter) {
+        //console.log(filter);
+        
+        const allModules = this.state.modules;
+        //this.setState({isLoaded: false,});
+
+        if (filter !== '') {
+            const r = await asyncFilter(allModules, module => module.moduleCode.includes(filter.toUpperCase()));
+            this.setState({
+                display: r,
+            });
+            console.log(r);
+            /*
+            let filteredDisplay = [];
+            filteredDisplay = allModules.filter(module => module.moduleCode.includes(filter.toUpperCase()));
+            this.setState({
+                display: filteredDisplay
+            });
+            */
+        } else {
+            this.setState({
+                display: allModules,
+            })
+        }
+
+        //this.setState({isLoaded: true,})
+        
+    }
+    
 
     componentDidMount() {
         
@@ -27,7 +71,7 @@ class SelectModules extends Component {
             console.log(err.message);
         });
         //const moduleList = this.fetchModuleList();
-        
+        */
         
         fetch("https://api.nusmods.com/v2/2020-2021/moduleList.json")
             .then(res => res.json())
@@ -35,7 +79,8 @@ class SelectModules extends Component {
                 (result) => {
                     this.setState({
                         isLoaded: true,
-                        items: result
+                        modules: result,
+                        display : result,
                     });
                 },
                 // Note: it's important to handle errors here
@@ -44,16 +89,27 @@ class SelectModules extends Component {
                 (error) => {
                     this.setState({
                         isLoaded: true,
-                        error
+                        error: error,
                     });
                 }
             )
-            */
+            
     }
 
     render() {
         return(
-            <div>hello</div>
+            <div>
+                <SearchBar onChange = {this.filterDisplay} />
+                {
+                    this.state.isLoaded ?
+                        <div>
+                        <ModuleDisplay modules = {this.state.display} />
+                        </div>
+                    : <div> loading </div>
+                }
+            </div>
+
+
         )
     }
 
