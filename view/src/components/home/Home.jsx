@@ -3,11 +3,6 @@ import  { withFirebase } from '../firebase';
 import Timetable, {formatTimetable} from "../timetable"
 
 class Home extends Component {
-    // componentDidMount() {
-    //     const [timetable, setTimetable] = useState({});
-    //     setTimetable()
-    // }
-
     render() {
         console.log("home")
         return (
