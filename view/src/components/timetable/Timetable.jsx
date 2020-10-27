@@ -1,0 +1,87 @@
+import React from "react"
+import { Paper, Grid, Box, Typography } from '@material-ui/core';
+import "./Timetable.scss"
+
+const days = { 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun" }
+
+function Timetable(props) {
+    const moduleColor = {}
+
+    const assignModuleColor = () => {
+        props.classes.map()
+    }
+    return (
+        <div className="timetable-container">
+            <TimeLabels timings={props.timetable.timings} />
+            <TimetableClasses classes={props.timetable.classes}></TimetableClasses>
+        </div>
+    )
+}
+
+const TimeLabels = (props) => {
+    const timings = props.timings
+    return (
+        <Box display="flex" justifyContent="flex-start">
+            <Slot className="timetable-time-slot timetable-day-slot" flex={0.5}></Slot>
+            {
+                timings.map((time) => {
+                    return (<Slot className="timetable-time-slot" key={time} flex={1}>{time}</Slot>)
+                })
+            }
+        </Box>
+    )
+}
+
+const TimetableClasses = (props) => {
+    const classes = props.classes
+    return (
+        <React.Fragment>
+            {Object.entries(classes).map(([day, slots]) => {
+                return (<DayLessons key={day} day={day} slots={slots} />)
+            })}
+        </React.Fragment>
+    )
+}
+
+// A row of day
+const DayLessons = (props) => {
+    const day = props.day
+    const slots = props.slots
+    return (
+        <Box display="flex">
+            <Slot className="timetable-day-slot" flex={0.5}>{days[day]}</Slot>
+            {
+                slots.map((lesson, index) => {
+                    return (<LessonSlot key={index} lesson={lesson} />)
+                })
+            }
+        </Box>
+    )
+}
+
+const LessonSlot = (props) => {
+    const lesson = props.lesson
+    if (Object.keys(lesson).length == 0) { // No lessons
+        return (<Slot flex={1}></Slot>)
+    } else { // lessons
+        return (
+            <Slot flex={lesson.hours} flexShrink={lesson.hours} bgcolor={lesson.color}>
+                <b>{lesson.moduleCode}</b><br />
+                {lesson.lessonType} {lesson.classNo}<br />
+                {lesson.location}
+            </Slot>
+        )
+    }
+}
+
+const Slot = (props) => {
+    return (
+        <Box {...props} className={`timetable-slot ${props.className}`} component="span">
+            <div>
+                {props.children}
+            </div>
+        </Box>
+    )
+}
+
+export default Timetable
