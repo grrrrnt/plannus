@@ -36,7 +36,7 @@ class SelectSemester extends Component {
         const year = this.state.semester.split(" ")[0];
         const sem = this.state.semester.split(" ")[1];
         alert(year + ' ' + sem);
-        this.props.history.push(ROUTES.SELECTMODULES);
+        //this.props.history.push(ROUTES.SELECTMODULES);
          //save year and sem into firebase sanq
     }
 

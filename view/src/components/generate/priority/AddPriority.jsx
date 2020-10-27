@@ -106,7 +106,7 @@ class AddPriority extends Component {
 
 
     handleSubmit() {
-        const { type, fields, name} = this.state;
+        const { type, fields, name } = this.state;
         const toAdd = this.state;
         
         if (name === "") {

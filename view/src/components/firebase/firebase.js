@@ -1,6 +1,7 @@
 import firebase from 'firebase';
 import app from 'firebase/app';
-import 'firebase/firestore'
+import 'firebase/firestore';
+import 'firebase/functions';
 
 
 const config = {
@@ -19,7 +20,7 @@ class Firebase {
         firebase.initializeApp(config);
 
         this.auth = app.auth();
-        this.db = app.firestore();
+        this.functions = app.functions();
     }
 
     loginAnonymously = () =>

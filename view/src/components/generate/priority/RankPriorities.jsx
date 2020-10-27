@@ -120,16 +120,17 @@ class RankPriorities extends Component {
             loaded: true,
         });
     }
-/*
-this.state = {
-            name: 'Select a Priority',
-            type: "",
-            fields: {
-                time: defaultDate,
-                fromTime: defaultDate,
-                toTime: defaultDate,
-                hours: 0,
-            },   */
+/* format of priority
+{
+    name: 'Select a Priority',
+    type: "",
+    fields: {
+        time: defaultDate,
+        fromTime: defaultDate,
+        toTime: defaultDate,
+        hours: 0,
+},  
+ */
     addPriority(priority) {        
         const priorities = this.state.items;
         
@@ -208,6 +209,15 @@ this.state = {
         }
 
         console.log(toSubmit);
+        /*
+        var setUserPriorities = this.props.firebase.functions.httpsCallable('setUserPriorities');
+        setUserPriorities({priorities: toSubmit}).then(function(result) {
+            console.log(JSON.parse(JSON.stringify(result)));
+        }).catch(function(err) {
+            console.log(JSON.parse(JSON.stringify(err)));
+        });
+        */
+
     }
 
     
@@ -224,9 +234,7 @@ this.state = {
                 
                 {
                     loaded ?
-                    <div>
-                    
-                        
+                    <div>  
                     <DragDropContext onDragEnd = {this.handleDragEnd}>
                         <Grid container justify = "center">
                         <h3 className = {"title"} > Drag to rank your priorities </h3>
@@ -237,7 +245,6 @@ this.state = {
                         </Grid>
                     </DragDropContext>
                     </div>
-
                     :
                     <div> loading ... </div>
                 }

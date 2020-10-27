@@ -1,10 +1,9 @@
-import { auth } from "firebase";
 import React, { Component } from "react";
-
-import { AuthUserContext, withAuthenticationConsumer } from "../authentication"
+import { withAuthenticationConsumer } from "../authentication"
 import { withFirebase } from "../firebase"
 import SelectSemester from "./SelectSemester";
 import RankPriorities from "./priority/RankPriorities";
+import SelectModules from "./modules/SelectModules"
 
 class Generate extends Component {
     componentDidMount() {
@@ -18,6 +17,7 @@ class Generate extends Component {
             <div>
                 <SelectSemester />
                 <RankPriorities />
+                <SelectModules />
             </div>
         )
     }

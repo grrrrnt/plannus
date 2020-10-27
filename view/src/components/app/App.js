@@ -9,8 +9,6 @@ import Compare from "../compare/Compare";
 import Account from "../account/Account";
 import { Login, withAuthenticationProvider } from "../authentication";
 
-import SelectModules from '../generate/SelectModules';
-
 import * as ROUTES from '../../util/Routes';
 
 class App extends Component {
