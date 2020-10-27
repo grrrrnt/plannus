@@ -1,0 +1,28 @@
+.timetable-container {
+  width: 90%;
+  margin: 5%;
+}
+
+.timetable-slot {
+  border-bottom: 0.5px solid #C4C4C4;
+  border-right: 0.5px solid #C4C4C4;
+  div {
+    margin: 0.5em;
+  }
+}
+
+.timetable-time-slot {
+  border-top: 0.5px solid #C4C4C4;
+  div {
+    font-weight: bold;
+  }
+}
+
+.timetable-day-slot {
+  border-left: 0.5px solid #C4C4C4;
+  text-align: center;
+  div {
+    position: relative;
+    font-weight: bold;
+  }
+}
