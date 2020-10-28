@@ -5,7 +5,6 @@ admin.initializeApp();
 //const loginUser = require('./users')
 //app.post('/login', loginUser);
 
-var uuid = require('uuid');
 var request = require('request');
 var bodyParser = require('body-parser');
 
@@ -97,6 +96,50 @@ exports.getTimetable = functions.https.onCall((data, context) => {
         }
     }).catch((error) => {
         console.error("Error getting timetable: " + error);
+    });
+});
+
+exports.setDefaultTimetable = functions.https.onCall((data, context) => {
+    const timetableId = data.timetableId;
+    const uid = context.auth.uid;
+    admin.firestore().collection("users").doc(uid).set({
+        defaultTimetable: timetableId
+    }, {merge: true})
+    .then(() => {
+        console.log("User default timetable set: " + uid);
+        return { success: true };
+    })
+    .catch((error) => {
+        console.error("Error setting default timetable for user " + uid + " " + error);
+        return { success: false };
+    });
+});
+
+exports.getDefaultTimetable = functions.https.onCall((data, context) => {
+    const uid = context.auth.uid;
+    var userRef = admin.firestore().collection("users").doc(uid);
+    return userRef.get().then((doc) => {
+        if (doc.exists && doc.data().defaultTimetable !== null) {
+            return doc.data().defaultTimetable;
+        } else {
+            return console.error("No default timetable");
+        }
+    }).catch((error) => {
+        console.error("No default timetable: " + error);
+    });
+});
+
+exports.getSavedTimetables = functions.https.onCall((data, context) => {
+    const uid = context.auth.uid;
+    var userRef = admin.firestore().collection("users").doc(uid);
+    return userRef.get().then((doc) => {
+        if (doc.exists && doc.data().timetables !== null) {
+            return doc.data().timetables;
+        } else {
+            return console.error("No saved timetables");
+        }
+    }).catch((error) => {
+        console.error("No saved timetables: " + error);
     });
 });
 
