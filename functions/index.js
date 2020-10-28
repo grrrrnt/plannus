@@ -6,6 +6,7 @@ admin.initializeApp();
 //app.post('/login', loginUser);
 
 var request = require('request');
+var bodyParser = require('body-parser');
 
 //exports.helloWorld = functions.https.onRequest((request, response) => {
 //   functions.logger.info("Hello logs!", {structuredData: true});
@@ -16,18 +17,28 @@ exports.retrieveModules = functions.https.onCall((data, context) => {
     var startYear = data.year;
     var endYear = startYear + 1;
     var semester = data.semester;
-    var yearCode = startYear + "-" + endYear;
+    var yearCode = startYear.toString() + "-" + endYear.toString();
 
-    var yearModules = request("https://nusmods.com/api/v2/2018-2019/modules/" + yearCode + ".json", { json: true }, (err, res, body) => {
-        if (err) { return console.log(err); }
-        return JSON.parse(body);
+    var getYearModules = function (yearCode) {
+        return new Promise(function (resolve, reject) {
+            request("https://nusmods.com/api/v2/" + yearCode + "/moduleList.json", (err, res, body) => {
+                if (err) {
+                    console.log(err);
+                    reject(err)
+                } else {
+                    resolve(JSON.parse(body));
+                }
+            });
+        });
+    };
+
+    return getYearModules(yearCode).then((yearModules) => {
+        var semesterModules = yearModules.filter((module) => {
+            return module.semesters.includes(semester);
+        });
+
+        return { modules: semesterModules };
     });
-
-    var semesterModules = yearModules.filter((module) => {
-        return module.semesters.includes(semester);
-    });
-
-    return { modules: semesterModules };
 });
 
 exports.setUserModules = functions.https.onCall((data, context) => {
