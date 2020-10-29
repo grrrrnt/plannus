@@ -69,18 +69,16 @@ exports.setUserPriorities = functions.https.onCall((data, context) => {
 });
 
 exports.createUser = functions.https.onCall((data, context) => {
-    const userId = data.userId;
     const uid = context.auth.uid;
     admin.firestore().collection("users").doc(uid).set({
-        userId: userId,
         dateCreated: admin.firestore.FieldValue.serverTimestamp()
     }, {merge: true})
     .then(() => {
-        console.log("User with userId " + userId + " created: " + uid);
+        console.log("User record created: " + uid);
         return { success: true };
     })
     .catch((error) => {
-        console.error("Error creating user " + uid + " " + error);
+        console.error("Error creating user record " + uid + " " + error);
         return { success: false };
     });
 });
@@ -149,17 +147,6 @@ exports.saveTimetable = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
 
     // Set timetable in timetables collection if it doesn't yet exist
-    const userRef = admin.firestore().collection("users").doc(uid);
-    var userId;
-    userRef.get()
-        .then((doc) => {
-            if (doc.exists) {
-                userId = doc.data().userId;
-            } else {
-                userId = "Anonymous";
-            }
-            return userId;
-        }).catch((error) => { console.log(error); });
     const timetableRef = admin.firestore().collection("timetables").doc(timetableId);
     timetableRef.get()
         .then((docSnapshot) => {
@@ -167,10 +154,10 @@ exports.saveTimetable = functions.https.onCall((data, context) => {
                 admin.firestore().collection("timetables").doc(timetableId).set({
                     timetableId: timetableId,
                     timetable: timetable,
-                    owner: userId,
+                    owner: uid,
                     dateModified: admin.firestore.FieldValue.serverTimestamp()
                 });
-                console.log("Timetable owned by " + userId + " set with ID: " + timetableId);
+                console.log("Timetable set with ID: " + timetableId);
             }
             return timetableId;
         })
