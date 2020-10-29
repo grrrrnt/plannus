@@ -12,16 +12,23 @@ const moduleData = require('./moduleData');
    response.send("Hello from Firebase!");
  });
 
+exports.setUserSemester = functions.https.onCall(async (data, context) => {
+
+});
+
 exports.retrieveModules = functions.https.onCall(async (data, context) => {
+    console.log("auth", context.auth);
     const userDocRef = admin.firestore().collection("users").doc(context.auth.uid);
     const userDoc = await userDocRef.get();
     if (!userDoc.exists) {
-        throw new Error("userDoc does not exist");
+        console.log(new Error("userDoc does not exist"));
+        return {success: false};
     }
     const user = userDoc.data();
     if (!("year" in user) || !("semester" in user)) {
-        throw new Error("userDoc does not have year or semester");
+        console.log(new Error("userDoc does not have year or semester"));
+        return {success: false};
     }
     const year = user.year.replace("/", "-");
-    return moduleData.getModuleListSemester(year, user.semester);
+    return {success: true, data: moduleData.getModuleListSemester(year, user.semester)};
 });

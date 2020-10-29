@@ -20,6 +20,7 @@ class Firebase {
 
         this.auth = app.auth();
         this.db = app.firestore();
+        this.func = app.functions();
     }
 
     loginAnonymously = () =>

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from 'react-router-dom'
+import { withFirebase } from '../firebase';
 
 
 class SelectModules extends Component {
@@ -13,13 +14,13 @@ class SelectModules extends Component {
     }
 
     componentDidMount() {
-        fetch("https://api.nusmods.com/v2/2020-2021/moduleList.json")
-            .then(res => res.json())
+        const retrieveModules = this.props.firebase.func.httpsCallable("retrieveModules");
+        retrieveModules()
             .then(
                 (result) => {
                     this.setState({
                         isLoaded: true,
-                        items: result
+                        ...result
                     });
                 },
                 // Note: it's important to handle errors here
@@ -31,13 +32,15 @@ class SelectModules extends Component {
                         error
                     });
                 }
-            )
+            );
     }
 
     render() {
-        const { error, isLoaded, items } = this.state;
+        const { error, isLoaded, success, items } = this.state;
         if (error) {
             return <div>Error: {error.message}</div>;
+        } else if (!success) {
+            return <div>Error, try selecting the semester</div>;
         } else if (!isLoaded) {
             return <div>Loading...</div>;
         } else {
@@ -54,4 +57,4 @@ class SelectModules extends Component {
     }
 }
 
-export default withRouter(SelectModules);
+export default withRouter(withFirebase(SelectModules));
