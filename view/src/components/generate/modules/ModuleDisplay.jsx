@@ -1,6 +1,11 @@
-import React, { Component } from "react";
-import Module from './Module';
+import React from "react";
 import LazyLoad from 'react-lazyload';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+
+
+
 /*
 class ModuleDisplay extends Component {
     constructor(props) {
@@ -32,19 +37,21 @@ const Loading = () => (
     <div> loading ...</div>
 );
 
-const ModuleDisplay = ({ modules }) => {
+const ModuleDisplay = ({ modules, selectMod }) => {
     return (
-        <div>
-        {
-            modules.map(m => {
-                return (
-                    <LazyLoad key={m.moduleCode} placeholder={<Loading />} offset = {100} height = {200}>
-                    <Module key={m.moduleCode} moduleCode={m.moduleCode} title={m.title} />
-                    </LazyLoad>
-                )
-            })
-        }
-        </div>
+        <List>
+            {
+                modules.map(m=> {
+                    return(             
+                        <LazyLoad key = {m.moduleCode} placeholder = {<Loading/>}>
+                            <ListItem key = {m.moduleCode} dense button onClick = {()=>selectMod(m)}>
+                                <ListItemText primary={m.moduleCode} secondary={m.title} />
+                            </ListItem>  
+                        </LazyLoad>     
+                    )
+                })
+            }
+        </List>
     );
 }
 

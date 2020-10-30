@@ -1,4 +1,4 @@
-import React, { Component, useCallback } from "react";
+import React, { Component } from "react";
 import TextField from '@material-ui/core/TextField';
 import _ from 'lodash';
 
@@ -33,7 +33,7 @@ class SearchBar extends Component {
 
     render() {
         return (
-            <TextField style={{width : "50%"}} id="outlined-search" label="Enter Module Code" type="search" variant="outlined" value={this.state.input} 
+            <TextField style={{width : "100%"}} id="outlined-search" label="Enter Module Code" type="search" variant="outlined" value={this.state.input} 
             onChange = {this.updateFilter} />
         );
     }

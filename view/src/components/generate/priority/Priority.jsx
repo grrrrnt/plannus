@@ -4,6 +4,9 @@ import './priorities.css';
 import DeleteIcon from '@material-ui/icons/Delete';
 import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
+import { IconButton } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
+
 /*
 format:
                 id:v4(),
@@ -25,14 +28,26 @@ const Priority = ({ p, index, delPriority, toggleMH }) => {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                     >
-                        <DeleteIcon fontSize="small" onClick = {(e) => delPriority(index)} />
+                        <Tooltip title="Delete">
+                        <IconButton size = "small" edge = "start" onClick = {(e) => delPriority(index)} >
+                        <DeleteIcon fontSize="small" />
+                        </IconButton>
+                        </Tooltip>
                         {
                             p.mustHave ? 
-                                <StarIcon fontSize="small" onClick = {(e) => toggleMH(index)} />
+                                <Tooltip title="Must-Have">
+                                <IconButton size = "small" onClick = {(e) => toggleMH(index)} >
+                                <StarIcon fontSize="small"  />
+                                </IconButton>
+                                </Tooltip>
                             :   
-                                <StarBorderIcon fontSize="small" onClick = {(e) => toggleMH(index)} />
+                                <Tooltip title="Must-Have">
+                                <IconButton size = "small" onClick = {(e) => toggleMH(index)} >
+                                <StarBorderIcon fontSize="small" />
+                                </IconButton>
+                                </Tooltip>
                         }
-                    {p.name}
+                    <span className = {"title"}>{p.name} </span>
                     </div>
                 )
             }} 

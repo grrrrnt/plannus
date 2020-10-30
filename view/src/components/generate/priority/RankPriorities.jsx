@@ -4,63 +4,16 @@ import { withFirebase } from '../../firebase';
 import {DragDropContext} from "react-beautiful-dnd";
 import './priorities.css';
 import {v4} from 'uuid';
+import _ from "lodash";
 import PriorityList from './PriorityList';
-import AddPriority from './AddPriority';
+import PriorityAdder from './PriorityAdder';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import options from './options';
+import {initialise, reformatForSub} from './priorityfunc';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Box from '@material-ui/core/Box';
+import Alert from '@material-ui/lab/Alert';
 
-
-const fromDB = [
-{
-    id: v4(),
-    type: "MinTravellingPriority",
-    fields: {},
-    rank: 1,
-    mustHave: false,
-},
-{
-    id: v4(),
-    type: "AvoidBeforePriority",
-    fields: {time: 1030},
-    rank: 2,
-    mustHave: true,
-}, 
-{
-    id: v4(),
-    type: "AvoidAfterPriority",
-    fields: {time: 1400},
-    rank: 3,
-    mustHave: true,
-}, 
-{
-    id: v4(),
-    type: "FreePeriodPriority",
-    fields: {fromTime: 911, toTime: 1411},
-    rank: 4,
-    mustHave: true,
-}, 
-{
-    id: v4(),
-    type: "MaxFreeDaysPriority",
-    fields: {},
-    rank: 5,
-    mustHave: true,
-},
-{
-    id: v4(),
-    type: "MinBreaksPriority",
-    fields: {},
-    rank: 6,
-    mustHave: true,
-}, 
-{
-    id: v4(),
-    type: "LunchBreakPriority",
-    fields: {hours: 2},
-    rank: 7,
-    mustHave: true,
-}];
 
 
 /*
@@ -80,7 +33,8 @@ class RankPriorities extends Component {
         this.state = {
             title: "Priorities",
             items: [],
-            loaded: false
+            loaded: false,
+            error: "",
         };
         
         this.addPriority = this.addPriority.bind(this);
@@ -89,34 +43,12 @@ class RankPriorities extends Component {
         this.handleDragEnd = this.handleDragEnd.bind(this);
         this.handleSubmit  = this.handleSubmit.bind(this);
     }
-
+ 
     componentDidMount() {
-        var initItems = fromDB;
-        for(var x of initItems) {
-            for (var i of options) {
-                if (x.type === i.type) {
-                   var name = i.value;
-                   if (x.type === 'AvoidBeforePriority' || x.type === 'AvoidAfterPriority') {
-                        x.name = name.replace('(Time)', x.fields.time);
-                    }
-
-                    if (x.type === 'FreePeriodPriority') {
-                        x.name = name.replace('(Time 1)', x.fields.fromTime);
-                        x.name = x.name.replace('(Time 2)', x.fields.toTime);
-                    }
-
-                    if (x.type === 'LunchBreakPriority') {
-                        x.name = name.replace('(duration)', x.fields.hours + " hours");
-                    }
-
-                    if (x.type === 'MaxFreeDaysPriority' || x.type === 'MinTravellingPriority' || x.type === 'MinBreaksPriority') {
-                        x.name = name;
-                    }
-                } 
-            }
-        }
+        var priorities = this.props.priorities; 
+        const init = initialise(priorities);
         this.setState({
-            items: initItems,
+            items: init,
             loaded: true,
         });
     }
@@ -133,14 +65,10 @@ class RankPriorities extends Component {
  */
     addPriority(priority) {        
         const priorities = this.state.items;
-        
         const duplicate = priorities.some(p => p.name === priority.name);
-        
         if (duplicate) {
-            alert("Priority was already selected.");
-            return;
+            return "Priority was already selected.";
         }
-        
         this.setState({
             items: [{
                 id:v4(),
@@ -152,28 +80,33 @@ class RankPriorities extends Component {
                 },
                 ...this.state.items
             ],
+            error: "",
         });
+        return "success";
     }
 
     delPriority(index) {
-        var updatedP = this.state.items;
-        updatedP.splice(index, 1);
+        var items = [...this.state.items];
+        //priorities.splice(index, 1);
         this.setState({
-            items: updatedP,
-        });
+            items: [
+                ...items.slice(0, index),
+                ...items.slice(index + 1)
+                ]
+        })
     }
 
     toggleMH(index) {
-        var updatedP = this.state.items;
-        const isMustHave = updatedP[index].mustHave;
-        if (isMustHave) {
-            updatedP[index].mustHave = false;
-        } else {
-            updatedP[index].mustHave = true;
-        }
-
+        const items = [...this.state.items];
         this.setState({
-            items: updatedP,
+            items: [
+                ...items.slice(0, index),
+                {
+                    ...items[index],
+                    mustHave: !items[index].mustHave,
+                },
+                ...items.slice(index + 1)
+                ]
         })
     }
 
@@ -202,57 +135,81 @@ class RankPriorities extends Component {
     }
 
     handleSubmit() {
-        var toSubmit = this.state.items;
-        for (var i = 0; i < toSubmit.length; i ++) {
-            toSubmit[i].rank = i + 1;
-            delete toSubmit[i].name;
+        if (this.state.items.length === 0) {
+            this.setState({error: "Please select at least 1 priority"})
+            return;
         }
-
-        console.log(toSubmit);
-        /*
+        var items = _.cloneDeep(this.state.items);
+        const toSubmit = reformatForSub(items);
+        
         var setUserPriorities = this.props.firebase.functions.httpsCallable('setUserPriorities');
-        setUserPriorities({priorities: toSubmit}).then(function(result) {
-            console.log(JSON.parse(JSON.stringify(result)));
-        }).catch(function(err) {
-            console.log(JSON.parse(JSON.stringify(err)));
-        });
-        */
-
+        setUserPriorities({priorities: toSubmit})
+            .then(
+                (result) => {
+                    console.log(result);
+                }
+            ).catch(
+                (err) => {
+                    console.log(err);
+                }
+            );
+        
+        this.props.setPriorities(toSubmit);
+        this.props.nextStep();
     }
 
-    
 
     render() {
-        const { loaded, items, title } = this.state;
+        const { loaded, items, title, error } = this.state;
         return( 
             <div>
                 <Grid container justify = "center">
                     <h2 className = {"title"}> What priorities are important to you?</h2>
                 </Grid> 
+                <PriorityAdder addPriority = {this.addPriority} />
                 
-                <AddPriority addPriority = {this.addPriority} />
                 
+                <Grid container justify = "center">
+                    <h3 className = {"title"} style = {{whiteSpace: "pre-wrap"}} > 
+                        Drag to rank your priorities {"\n"} 
+                    </h3>
+                </Grid>
+
                 {
                     loaded ?
                     <div>  
                     <DragDropContext onDragEnd = {this.handleDragEnd}>
-                        <Grid container justify = "center">
-                        <h3 className = {"title"} > Drag to rank your priorities </h3>
-                        </Grid>
-
                         <Grid container justify = "center">
                         <PriorityList priorities = {items} title = {title} delPriority = {this.delPriority} toggleMH = {this.toggleMH} />
                         </Grid>
                     </DragDropContext>
                     </div>
                     :
-                    <div> loading ... </div>
+                    <Box m={2} pt={3}>
+                    <Grid container justify = "center">  
+                        <CircularProgress />
+                    </Grid>
+                    </Box>
                 }
 
+                {
+                    error !== "" ? 
+                        <Grid container justify = "center">
+                            <Box m={1}>
+                                <Alert severity="error">
+                                    {error}
+                                </Alert>
+                            </Box>
+                        </Grid>
+                    : <div></div>
+                }
+                
                 <Grid container justify = "center">
-                    <Button variant="outlined" color="primary" onClick = {this.handleSubmit}>
-                        Submit
-                    </Button>
+                    <Box m={1}>
+                        <Button variant="outlined" color="primary" onClick = {this.handleSubmit}>
+                            Next
+                        </Button>
+                    </Box>
                 </Grid>
 
             </div>

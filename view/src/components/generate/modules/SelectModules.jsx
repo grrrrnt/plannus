@@ -1,9 +1,14 @@
 import React, { Component } from "react";
-import { withRouter } from 'react-router-dom'
 import { withFirebase } from "../../firebase";
 import ModuleDisplay from "./ModuleDisplay";
 import SearchBar from './SearchBar'
-
+import SelectedModules from './SelectedModules'
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import Alert from '@material-ui/lab/Alert';
+import _ from "lodash";
 
 const asyncFilter = async (arr, predicate) => {
     const results = await Promise.all(arr.map(predicate));
@@ -15,17 +20,50 @@ class SelectModules extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            error: null,
+            error: "",
             isLoaded: false,
             modules: [],
-            selected:[],
+            selected:this.props.mods,
             display: [],
+            sem: this.props.sem,
         };
 
         this.filterDisplay = this.filterDisplay.bind(this);
+        this.selectMod = this.selectMod.bind(this);
+        this.delMod = this.delMod.bind(this);
+        this.submitModules = this.submitModules.bind(this);
     }
 
+    submitModules() {
+        if (this.state.selected.length === 0) {
+            this.setState({
+                error: "Please select at least 1 module"
+            })
+            return;
+        }
 
+        var toSubmit = [];
+        const selected = _.cloneDeep(this.state.selected);
+        for (var x of selected) {
+            toSubmit.push(x.moduleCode);
+        }
+        console.log(toSubmit);
+
+        var setUserModules = this.props.firebase.functions.httpsCallable('setUserModules');
+        setUserModules({modules: toSubmit})
+            .then(
+                (result) => {
+                    console.log(result);
+                }
+            ).catch(
+                (err) => {
+                    console.log(err);
+                }
+            );
+
+        this.props.setMods(selected);
+        this.props.nextStep();
+    }
     
     async filterDisplay(filter) {
         //console.log(filter);
@@ -58,86 +96,89 @@ class SelectModules extends Component {
     
 
     componentDidMount() {
-        
-    
-        /*
+        const year = parseInt(this.state.sem.split(" ")[0]);
+        const sem = parseInt(this.state.sem.split(" ")[1]);
+        console.log(year);
+        console.log(sem);
         var retrieveModules = this.props.firebase.functions.httpsCallable('retrieveModules');
-        retrieveModules({year: 2020, semester: 1}).then(function(result) {
+        retrieveModules({year: year, semester: sem})      // To change depending on selected option
+        .then(
+            (result) => {
             var res = result.data.modules;
             this.setState({
-                items:res,
-            })
-        }).catch(function(err) {
-            console.log(err.message);
-        });
-        //const moduleList = this.fetchModuleList();
-        */
-        
-        fetch("https://api.nusmods.com/v2/2020-2021/moduleList.json")
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        isLoaded: true,
-                        modules: result,
-                        display : result,
-                    });
-                },
-                // Note: it's important to handle errors here
-                // instead of a catch() block so that we don't swallow
-                // exceptions from actual bugs in components.
-                (error) => {
-                    this.setState({
-                        isLoaded: true,
-                        error: error,
-                    });
-                }
-            )
+                isLoaded: true,
+                modules: res,
+                display : res,
+            });
+        }).catch(
+            (err) => {console.log(err);}
+        );
             
     }
 
+    selectMod(m) {
+        var mods = [...this.state.selected];
+        if (!mods.some(p => p.moduleCode === m.moduleCode)) {
+            this.setState({
+                selected: [...this.state.selected, m],
+                error: "",
+            })
+        } else {
+            alert("Module was already selected.");
+        }    
+    }
+
+    delMod(ind) {
+        var mods = [...this.state.selected];
+        this.setState( {
+            selected: [...mods.slice(0, ind), 
+                        ...mods.slice(ind + 1)],
+        });
+    }
+
     render() {
+        console.log(this.state.selected);
         return(
+            
             <div>
-                <SearchBar onChange = {this.filterDisplay} />
-                {
+                <Grid container >
+                <Box m = {2} width = "50%">
+                    <SearchBar onChange = {this.filterDisplay} />
+                    {
                     this.state.isLoaded ?
-                        <div>
-                        <ModuleDisplay modules = {this.state.display} />
-                        </div>
-                    : <div> loading </div>
-                }
+                        <ModuleDisplay modules = {this.state.display} selectMod = {this.selectMod} />
+                    : 
+                        <Box m={2} pt={3}>
+                            <CircularProgress />
+                        </Box>
+                    }
+                </Box>
+                <Box m = {2} width = "40%" >
+                    <SelectedModules mods={this.state.selected} delMod = {this.delMod} />
+                    <Grid container justify = "center">
+                        {
+                            this.state.error !== "" ? 
+                                <Box m={1}>
+                                    <Alert severity="error">
+                                        {this.state.error}
+                                    </Alert>
+                                </Box>
+                            :
+                                <div></div>
+                        }
+                        <Button variant="outlined" color="primary" onClick = {this.submitModules}>
+                                    Next
+                        </Button>
+                    </Grid>
+                </Box>
+                </Grid>
+                
             </div>
 
 
         )
     }
 
-
-    /*
-    render() {
-        const { error, isLoaded, items } = this.state;
-        console.log(items[0]);
-        if (error) {
-            return <div>Error: {error.message}</div>;
-        } else if (!isLoaded) {
-            return <div>Loading...</div>;
-        } else {
-            return (
-                <div>
-                <SearchBar />
-                <ul>
-                    {items.map(item => (
-                        <li key={item.moduleCode}>
-                            {item.moduleCode} {item.title}
-                        </li>
-                    ))}
-                </ul>
-                </div>
-            );
-        }
-    }
-    */
 }
 
 export default withFirebase(SelectModules);
