@@ -1,11 +1,12 @@
 const admin = require('firebase-admin');
+const request = require('request');
 
 exports.getModuleListSemester = async (year, semester) => {
     return JSON.parse(await exports.getModuleList(year)).filter(mod => mod.semesters.includes(semester));
 }
 
 exports.getModuleList = async year => {
-    const docRef = admin.firestore().collection("moduleList").doc(year);
+    const docRef = admin.firestore().collection("moduleList").doc(year.toString());
     const cache = await docRef.get();
     if (cache.exists) {
         const data = cache.data();
