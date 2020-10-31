@@ -9,15 +9,13 @@ import * as serviceWorker from './serviceWorker';
 import './index.css';
 
 ReactDOM.render(
-  <React.StrictMode>
-    <StylesProvider injectFirst>
-      <BrowserRouter>
-        <FirebaseContext.Provider value={new Firebase()}>
-          <App />
-        </FirebaseContext.Provider>
-      </BrowserRouter>
-    </StylesProvider>
-  </React.StrictMode>,
+  <StylesProvider injectFirst>
+    <BrowserRouter>
+      <FirebaseContext.Provider value={new Firebase()}>
+        <App />
+      </FirebaseContext.Provider>
+    </BrowserRouter>
+  </StylesProvider>,
   document.getElementById('root')
 );
 

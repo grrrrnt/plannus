@@ -31,9 +31,7 @@ class FirebaseAuth extends React.Component {
                 signInFailure: function (error) {
                     // For merge conflicts, the error.code will be
                     // 'firebaseui/anonymous-upgrade-merge-conflict'.
-                    console.log("anon upgrade error")
                     if (error.code != 'firebaseui/anonymous-upgrade-merge-conflict') {
-                        console.log("anon upgrade merge conflict")
                         return Promise.resolve();
                     }
                     const cred = error.credential; // credential the user tried to sign in with

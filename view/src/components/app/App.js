@@ -2,14 +2,10 @@ import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import Main from "./Main"
-import NavBar from "../navigation";
-import Home from "../home/Home";
-import Generate from "../generate";
-import Compare from "../compare/Compare";
-import Account from "../account/Account";
 import { Login, withAuthenticationProvider } from "../authentication";
 
 import * as ROUTES from '../../util/Routes';
+import "./App.scss"
 
 class App extends Component {
   render() {
