@@ -1,57 +1,34 @@
 import React from "react";
-import LazyLoad from 'react-lazyload';
-import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { FixedSizeList } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 
-
-
-/*
-class ModuleDisplay extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            modules: this.props.modules,
-        };
-    }
-
-    render() {
-        var { modules } = this.state;
-
-        return (
-            <div>
-            {
-                modules.map(m => {
-                    return (
-                        <Module key={m.moduleCode} moduleCode={m.moduleCode} title={m.title} />
-                    )
-                })
-            }
-            </div>
-        );
-    }
-}
-*/
-
-const Loading = () => (
-    <div> loading ...</div>
-);
-
-const ModuleDisplay = ({ modules, selectMod }) => {
+const ModuleDisplay = ({ className, modules, selectMod }) => {
     return (
-        <List>
-            {
-                modules.map(m=> {
-                    return(             
-                        <LazyLoad key = {m.moduleCode} placeholder = {<Loading/>}>
-                            <ListItem key = {m.moduleCode} dense button onClick = {()=>selectMod(m)}>
-                                <ListItemText primary={m.moduleCode} secondary={m.title} />
-                            </ListItem>  
-                        </LazyLoad>     
-                    )
-                })
-            }
-        </List>
+        <div className={className}>
+            <AutoSizer>
+                {({ height, width }) => (
+                    <FixedSizeList
+                        height={height}
+                        itemCount={modules.length}
+                        itemSize={height / 8}
+                        width={width}
+                    >
+                        {
+                            ({ index, style }) => {
+                                const m = modules[index]
+                                return (
+                                    <ListItem className="module-display-list-item" key={m.moduleCode} dense button onClick={() => selectMod(m)} style={style} >
+                                        <ListItemText primary={m.moduleCode} secondary={m.title} />
+                                    </ListItem>
+                                )
+                            }
+                        }
+                    </FixedSizeList>
+                )}
+            </AutoSizer>
+        </div >
     );
 }
 

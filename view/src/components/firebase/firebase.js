@@ -37,6 +37,30 @@ class Firebase {
     fetchMainTimetable = () => {
         return JSON.parse(JSON.stringify(sampleTimetable))
     }
+
+    fetchModules = async (year, sem) => {
+        var retrieveModules = this.functions.httpsCallable('retrieveModules');
+        try {
+            const result = await retrieveModules({year: year, semester: sem})
+            return result.data.modules
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
+    setModules = (modules) => {
+        var setUserModules = this.props.functions.httpsCallable('setUserModules');
+        setUserModules({modules: modules})
+            .then(
+                (result) => {
+                    console.log(result);
+                }
+            ).catch(
+                (err) => {
+                    console.log(err);
+                }
+            );
+    }
 }
 
 const sampleTimetable = {

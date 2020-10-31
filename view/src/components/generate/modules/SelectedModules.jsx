@@ -10,7 +10,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 class SelectedModules extends Component {
     constructor(props) {
         super(props);
-        this.state = {
+        this.state = {F
             modules: this.props.selected,
         
         };
@@ -39,22 +39,22 @@ class SelectedModules extends Component {
     }
 }
 */
-const SelectedModules = ({mods, delMod}) => {
+const SelectedModules = ({ mods, delMod }) => {
     return (
         <List>
             {
                 mods.map((m, index) => {
-                    return(             
-                        <ListItem key = {m.moduleCode} dense button >
+                    return (
+                        <ListItem key={m.moduleCode} dense button >
                             <ListItemText primary={m.moduleCode} secondary={m.title} />
                             <ListItemSecondaryAction>
-                                <IconButton edge="end" onClick = {() => delMod(index)}>
+                                <IconButton edge="end" onClick={() => delMod(index)}>
                                     <ClearIcon fontsize="medium" />
                                 </IconButton>
                             </ListItemSecondaryAction>
 
-                        </ListItem>  
-                      
+                        </ListItem>
+
                     )
                 })
             }
