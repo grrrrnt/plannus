@@ -1,7 +1,7 @@
 import firebase from 'firebase';
 import app from 'firebase/app';
 import 'firebase/firestore'
-import { v4 as uuid } from "uuid"
+import 'firebase/functions'
 
 
 const config = {
@@ -72,10 +72,11 @@ class Firebase {
         }
     }
 
-    fetchModules = async (year, sem) => {
+    fetchModules = async () => {
         var retrieveModules = this.functions.httpsCallable('retrieveModules');
         try {
-            const result = await retrieveModules({year: year, semester: sem})
+            const result = await retrieveModules()
+            console.log(result)
             return result.data.modules
         } catch(err) {
             console.error(err);
@@ -83,8 +84,36 @@ class Firebase {
     }
 
     setModules = (modules) => {
-        var setUserModules = this.props.functions.httpsCallable('setUserModules');
+        var setUserModules = this.functions.httpsCallable('setUserModules');
         setUserModules({modules: modules})
+            .then(
+                (result) => {
+                    console.log(result);
+                }
+            ).catch(
+                (err) => {
+                    console.log(err);
+                }
+            );
+    }
+
+    setSemester = (year, sem) => {
+        var setUserSemester = this.functions.httpsCallable('setUserSemester');
+        setUserSemester({year: year, semester: sem})
+            .then(
+                (result) => {
+                    console.log(result);
+                }
+            ).catch(
+                (err) => {
+                    console.log(err);
+                }
+            );
+    }
+
+    setPriorities = (priorities) => {
+        var setUserPriorities = this.functions.httpsCallable('setUserPriorities');
+        setUserPriorities({ priorities: priorities })
             .then(
                 (result) => {
                     console.log(result);

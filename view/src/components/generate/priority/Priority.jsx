@@ -7,16 +7,6 @@ import StarBorderIcon from '@material-ui/icons/StarBorder';
 import { IconButton } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
 
-/*
-format:
-                id:v4(),
-                type: priority.type,
-                fields: priority.fields,
-                name:priority.name,
-                rank: 0,
-                mustHave: false
-*/
-
 const Priority = ({ p, index, delPriority, toggleMH }) => {
     return (
         <Draggable index={index} draggableId={p.id}>
@@ -30,24 +20,24 @@ const Priority = ({ p, index, delPriority, toggleMH }) => {
                     >
                         <Tooltip title="Delete">
                             <IconButton size="small" edge="start" onClick={(e) => delPriority(index)} >
-                                <DeleteIcon fontSize="small" />
+                                <DeleteIcon fontSize="default" />
                             </IconButton>
                         </Tooltip>
                         {
                             p.mustHave ?
                                 <Tooltip title="Must-Have">
                                     <IconButton size="small" onClick={(e) => toggleMH(index)} >
-                                        <StarIcon fontSize="small" />
+                                        <StarIcon fontSize="default" />
                                     </IconButton>
                                 </Tooltip>
                                 :
                                 <Tooltip title="Must-Have">
                                     <IconButton size="small" onClick={(e) => toggleMH(index)} >
-                                        <StarBorderIcon fontSize="small" />
+                                        <StarBorderIcon fontSize="default" />
                                     </IconButton>
                                 </Tooltip>
                         }
-                        <span className={"title"}>{p.name} </span>
+                        <span>{p.name}</span>
                     </div>
                 )
             }}

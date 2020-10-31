@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import './generate.css'
 import { withRouter } from 'react-router-dom'
 import { withFirebase } from '../firebase';
 import TextField from '@material-ui/core/TextField';
@@ -15,7 +14,6 @@ class SelectSemester extends Component {
         super(props);
         this.state = {
             semester: this.props.sem,
-            year: '',
             error: "",
         }   
         this.handleChange = this.handleChange.bind(this);
@@ -39,7 +37,9 @@ class SelectSemester extends Component {
             return;
         }
         
-        this.props.setSem(this.state.semester);
+        const year = parseInt(this.state.semester.split(" ")[0]);
+        const sem = parseInt(this.state.semester.split(" ")[1]);
+        this.props.firebase.setSemester(year, sem);
         this.props.nextStep();
     }
 
@@ -47,7 +47,7 @@ class SelectSemester extends Component {
         return (
             <div>
                 <Grid container justify = "center">
-                    <h2 className = {"title"}> Which Semester are you planning for?</h2>
+                    <h2> Which Semester are you planning for?</h2>
                 </Grid>
                     <Grid container justify = "center">
                             <TextField style={{width: "50%"}}
@@ -85,5 +85,6 @@ class SelectSemester extends Component {
         )
     }
 }
+
 
 export default withRouter(withFirebase(SelectSemester));

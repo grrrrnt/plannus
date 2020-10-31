@@ -46,7 +46,7 @@ class FirebaseAuth extends React.Component {
             }
         }
 
-    };
+    }
 
     render() {
         return (

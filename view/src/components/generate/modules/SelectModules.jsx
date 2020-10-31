@@ -19,7 +19,7 @@ class SelectModules extends Component {
             error: "",
             isLoaded: false,
             modules: [],
-            selected:this.props.mods,
+            selected: this.props.mods,
             display: [],
             sem: this.props.sem,
         };
@@ -32,73 +32,65 @@ class SelectModules extends Component {
     }
 
     componentDidMount() {
-        const year = parseInt(this.state.sem.split(" ")[0]);
-        const sem = parseInt(this.state.sem.split(" ")[1]);
-        
-        this.props.firebase.fetchModules(year, sem)
+        this.props.firebase.fetchModules()
             .then((modules) => {
                 this.setState({
                     isLoaded: true,
                     modules: modules,
-                    display : modules,
+                    display: modules,
                 });
             }).catch(
-                (err) => {console.log(err);}
+                (err) => { console.log(err); }
             );
-            
+
     }
 
     render() {
         console.log(this.state.selected);
-        return(
-            
-            <div>
+        return (
                 <Grid container >
-                <Box m = {2} width = "50%">
-                    <SearchBar onChange = {this.filterDisplay} />
-                    {
-                    this.state.isLoaded ?
-                    <ModuleDisplay className="module-display" modules={this.state.display} selectMod={this.selectMod} />
-                    : 
-                        <Box m={2} pt={3}>
-                            <CircularProgress />
-                        </Box>
-                    }
-                </Box>
-                <Box m = {2} width = "40%" >
-                    <Grid container justify = "center">
-                        <h4 className = {"title"}> Selected Modules </h4>
-                    </Grid>
-                    <SelectedModules mods={this.state.selected} delMod = {this.delMod} />
-                    <Grid container justify = "center">
+                    <Box m={2} width="50%">
+                        <SearchBar onChange={this.filterDisplay} />
                         {
-                            this.state.error !== "" ? 
-                                <Box m={1}>
-                                    <Alert severity="error">
-                                        {this.state.error}
-                                    </Alert>
+                            this.state.isLoaded ?
+                                <ModuleDisplay className="module-display" modules={this.state.display} selectMod={this.selectMod} />
+                                :
+                                <Box m={2} pt={3}>
+                                    <CircularProgress />
                                 </Box>
-                            :
-                                <div></div>
                         }
-                        <Box m={1}>
-                            <Button variant="outlined" color="secondary" onClick = {this.clear}>
-                                Clear
+                    </Box>
+                    <Box m={2} width="40%" >
+                        <Grid container justify="center">
+                            <h4> Selected Modules </h4>
+                        </Grid>
+                        <SelectedModules mods={this.state.selected} delMod={this.delMod} />
+                        <Grid container justify="center">
+                            {
+                                this.state.error !== "" ?
+                                    <Box m={1}>
+                                        <Alert severity="error">
+                                            {this.state.error}
+                                        </Alert>
+                                    </Box>
+                                    :
+                                    <div></div>
+                            }
+                            <Box m={1}>
+                                <Button variant="outlined" color="secondary" onClick={this.clear}>
+                                    Clear
                             </Button>
-                        </Box>
-                        
-                        <Box m={1}>
-                        <Button variant="outlined" color="primary" onClick = {this.submitModules}>
+                            </Box>
+
+                            <Box m={1}>
+                                <Button variant="outlined" color="primary" onClick={this.submitModules}>
                                     Next
-                        </Button>
-                        </Box>
-                    </Grid>
-                </Box>
+                                </Button>
+                            </Box>
+
+                        </Grid>
+                    </Box>
                 </Grid>
-                
-            </div>
-
-
         )
     }
 
@@ -109,21 +101,16 @@ class SelectModules extends Component {
             })
             return;
         }
-
         var selected = [...this.state.selected];
         let toSubmit = [];
-        //const selected = _.cloneDeep(this.state.selected);
         for (var x of selected) {
             toSubmit.push(x.moduleCode);
         }
-        console.log(toSubmit);
 
         this.props.firebase.setModules(toSubmit);
-        
-        //this.props.setMods(selected);
         this.props.nextStep();
     }
-    
+
     async filterDisplay(filter) {
         const allModules = this.state.modules;
         if (filter !== '') {
@@ -131,15 +118,13 @@ class SelectModules extends Component {
             this.setState({
                 display: r,
             });
-            console.log(r);
-           
         } else {
             this.setState({
                 display: allModules,
             })
         }
-        
-    }    
+
+    }
 
     selectMod(m) {
         var mods = [...this.state.selected];
@@ -150,25 +135,25 @@ class SelectModules extends Component {
             })
         } else {
             this.setState({
-                error:"Module was already selected."
+                error: "Module was already selected."
             });
-        }    
+        }
     }
 
     delMod(ind) {
         var mods = [...this.state.selected];
-        this.setState( {
-            selected: [...mods.slice(0, ind), 
-                        ...mods.slice(ind + 1)],
+        this.setState({
+            selected: [...mods.slice(0, ind),
+            ...mods.slice(ind + 1)],
         });
     }
 
     clear() {
         this.setState({
             selected: [],
-            error:"",
+            error: "",
         })
-        
+
     }
 }
 

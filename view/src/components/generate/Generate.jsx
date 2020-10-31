@@ -3,6 +3,7 @@ import { withFirebase } from "../firebase"
 import SelectSemester from "./SelectSemester";
 import RankPriorities from "./priority/RankPriorities";
 import SelectModules from "./modules/SelectModules"
+import SelectTimetables from "./SelectTimetables"
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -123,7 +124,7 @@ class Generate extends Component {
             case 2:
                 return <SelectModules nextStep = {this.handleNext} sem = {this.state.sem} mods = {this.state.selectedModules} setMods = {this.setMods}  />
             case 3:
-                return <div> select timetable</div>
+                return <SelectTimetables />
     
         }
     }
@@ -151,7 +152,7 @@ class Generate extends Component {
         return (
             <div>
                 <Grid container justify = "center">
-                <h1 className = {"title"}> Generate Timetables</h1>
+                <h1> Generate Timetables</h1>
                 </Grid>
             
                 <Stepper activeStep={activeStep} alternativeLabel>
@@ -181,6 +182,7 @@ class Generate extends Component {
                         </div>
                     </div>
                 )}
+
                 </div>
              </div>
         )

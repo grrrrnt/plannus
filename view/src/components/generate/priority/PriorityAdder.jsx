@@ -1,5 +1,5 @@
-import React, {Component} from "react";
-import {KeyboardTimePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
+import React, { Component } from "react";
+import { KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import 'date-fns';
 import TextField from '@material-ui/core/TextField';
@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Alert from '@material-ui/lab/Alert';
-import {options, durationOp, reformatForAdd} from './priorityfunc'
+import { options, durationOp, reformatForAdd } from './priorityfunc'
 import './priorities.css'
 
 
@@ -23,7 +23,7 @@ const initialState = {
         toTime: defaultDate,
         hours: "1",
     },
-    error: ""           
+    error: ""
 }
 
 class PriorityAdder extends Component {
@@ -38,7 +38,7 @@ class PriorityAdder extends Component {
                 toTime: defaultDate,
                 hours: "1",
             },
-            error: "",            
+            error: "",
         }
 
         this.handleOptionChange = this.handleOptionChange.bind(this);
@@ -48,17 +48,16 @@ class PriorityAdder extends Component {
 
     }
 
-    handleOptionChange(e) {
-        const selectedOp = e.target.value;    
-        var selectedType;    
+    handleOptionChange(selected) {
+        var selectedType;
         for (var op of options) { //loop to get type of priority
-            if (op.value === selectedOp) {
+            if (op.value === selected) {
                 selectedType = op.type;
             }
         }
 
         this.setState({
-            name: selectedOp,
+            name: selected,
             type: selectedType,
             error: "",
         });
@@ -97,13 +96,11 @@ class PriorityAdder extends Component {
 
     };
 
-    handleDurationChange(e) {
-        const duration = e.target.value;
+    handleDurationChange(d) {
         this.setState({
             fields: {
                 ...this.state.fields,
-                hours: duration,
-                
+                hours: d,
             },
             error: "",
         });
@@ -115,7 +112,7 @@ class PriorityAdder extends Component {
         let priority = {
             name: name,
             type: type,
-            fields: {},        
+            fields: {},
         };
 
         if (name === "") {
@@ -126,98 +123,50 @@ class PriorityAdder extends Component {
         }
 
         if (type === 'FreePeriodPriority' && fields.fromTime >= fields.toTime) {
-                this.setState({
-                    error: "Time 2 should be after Time 1. Please select your desired time(s) again."
-                })
-                return;
+            this.setState({
+                error: "Time 2 should be after Time 1. Please select your desired time(s) again."
+            })
+            return;
         }
 
         reformatForAdd(priority, fields);
-        const res = this.props.addPriority(priority);  
-        res !==  "success" ? this.setState({error: res}) : this.setState(initialState);
-    
+        const res = this.props.addPriority(priority);
+        res !== "success" ? this.setState({ error: res }) : this.setState(initialState);
+
     }
-    
+
     render() {
         const { name, type, fields, error } = this.state;
-        
+
         return (
             <div>
-                <Grid container justify = "center">
-                <TextField style={{width: "50%"}}
-                    select label="Select"
-                    onChange={this.handleOptionChange}
-                    helperText="Please select your priority"
-                    variant="outlined"
-                    value={name}
-                >
-                    {options.map((op) => (
-                        <MenuItem key = {op.value} value={op.value}> {op.value} </MenuItem>
-                    ))}
-                
-                </TextField>
-                </Grid>
-
+                <PrioritySelect name={name} handleOptionChange={this.handleOptionChange} />
                 {
                     (type === 'AvoidBeforePriority' || type === 'AvoidAfterPriority') ?
-                        
-                        <Grid container justify = "center">
-                            <Box m={1}>
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <KeyboardTimePicker label="(Time)" value = {fields.time} onChange={this.handleTimeChange(1)}/>
-                                </MuiPickersUtilsProvider>
-                            </Box>
-                        </Grid>
-
-                    : (type === 'FreePeriodPriority') ?
-                            <Grid container justify = "center">
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <Box m={1} >
-                                        <KeyboardTimePicker label="(Time1)" value = {fields.fromTime} onChange={this.handleTimeChange(2)}/>
-                                    </Box>
-                                    <Box m={1} >
-                                        <KeyboardTimePicker label="(Time2)" value = {fields.toTime} onChange={this.handleTimeChange(3)}/>
-                                    </Box>
-                                </MuiPickersUtilsProvider>
-                            </Grid>
-                    
-                    : (type === 'LunchBreakPriority') ?
-                            <Grid container justify = "center">
-                                <Box m={1}>
-                                    <TextField
-                                        select label="Select"
-                                        onChange={this.handleDurationChange}
-                                        helperText="Please select duration (in hours)"
-                                        variant="outlined"
-                                        value={fields.hours}
-                                    >
-                                        {durationOp.map((d) => (
-                                            <MenuItem key = {d} value={d}> {d} </MenuItem>
-                                        ))}
-                                    
-                                    </TextField> 
-                                </Box> 
-                            </Grid> 
-                    :
-                    <div></div>
+                        <TimeSelect t={fields.time} handleTimeChange={this.handleTimeChange} />
+                        : (type === 'FreePeriodPriority') ?
+                            <FreePeriodSelect toTime={fields.toTime} fromTime={fields.fromTime} handleTimeChange={this.handleTimeChange} />
+                            : (type === 'LunchBreakPriority') ?
+                                <DurationSelect handleDurationChange={this.handleDurationChange} val={fields.hours} />
+                                :
+                                <div></div>
                 }
                 {
-                    error !== "" ? 
-                        <Grid container justify = "center">
+                    error !== "" ?
+                        <Grid container justify="center">
                             <Box m={1}>
                                 <Alert severity="error">
                                     {error}
                                 </Alert>
                             </Box>
-                            
                         </Grid>
-                    : <div></div>
+                        : <div></div>
                 }
-                 <Grid container justify = "center">
+                <Grid container justify="center">
                     <Box m={1}>
-                            <Button variant="outlined" color="primary" onClick = {this.handleSubmit}>
-                                Add Priority
-                            </Button>
+                        <Button variant="outlined" color="primary" onClick={this.handleSubmit}>
+                            Add Priority
+                        </Button>
                     </Box>
                 </Grid>
             </div>
@@ -225,4 +174,73 @@ class PriorityAdder extends Component {
     }
 }
 
+const DurationSelect = ({ handleDurationChange, val }) => {
+    return (
+        <Grid container justify="center">
+            <Box m={1}>
+                <TextField
+                    select label="Select"
+                    onChange={(e) => handleDurationChange(e.target.value)}
+                    helperText="Please select duration (in hours)"
+                    variant="outlined"
+                    value={val}
+                >
+                    {durationOp.map((d) => (
+                        <MenuItem key={d} value={d}> {d} </MenuItem>
+                    ))}
+
+                </TextField>
+            </Box>
+        </Grid>
+    )
+}
+
+const FreePeriodSelect = ({ handleTimeChange, fromTime, toTime }) => {
+    return (
+        <Grid container justify="center">
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <Box m={1} >
+                    <KeyboardTimePicker label="(Time1)" value={fromTime} onChange={(time) => (handleTimeChange(2))(time)} />
+                </Box>
+                <Box m={1} >
+                    <KeyboardTimePicker label="(Time2)" value={toTime} onChange={(time) => (handleTimeChange(3))(time)} />
+                </Box>
+            </MuiPickersUtilsProvider>
+        </Grid>
+    );
+}
+
+const TimeSelect = ({ handleTimeChange, t }) => {
+    return (
+        <Grid container justify="center">
+            <Box m={1}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardTimePicker label="(Time)" value={t} onChange={(time) => (handleTimeChange(1))(time)} />
+                </MuiPickersUtilsProvider>
+            </Box>
+        </Grid>
+    )
+}
+
+const PrioritySelect = ({ handleOptionChange, name }) => {
+    return (
+        <Grid container justify="center">
+            <TextField style={{ width: "50%" }}
+                select label="Select"
+                onChange={(e) => handleOptionChange(e.target.value)}
+                helperText="Please select your priority"
+                variant="outlined"
+                value={name}
+            >
+                {options.map((op) => (
+                    <MenuItem key={op.value} value={op.value}> {op.value} </MenuItem>
+                ))}
+
+            </TextField>
+        </Grid>
+    )
+}
+
+
 export default PriorityAdder
+

@@ -52,17 +52,7 @@ class RankPriorities extends Component {
             loaded: true,
         });
     }
-    /* format of priority
-    {
-        name: 'Select a Priority',
-        type: "",
-        fields: {
-            time: defaultDate,
-            fromTime: defaultDate,
-            toTime: defaultDate,
-            hours: 0,
-    },  
-     */
+
     addPriority(priority) {
         const priorities = this.state.items;
         const duplicate = priorities.some(p => p.name === priority.name);
@@ -139,20 +129,8 @@ class RankPriorities extends Component {
             return;
         }
         var items = _.cloneDeep(this.state.items);
-        const toSubmit = reformatForSub(items);
-
-        var setUserPriorities = this.props.firebase.functions.httpsCallable('setUserPriorities');
-        setUserPriorities({ priorities: toSubmit })
-            .then(
-                (result) => {
-                    console.log(result);
-                }
-            ).catch(
-                (err) => {
-                    console.log(err);
-                }
-            );
-
+        const priorities = reformatForSub(items);
+        this.props.firebase.setPriorities(priorities);
         //this.props.setPriorities(toSubmit);
         this.props.nextStep();
     }
@@ -170,13 +148,13 @@ class RankPriorities extends Component {
         return (
             <div>
                 <Grid container justify="center">
-                    <h2 className={"title"}> What priorities are important to you?</h2>
+                    <h2> What priorities are important to you?</h2>
                 </Grid>
                 <PriorityAdder addPriority={this.addPriority} />
 
 
                 <Grid container justify="center">
-                    <h3 className={"title"} style={{ whiteSpace: "pre-wrap" }} >
+                    <h3 style={{ whiteSpace: "pre-wrap" }} >
                         Drag to rank your priorities {"\n"}
                     </h3>
                 </Grid>
