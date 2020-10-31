@@ -102,20 +102,19 @@ class SelectModules extends Component {
         const sem = parseInt(this.state.sem.split(" ")[1]);
         console.log(year);
         console.log(sem);
-        var retrieveModules = this.props.firebase.functions.httpsCallable('retrieveModules');
-        retrieveModules({year: year, semester: sem})      // To change depending on selected option
-        .then(
-            (result) => {
-            var res = result.data.modules;
-            this.setState({
-                isLoaded: true,
-                modules: res,
-                display : res,
-            });
-        }).catch(
-            (err) => {console.log(err);}
-        );
-            
+        const setUserSemester = this.props.firebase.functions.httpsCallable('setUserSemester');
+        const retrieveModules = this.props.firebase.functions.httpsCallable('retrieveModules');
+        setUserSemester({year: year, semester: sem})      // To change depending on selected option
+            .then(() => retrieveModules())
+            .then((result) => {
+                const res = result.data.modules;
+                this.setState({
+                    isLoaded: true,
+                    modules: res,
+                    display: res,
+                });
+            })
+            .catch((err) => {console.log(err);});
     }
 
     selectMod(m) {
