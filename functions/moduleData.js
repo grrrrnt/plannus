@@ -1,4 +1,3 @@
-const https = require('https');
 const admin = require('firebase-admin');
 
 exports.getModuleListSemester = async (year, semester) => {
@@ -24,19 +23,13 @@ exports.getModuleList = async year => {
 
 exports.requestModuleList = year => {
     return new Promise((resolve, reject) => {
-        const options = {
-            host: 'api.nusmods.com',
-            path: `/v2/${year}/moduleList.json`
-        };
-
-        https.request(options, response => {
-            let str = '';
-
-            //another chunk of data has been received, so append it to `str`
-            response.on('data', chunk => (str += chunk));
-
-            //the whole response has been received, so we just return it
-            response.on('end', () => resolve(str));
-        }).end();
+        request(`https://nusmods.com/api/v2/${year}-${year + 1}/moduleList.json`, (err, res, body) => {
+            if (err) {
+                console.log(err);
+                reject(err);
+            } else {
+                resolve(body);
+            }
+        });
     });
 };

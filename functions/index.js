@@ -7,9 +7,6 @@ const moduleData = require('./moduleData');
 //const loginUser = require('./users')
 //app.post('/login', loginUser);
 
-var request = require('request');
-var bodyParser = require('body-parser');
-
 exports.retrieveModules = functions.https.onCall(async (data, context) => {
     const userDocRef = admin.firestore().collection("users").doc(context.auth.uid);
     const userDoc = await userDocRef.get();
@@ -22,12 +19,7 @@ exports.retrieveModules = functions.https.onCall(async (data, context) => {
         console.log(new Error("userDoc does not have year or semester"));
         return {success: false};
     }
-    var startYear = user.year;
-    var endYear = startYear + 1;
-    var semester = user.semester;
-    var yearCode = startYear.toString() + "-" + endYear.toString();
-
-    return {success: true, data: moduleData.getModuleListSemester(yearCode, semester)};
+    return {success: true, data: moduleData.getModuleListSemester(user.year, user.semester)};
 });
 
 exports.setUserModules = functions.https.onCall((data, context) => {
