@@ -1,0 +1,21 @@
+.share-button-container {
+    display: flex;
+    padding-top: 1em;
+    justify-content: flex-end;
+}
+
+.share-link-dialog-title {
+    text-align: center;
+    font-weight: bolder;
+}
+
+.share-link-dialog-content {
+    padding: 1em;
+    margin: 0 1em 1em 1em;
+    border-top: 0.1em solid #3F51B5;
+    text-align: center;
+
+    .share-link-dialog-text {
+        margin-bottom: 1em;
+    }
+}

@@ -16,9 +16,22 @@ const withAuthenticationProvider = Component => {
         componentDidMount() {
             this.listener = this.props.firebase.auth.onAuthStateChanged(
                 authUser => {
-                    authUser
-                        ? this.setState({ authUser })
-                        : this.setState({ authUser: null });
+                    if (authUser) {
+                        var createUser = this.props.firebase.functions.httpsCallable('createUser');
+                        createUser()
+                            .then(
+                                (result) => {
+                                    // console.log(result);
+                                }
+                            ).catch(
+                                (err) => {
+                                    console.error(err);
+                                }
+                            );
+                            this.setState({ authUser });
+                    } else {
+                        this.setState({ authUser: null });
+                    }
                 },
             );
         }
@@ -46,6 +59,6 @@ const withAuthenticationConsumer = Component => props => (
         }
     </AuthUserContext.Consumer>
 );
- 
+
 export default AuthUserContext;
 export { withAuthenticationProvider, withAuthenticationConsumer };

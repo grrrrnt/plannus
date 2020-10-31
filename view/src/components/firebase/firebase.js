@@ -1,6 +1,7 @@
 import firebase from 'firebase';
 import app from 'firebase/app';
 import 'firebase/firestore'
+import { v4 as uuid } from "uuid"
 
 
 const config = {
@@ -20,7 +21,8 @@ class Firebase {
         firebase.initializeApp(config);
 
         this.auth = app.auth();
-        this.db = app.firestore();
+        this.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        this.functions = app.functions()
     }
 
     loginAnonymously = () =>
@@ -33,8 +35,41 @@ class Firebase {
     doPasswordUpdate = password =>
         this.auth.currentUser.updatePassword(password);
 
-    fetchMainTimetable = () => {
-        return JSON.parse(JSON.stringify(sampleTimetable))
+    fetchDefaultTimetable = async () => {
+        var getDefaultTimetable = this.functions.httpsCallable('getDefaultTimetable');
+
+        try {
+            const result = await getDefaultTimetable({});
+            const timetableId = result.data;
+            if (timetableId) {
+                const timetable = await this.fetchTimetable(timetableId);
+                return timetable;
+            } else {
+                return null
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    fetchTimetable = async (id) => {
+        var getTimetable = this.functions.httpsCallable('getTimetable');
+        try {
+            const res = await getTimetable({ timetableId: id });
+            return res.data;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    fetchSavedTimetableIds = async () => {
+        var getSavedTimetables = this.functions.httpsCallable('getSavedTimetables');
+        try {
+            const res = await getSavedTimetables();
+            return res.data;
+        } catch (err) {
+            console.log(err);
+        }
     }
 }
 
