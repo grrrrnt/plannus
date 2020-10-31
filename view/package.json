@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^7.2.1",
     "date-fns": "^2.16.1",
     "firebase": "^7.23.0",
+    "lodash": "^4.17.20",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-beautiful-dnd": "^13.0.0",
@@ -22,6 +23,8 @@
     "react-lazyload": "^3.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
+    "react-virtualized-auto-sizer": "^1.0.2",
+    "react-window": "^1.8.6",
     "uuid": "^8.3.1"
   },
   "scripts": {
