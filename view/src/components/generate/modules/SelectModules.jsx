@@ -32,6 +32,7 @@ class SelectModules extends Component {
         this.selectMod = this.selectMod.bind(this);
         this.delMod = this.delMod.bind(this);
         this.submitModules = this.submitModules.bind(this);
+        this.clear = this.clear.bind(this);
     }
 
     submitModules() {
@@ -42,8 +43,9 @@ class SelectModules extends Component {
             return;
         }
 
-        var toSubmit = [];
-        const selected = _.cloneDeep(this.state.selected);
+        var selected = [...this.state.selected];
+        let toSubmit = [];
+        //const selected = _.cloneDeep(this.state.selected);
         for (var x of selected) {
             toSubmit.push(x.moduleCode);
         }
@@ -61,7 +63,7 @@ class SelectModules extends Component {
                 }
             );
 
-        this.props.setMods(selected);
+        //this.props.setMods(selected);
         this.props.nextStep();
     }
     
@@ -136,6 +138,13 @@ class SelectModules extends Component {
         });
     }
 
+    clear() {
+        this.setState({
+            selected: [],
+        })
+        
+    }
+    
     render() {
         console.log(this.state.selected);
         return(
@@ -166,9 +175,17 @@ class SelectModules extends Component {
                             :
                                 <div></div>
                         }
+                        <Box m={1}>
+                            <Button variant="outlined" color="secondary" onClick = {this.clear}>
+                                Clear
+                            </Button>
+                        </Box>
+                        
+                        <Box m={1}>
                         <Button variant="outlined" color="primary" onClick = {this.submitModules}>
                                     Next
                         </Button>
+                        </Box>
                     </Grid>
                 </Box>
                 </Grid>

@@ -42,6 +42,7 @@ class RankPriorities extends Component {
         this.toggleMH = this.toggleMH.bind(this);
         this.handleDragEnd = this.handleDragEnd.bind(this);
         this.handleSubmit  = this.handleSubmit.bind(this);
+        this.clear = this.clear.bind(this);
     }
  
     componentDidMount() {
@@ -154,8 +155,14 @@ class RankPriorities extends Component {
                 }
             );
         
-        this.props.setPriorities(toSubmit);
+        //this.props.setPriorities(toSubmit);
         this.props.nextStep();
+    }
+
+    clear() {
+        this.setState({
+            items:[],
+        })
     }
 
 
@@ -205,6 +212,11 @@ class RankPriorities extends Component {
                 }
                 
                 <Grid container justify = "center">
+                <Box m={1}>
+                        <Button variant="outlined" color="secondary" onClick = {this.clear}>
+                            Clear
+                        </Button>
+                    </Box>
                     <Box m={1}>
                         <Button variant="outlined" color="primary" onClick = {this.handleSubmit}>
                             Next
