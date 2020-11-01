@@ -1,21 +1,31 @@
 import React from "react"
-import { Paper, Grid, Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
+
+import formatTimetable from "./timetable-formatter"
+import ShareButton from "./ShareButton"
 import "./Timetable.scss"
 
 const days = { 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun" }
 
-function Timetable(props) {
-    const moduleColor = {}
-
-    const assignModuleColor = () => {
-        props.classes.map()
+class Timetable extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            timetable: formatTimetable(props.json.timetable),
+            timetableId: props.json.timetableId
+        }
     }
-    return (
-        <div className="timetable-container">
-            <TimeLabels timings={props.timetable.timings} />
-            <TimetableClasses classes={props.timetable.classes}></TimetableClasses>
-        </div>
-    )
+
+    render() {
+        return (
+            <div className="timetable-container">
+                <TimeLabels timings={this.state.timetable.timings} />
+                <TimetableClasses classes={this.state.timetable.classes}></TimetableClasses>
+                <ShareButton timetableId={this.state.timetableId}></ShareButton>
+            </div>
+        )
+    }
+
 }
 
 const TimeLabels = (props) => {
@@ -65,7 +75,7 @@ const LessonSlot = (props) => {
         return (<Slot flex={1}></Slot>)
     } else { // lessons
         return (
-            <Slot flex={lesson.hours} flexShrink={lesson.hours} bgcolor={lesson.color}>
+            <Slot flex={lesson.hours} bgcolor={lesson.color}>
                 <b>{lesson.moduleCode}</b><br />
                 {lesson.lessonType} {lesson.classNo}<br />
                 {lesson.location}

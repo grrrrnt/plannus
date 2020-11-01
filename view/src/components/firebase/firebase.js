@@ -1,6 +1,7 @@
 import firebase from 'firebase';
 import app from 'firebase/app';
 import 'firebase/firestore'
+import 'firebase/functions'
 
 
 const config = {
@@ -20,8 +21,8 @@ class Firebase {
         firebase.initializeApp(config);
 
         this.auth = app.auth();
-        this.db = app.firestore();
-        this.func = app.functions();
+        this.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        this.functions = app.functions()
     }
 
     loginAnonymously = () =>
@@ -34,8 +35,94 @@ class Firebase {
     doPasswordUpdate = password =>
         this.auth.currentUser.updatePassword(password);
 
-    fetchMainTimetable = () => {
-        return JSON.parse(JSON.stringify(sampleTimetable))
+    fetchDefaultTimetable = async () => {
+        var getDefaultTimetable = this.functions.httpsCallable('getDefaultTimetable');
+
+        try {
+            const result = await getDefaultTimetable({});
+            const timetableId = result.data;
+            if (timetableId) {
+                const timetable = await this.fetchTimetable(timetableId);
+                return timetable;
+            } else {
+                return null
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    fetchTimetable = async (id) => {
+        var getTimetable = this.functions.httpsCallable('getTimetable');
+        try {
+            const res = await getTimetable({ timetableId: id });
+            return res.data;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    fetchSavedTimetableIds = async () => {
+        var getSavedTimetables = this.functions.httpsCallable('getSavedTimetables');
+        try {
+            const res = await getSavedTimetables();
+            return res.data;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    fetchModules = async () => {
+        var retrieveModules = this.functions.httpsCallable('retrieveModules');
+        try {
+            const result = await retrieveModules()
+            console.log(result)
+            return result.data.modules
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
+    setModules = (modules) => {
+        var setUserModules = this.functions.httpsCallable('setUserModules');
+        setUserModules({modules: modules})
+            .then(
+                (result) => {
+                    console.log(result);
+                }
+            ).catch(
+                (err) => {
+                    console.log(err);
+                }
+            );
+    }
+
+    setSemester = (year, sem) => {
+        var setUserSemester = this.functions.httpsCallable('setUserSemester');
+        setUserSemester({year: year, semester: sem})
+            .then(
+                (result) => {
+                    console.log(result);
+                }
+            ).catch(
+                (err) => {
+                    console.log(err);
+                }
+            );
+    }
+
+    setPriorities = (priorities) => {
+        var setUserPriorities = this.functions.httpsCallable('setUserPriorities');
+        setUserPriorities({ priorities: priorities })
+            .then(
+                (result) => {
+                    console.log(result);
+                }
+            ).catch(
+                (err) => {
+                    console.log(err);
+                }
+            );
     }
 }
 

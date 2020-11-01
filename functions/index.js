@@ -173,6 +173,7 @@ exports.saveTimetable = functions.https.onCall((data, context) => {
         console.error("Error saving timetable for user " + uid + " " + error);
         return { success: false };
     });
+    return timetableId;
 });
 
 function scoreTimetable(timetable) {
