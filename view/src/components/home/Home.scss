@@ -1,0 +1,14 @@
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.saved-timetable-link {
+    font-size: large;
+    text-decoration: none;
+    color: rgba(16, 28, 61, 0.9);
+    &:hover {
+        color: rgba(17, 38, 74, 0.7) ;
+    }
+}

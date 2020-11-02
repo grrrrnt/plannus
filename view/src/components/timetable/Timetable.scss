@@ -1,9 +1,10 @@
 .timetable-container {
-  width: 90%;
-  margin: 5%;
+  font-family: Comfortaa;
 }
 
 .timetable-slot {
+  display: flex;
+  align-items: center;
   border-bottom: 0.5px solid #c4c4c4;
   border-right: 0.5px solid #c4c4c4;
   overflow: hidden;
@@ -22,6 +23,7 @@
 .timetable-day-slot {
   border-left: 0.5px solid #c4c4c4;
   text-align: center;
+  justify-items: center;
   div {
     position: relative;
     font-weight: bold;

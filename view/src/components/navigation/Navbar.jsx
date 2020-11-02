@@ -11,12 +11,14 @@ export default function NavBar() {
     return (
         <React.Fragment>
             <nav className="navbar">
-                <img className="navbar-logo"
-                    src={logo}
-                    alt="Logo"
-                />
-                <span className="navbar-logo-name">
-                    <h1>planNUS</h1>
+                <div className="navbar-logo-container">
+                    <img className="navbar-logo"
+                        src={logo}
+                        alt="Logo"
+                    />
+                </div>
+                <span className="navbar-name-container">
+                    <h1 className="navbar-name">planNUS</h1>
                 </span>
                 <div className="nav-buttons">
                     <div>

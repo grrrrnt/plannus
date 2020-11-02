@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 const moduleData = require('./moduleData');
+const { v4: uuid } = require('uuid');
 
 //const loginUser = require('./users')
 //app.post('/login', loginUser);
@@ -205,7 +206,7 @@ exports.getSubscribedTimetables = functions.https.onCall((data, context) => {
 
 exports.saveTimetable = functions.https.onCall((data, context) => {
     const timetable = data.timetable;
-    const timetableId = uuid.v4();
+    const timetableId = uuid();
     const uid = context.auth.uid;
 
     // Set timetable in timetables collection

@@ -1,20 +1,29 @@
 import React from 'react';
-import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, TextField, IconButton } from '@material-ui/core';
-import { FileCopy, Share } from '@material-ui/icons';
+import { Button, Dialog, DialogContent, DialogContentText, DialogTitle, TextField, IconButton, Snackbar } from '@material-ui/core';
+import { FileCopy, Share, Close } from '@material-ui/icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import "./ShareButton.scss"
 
 
 export default function ShareButton(props) {
-    const [open, setOpen] = React.useState(false);
+    const [dialogOpen, setDialogOpen] = React.useState(false);
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
 
-    const handleClickOpen = () => {
-        setOpen(true);
+    const handleShareButtonClicked = () => {
+        setDialogOpen(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    };
+
+    const handleCopyButtonClicked = () => {
+        setSnackbarOpen(true);
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbarOpen(false);
     };
 
     const link = window.location.origin + "/timetable/" + props.timetableId
@@ -25,13 +34,13 @@ export default function ShareButton(props) {
                 variant="outlined"
                 color="primary"
                 endIcon={<Share></Share>}
-                onClick={handleClickOpen}
+                onClick={handleShareButtonClicked}
             >
                 Share
             </Button>
             <Dialog
-                open={open}
-                onClose={handleClose}
+                open={dialogOpen}
+                onClose={handleDialogClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -49,11 +58,29 @@ export default function ShareButton(props) {
                         }}
                         variant="outlined"
                     />
-                    <CopyToClipboard text={link}>
+                    <CopyToClipboard text={link} onCopy={handleCopyButtonClicked}>
                         <IconButton color="primary" aria-label="copy">
                             <FileCopy></FileCopy>
                         </IconButton>
                     </CopyToClipboard>
+                    <Snackbar
+                        anchorOrigin={{
+                            vertical: 'middle',
+                            horizontal: 'center',
+                        }}
+                        open={snackbarOpen}
+                        autoHideDuration={1500}
+                        onClose={handleSnackbarClose}
+                        message="Link Copied!"
+                        action={
+                            <React.Fragment>
+                                <IconButton size="small" aria-label="close" color="inherit" onClick={handleSnackbarClose}>
+                                    <Close fontSize="small" />
+                                </IconButton>
+                            </React.Fragment>
+                        }
+                    />
+
                 </DialogContent>
             </Dialog>
         </div>

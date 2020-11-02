@@ -1,58 +1,61 @@
 .navbar {
-    display: flex;
-    background: linear-gradient(43deg, #f2f2f2  0%, #a8d1e7 100% );
-    color: #383838;
+  display: flex;
+  background: linear-gradient(
+    180deg,
+    rgba(17, 38, 74, 0.7) 90%,
+    rgba(16, 28, 61, 0.9) 90%
+  );
+  color: white;
+  height: 7em;
 }
 
-.navbar-logo-holder {
-    display: flex;
-    flex-direction: row;
-    margin: 10px;
+.navbar-logo-container {
+  display: flex;
+  padding: 1em;
+  width: 5em;
 }
 
 .navbar-logo {
-    display: flex;
-    margin-left: 10px;
-    margin-right: 10px;
-    max-width: 15%;
-    height: auto;
-    object-fit: contain;
+  width: auto;
+  height: 100%;
+  object-fit: contain;
 }
 
-.navbar-logo-name {
-    display: flex;
-    
-    h1: {
-        text-align: left;
-        margin-bottom: 15px;
-        font-size: 200%;
-        font-family: Comfortaa;
-        font-weight: normal;
-    }
+.navbar-name-container {
+  display: flex;
+
+  .navbar-name {
+    text-align: left;
+    margin-bottom: 15px;
+    font-size: 2.5em;
+    font-family: Comfortaa;
+    font-weight: normal;
+    align-self: flex-end;
+  }
 }
 
 .nav-buttons {
-    display: flex;
-    flex-grow: 1;
-    flex-direction: row-reverse;
-    align-self: stretch;
-    align-items: flex-end;
-    div {
-        padding: 10px;
-    }
+  display: flex;
+  flex-grow: 1;
+  flex-direction: row-reverse;
+  align-self: flex-end;
+  div {
+    padding: 10px;
+  }
 }
 
 .nav-button {
-    display: inline;
-    padding: 10px;
-    color: inherit;
-    
-    &:hover {
-        color: white;
-        background: none
-    }
+  display: inline;
+  padding: 10px;
+  color: inherit;
+  font-size: 1em;
+
+  &:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.3);
+  }
 }
 
 .nav-button-active {
-    font-weight: bolder;
+  font-weight: bolder;
 }

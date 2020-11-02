@@ -1,9 +1,13 @@
 import React, { Component } from "react";
 import { LinearProgress } from "@material-ui/core"
 import { Alert, AlertTitle } from "@material-ui/lab"
+import { Link } from "react-router-dom"
 
 import { withFirebase } from '../firebase';
 import Timetable from "../timetable"
+
+import * as ROUTES from "../../util/Routes"
+import "./Home.scss"
 
 class Home extends Component {
     constructor(props) {
@@ -27,7 +31,10 @@ class Home extends Component {
     render() {
         return (
             <div>
-                <h1>Home</h1>
+                <div className="header-container">
+                    <h1>Home</h1>
+                    <Link to={ROUTES.SAVEDTIMETABLES} className="saved-timetable-link">View Saved Timetables</Link>
+                </div>
                 {
                     (this.state.loading)
                         ? <LinearProgress />

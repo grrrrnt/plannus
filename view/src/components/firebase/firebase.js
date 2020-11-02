@@ -21,7 +21,6 @@ class Firebase {
         firebase.initializeApp(config);
 
         this.auth = app.auth();
-        this.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         this.functions = app.functions()
     }
 
@@ -63,6 +62,8 @@ class Firebase {
     }
 
     fetchSavedTimetableIds = async () => {
+        // var saveTimetable = this.functions.httpsCallable('saveTimetable')
+        // saveTimetable({timetable: sampleTimetable})
         var getSavedTimetables = this.functions.httpsCallable('getSavedTimetables');
         try {
             const res = await getSavedTimetables();
