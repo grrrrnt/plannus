@@ -17,17 +17,28 @@ class Home extends Component {
             loading: true,
             timetable: null,
         };
+        // for cancelling of async taks when unmounted
+        this.abortController = new AbortController()
+        this.signal = this.abortController.signal
     }
 
     componentDidMount() {
         this.props.firebase.fetchDefaultTimetable()
             .then((timetable) => {
+                if (this.signal.aborted) {
+                    return
+                }
                 this.setState({ loading: false })
                 if (timetable) {
                     this.setState({ timetable: timetable })
                 }
             })
     }
+
+    componentWillUnmount() {
+        this.abortController.abort()
+    }
+    
     render() {
         return (
             <div>
@@ -40,9 +51,9 @@ class Home extends Component {
                         ? <LinearProgress />
                         : [
                             (this.state.timetable)
-                                ? <Timetable json={this.state.timetable} />
+                                ? <Timetable json={this.state.timetable} share download />
                                 : (
-                                    <Alert icon={false} severity="info">
+                                    <Alert icon={false} severity="info" key={"no-default-timetable"}>
                                         <AlertTitle><strong>No timetable selected</strong></AlertTitle>
                                         Choose one from Saved Timetables or generate one!
                                     </Alert>

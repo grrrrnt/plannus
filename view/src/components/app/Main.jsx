@@ -10,16 +10,10 @@ import SharedTimetable from '../shared-timetable/SharedTimetable';
 import SavedTimetables from '../saved-timetables/SavedTimetables';
 
 import { withFirebase } from "../firebase"
-import { withAuthenticationConsumer } from "../authentication"
 
 import * as ROUTES from '../../util/Routes';
 
 class Main extends Component {
-    componentDidMount() {
-        if (!this.props.authUser) {
-            this.props.firebase.loginAnonymously()
-        }
-    }
 
     render() {
         return (
@@ -38,4 +32,4 @@ class Main extends Component {
     }
 }
 
-export default withFirebase(withAuthenticationConsumer(Main));
+export default withFirebase(Main);

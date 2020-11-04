@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect, Link } from "react-router-dom"
-import { withAuthenticationConsumer } from "./context"
+import { withAuthUserConsumer } from "./context"
 import { FirebaseAuth } from '../firebase';
 import * as ROUTES from "../../util/Routes"
 
@@ -8,7 +8,7 @@ import "./Login.scss"
 import logo from "../../assets/logo.png";
 
 function Login(props) {
-  return (!props.authUser || props.authUser.isAnonymous)
+  return (!props.authUser.loggedIn || props.authUser.isUserAnonymous)
     ? (
       <div className="login-container">
         <div className="login-logo-container">
@@ -31,4 +31,4 @@ function Login(props) {
     )
 }
 
-export default withAuthenticationConsumer(Login)
+export default withAuthUserConsumer(Login)

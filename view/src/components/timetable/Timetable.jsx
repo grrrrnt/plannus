@@ -1,32 +1,12 @@
 import React from "react"
 import { Box } from '@material-ui/core';
 
-import formatTimetable from "./timetable-formatter"
-import ShareButton from "./ShareButton"
-import "./Timetable.scss"
-
-const days = { 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun" }
-
-class Timetable extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            timetable: formatTimetable(props.json.timetable),
-            timetableId: props.json.timetableId
-        }
-    }
-
-    render() {
-        return (
-            <div className="timetable-container">
-                <TimeLabels timings={this.state.timetable.timings} />
-                <TimetableClasses classes={this.state.timetable.classes}></TimetableClasses>
-                <ShareButton timetableId={this.state.timetableId}></ShareButton>
-            </div>
-        )
-    }
-
-}
+const Timetable = React.forwardRef((props, ref) => (
+    <div ref={ref}>
+        <TimeLabels timings={props.timetable.timings} />
+        <TimetableClasses classes={props.timetable.classes}></TimetableClasses>
+    </div>
+))
 
 const TimeLabels = (props) => {
     const timings = props.timings
@@ -53,6 +33,7 @@ const TimetableClasses = (props) => {
     )
 }
 
+const days = { 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun" }
 // A row of day
 const DayLessons = (props) => {
     const day = props.day

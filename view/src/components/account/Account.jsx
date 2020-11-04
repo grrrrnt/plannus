@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom"
 
 import { LogoutButton } from "../authentication";
-import { withAuthenticationConsumer } from "../authentication"
+import { withAuthUserConsumer } from "../authentication"
 import { LOGIN } from "../../util/Routes"
 
 class Account extends Component {
     render() {
-        return (this.props.authUser)
+        return (this.props.authUser.loggedIn)
             ? (
                 <div>
                     <h1>Account</h1>
@@ -20,4 +20,4 @@ class Account extends Component {
     }
 }
 
-export default withAuthenticationConsumer(Account);
+export default withAuthUserConsumer(Account);
