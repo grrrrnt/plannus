@@ -8,31 +8,18 @@ const { v4: uuid } = require('uuid');
 //const loginUser = require('./users')
 //app.post('/login', loginUser);
 
-exports.setUserSemester = functions.https.onCall(async (data, context) => {
+exports.retrieveModules = functions.https.onCall(async (data, context) => {
     if (!("year" in data) || !("semester" in data)) {
         console.log(data, new Error("data does not have year or semester"));
         return {success: false};
     }
-    await admin.firestore().collection("users").doc(context.auth.uid).set({
+    const setSemester = admin.firestore().collection("users").doc(context.auth.uid).set({
         year: data.year,
         semester: data.semester
     }, {merge: true});
-    return {success: true};
-});
-
-exports.retrieveModules = functions.https.onCall(async (data, context) => {
-    const userDocRef = admin.firestore().collection("users").doc(context.auth.uid);
-    const userDoc = await userDocRef.get();
-    if (!userDoc.exists) {
-        console.log(new Error("userDoc does not exist"));
-        return {success: false};
-    }
-    const user = userDoc.data();
-    if (!("year" in user) || !("semester" in user)) {
-        console.log(new Error("userDoc does not have year or semester"));
-        return {success: false};
-    }
-    return {success: true, modules: await moduleData.getModuleListSemester(user.year, user.semester)};
+    const getModules = moduleData.getModuleListSemester(data.year, data.semester);
+    const modules = (await Promise.all([setSemester, getModules]))[1];
+    return {success: true, modules: modules};
 });
 
 exports.setUserModules = functions.https.onCall((data, context) => {
