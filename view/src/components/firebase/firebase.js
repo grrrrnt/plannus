@@ -120,6 +120,21 @@ class Firebase {
         }
     }
 
+    fetchSubscribedTimetableIds = async () => {
+        if (!this.isLoggedIn) {
+            return null
+        }
+        // var subscribeToTimetable = this.functions.httpsCallable('subscribeToTimetable')
+        // subscribeToTimetable({ timetableId: "6f63aebe-45b3-4122-b054-ce1b83307191" })
+        var getSubscribedTimetables = this.functions.httpsCallable('getSubscribedTimetables');
+        try {
+            const res = await getSubscribedTimetables();
+            return res.data;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     fetchModules = async () => {
         var retrieveModules = this.functions.httpsCallable('retrieveModules');
         try {
@@ -240,8 +255,8 @@ const sampleTimetable = {
             "location": "COM1-01-01",
             "classNo": "02",
             "day": 1,
-            "startTime": 900,
-            "endTime": 1200,
+            "startTime": 1100,
+            "endTime": 1400,
             "evenWeek": true,
             "oddWeek": true,
             "weeks": [

@@ -89,6 +89,10 @@ function TimetableDisplay(props) {
     const timetableId = props.id
 
     React.useEffect(() => {
+        // for cancelling of async taks when unmounted
+        const abortController = new AbortController()
+        const signal = abortController.signal
+
         async function fetchTimetable() {
             props.firebase.fetchTimetable(timetableId)
                 .then((timetable) => {
@@ -98,18 +102,18 @@ function TimetableDisplay(props) {
                     }
                 })
         }
-        let isMounted = true;
-        if (isMounted) {
+        if (!signal?.aborted) {
             fetchTimetable()
         }
-        return () => { isMounted = false };
+
+        return () => abortController.abort()
     }, [timetableId])
 
     return (
         <React.Fragment>
             {
                 (loading)
-                    ? <LinearProgress style={{margin: "1em 0"}} />
+                    ? <LinearProgress style={{ margin: "1em 0" }} />
                     : (timetable)
                         ? <Timetable json={timetable} share download></Timetable>
                         : <div />

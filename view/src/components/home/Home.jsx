@@ -51,7 +51,7 @@ class Home extends Component {
                         ? <LinearProgress />
                         : [
                             (this.state.timetable)
-                                ? <Timetable json={this.state.timetable} share download />
+                                ? <Timetable key={"default-timetable"} json={this.state.timetable} share download />
                                 : (
                                     <Alert icon={false} severity="info" key={"no-default-timetable"}>
                                         <AlertTitle><strong>No timetable selected</strong></AlertTitle>
