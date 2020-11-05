@@ -6,7 +6,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { withFirebase } from '../firebase';
 import Timetable from "../timetable"
 
-class SavedTimetables extends Component {
+class SubscribedTimetables extends Component {
     constructor(props) {
         super(props);
 
@@ -118,4 +118,4 @@ function TimetableDisplay(props) {
     )
 }
 
-export default withFirebase(SavedTimetables);
+export default withFirebase(SubscribedTimetables);

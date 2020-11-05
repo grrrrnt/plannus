@@ -1,0 +1,13 @@
+.saved-timetables-container {
+  flex-grow: 1;
+  display: flex;
+  height: 100%;
+}
+
+.saved-timetables-tabs {
+  border-right: 1px solid #DCDCDC;
+}
+
+.saved-timetables-tab-panels {
+    width: 100%;
+}
