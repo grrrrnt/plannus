@@ -7,6 +7,7 @@ import Box from '@material-ui/core/Box';
 import SavedTimetables from "./SavedTimetables"
 import SubscribedTimetables from "./SubscribedTimetables"
 import "./SavedTimetables.scss"
+import { Container } from '@material-ui/core';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -39,24 +40,24 @@ export default function SavedTimetablesContainer() {
     };
 
     return (
-        <div className="saved-timetables-container">
-            <Tabs
-            variant="fullWidth"
-                orientation="vertical"
-                value={value}
-                onChange={handleChange}
-                indicatorColor="primary"
-                className="saved-timetables-tabs"
-            >
-                <Tab label="Saved Timetables" />
-                <Tab label="Subscribed Timetables" />
-            </Tabs>
-            <TabPanel value={value} index={0}>
-                <SavedTimetables />
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-                <SubscribedTimetables />
-            </TabPanel>
-        </div>
+        <Container fixed className="saved-timetables-container">
+                <Tabs
+                    variant="fullWidth"
+                    orientation="vertical"
+                    value={value}
+                    onChange={handleChange}
+                    indicatorColor="primary"
+                    className="saved-timetables-tabs"
+                >
+                    <Tab label="Saved Timetables" />
+                    <Tab label="Subscribed Timetables" />
+                </Tabs>
+                <TabPanel id="saved-timetable-panel" value={value} index={0}>
+                    <SavedTimetables parent="saved-timetable-panel" />
+                </TabPanel>
+                <TabPanel id="subscribed-timetable-panel" value={value} index={1}>
+                    <SubscribedTimetables parent="subscribed-timetable-panel" />
+                </TabPanel>
+        </Container>
     );
 }

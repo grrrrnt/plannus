@@ -4,7 +4,7 @@ import { Alert, AlertTitle } from "@material-ui/lab"
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import { withFirebase } from '../firebase';
-import Timetable from "../timetable"
+import TimetableItem from "./TimetableItem"
 
 class SubscribedTimetables extends Component {
     constructor(props) {
@@ -42,30 +42,28 @@ class SubscribedTimetables extends Component {
     render() {
         return (
             <div>
-                <div>
-                    {(this.state.loading)
-                        ? <LinearProgress />
-                        : [(this.state.timetableIds && this.state.displayedTimetableIds.length)
-                            ? (<InfiniteScroll
-                                key={"infinite-scroll"}
-                                dataLength={this.state.displayedTimetableIds.length}
-                                next={this.fetchMoreData}
-                                hasMore={this.state.timetableIds.length != this.state.displayedTimetableIds.length}
-                                loader={<LinearProgress />}
-                            >
-                                {this.state.displayedTimetableIds.map((id, index) => (
-                                    <TimetableDisplay key={index} index={index} id={id} firebase={this.props.firebase} />
-                                )
-                                )}
-                            </InfiniteScroll>)
-                            : (
-                                <Alert icon={false} severity="info" key={"no-saved-timetables"}>
-                                    <AlertTitle><b>No timetables saved</b></AlertTitle>
-                                        Start generating a timetable!
-                                </Alert>
-                            )]
-                    }
-                </div>
+                {(this.state.loading)
+                    ? <LinearProgress />
+                    : [(this.state.timetableIds && this.state.displayedTimetableIds.length)
+                        ? (<InfiniteScroll
+                            key={"infinite-scroll"}
+                            dataLength={this.state.displayedTimetableIds.length}
+                            next={this.fetchMoreData}
+                            hasMore={this.state.timetableIds.length !== this.state.displayedTimetableIds.length}
+                            loader={<LinearProgress />}
+                            scrollableTarget={this.props.parent}
+                        >
+                            {this.state.displayedTimetableIds.map((id, index) => (
+                                <TimetableItem key={index} id={id} unsubscribe />
+                            )
+                            )}
+                        </InfiniteScroll>)
+                        : (
+                            <Alert icon={false} severity="info" key={"no-subscribed-timetables"}>
+                                <AlertTitle><b>No subscribed timetables</b></AlertTitle>
+                            </Alert>
+                        )]
+                }
             </div>
         )
     }
@@ -81,45 +79,6 @@ class SubscribedTimetables extends Component {
             displayedTimetableIds: displayedIds.concat(allIds.slice(displayedIds.length, maxDisplayed)),
         })
     }
-}
-
-function TimetableDisplay(props) {
-    const [loading, setLoading] = React.useState(true)
-    const [timetable, setTimetable] = React.useState(null)
-    const timetableId = props.id
-
-    React.useEffect(() => {
-        // for cancelling of async taks when unmounted
-        const abortController = new AbortController()
-        const signal = abortController.signal
-
-        async function fetchTimetable() {
-            props.firebase.fetchTimetable(timetableId)
-                .then((timetable) => {
-                    setLoading(false)
-                    if (timetable) {
-                        setTimetable(timetable)
-                    }
-                })
-        }
-        if (!signal?.aborted) {
-            fetchTimetable()
-        }
-
-        return () => abortController.abort()
-    }, [timetableId])
-
-    return (
-        <React.Fragment>
-            {
-                (loading)
-                    ? <LinearProgress style={{margin: "1em 0"}} />
-                    : (timetable)
-                        ? <Timetable json={timetable} ></Timetable>
-                        : <div />
-            }
-        </React.Fragment>
-    )
 }
 
 export default withFirebase(SubscribedTimetables);

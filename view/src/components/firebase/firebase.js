@@ -1,4 +1,4 @@
-import firebase, { auth } from 'firebase';
+import firebase from 'firebase';
 import app from 'firebase/app';
 import 'firebase/firestore'
 import 'firebase/functions'
@@ -32,7 +32,7 @@ class Firebase {
                     this.authStateCallback(authUser)
                 }
                 if (authUser) {
-                    if (authUser.metadata.creationTime == authUser.metadata.lastSignInTime) {
+                    if (authUser.metadata.creationTime === authUser.metadata.lastSignInTime) {
                         this.createUser()
                     }
                     localStorage.setItem("plannus-login", true)
@@ -210,6 +210,44 @@ class Firebase {
         } else {
             return func()
         }
+    }
+
+    unsaveTimetable = (timetableId) => {
+        var saveTimetable = this.functions.httpsCallable('saveTimetable')
+        saveTimetable({ timetable: sampleTimetable })
+        var unsaveTimetable = this.functions.httpsCallable('unsaveTimetable');
+        return unsaveTimetable({ timetableId: timetableId })
+            .then(
+                (result) => {
+                    if (result.data.timetableId) {
+                        return result.data.timetableId
+                    } else {
+                        return null
+                    }
+                }
+            ).catch(
+                (err) => {
+                    return console.error(err);
+                }
+            );
+    }
+
+    unsubscribeTimetable = (timetableId) => {
+        var unsubscribeFromTimetable = this.functions.httpsCallable('unsubscribeFromTimetable');
+        return unsubscribeFromTimetable({ timetableId: timetableId })
+            .then(
+                (result) => {
+                    if (result.data.timetableId) {
+                    return result.data.timetableId
+                } else {
+                    return null
+                }
+                }
+            ).catch(
+                (err) => {
+                    return console.error(err);
+                }
+            );
     }
 }
 

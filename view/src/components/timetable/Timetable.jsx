@@ -52,7 +52,7 @@ const DayLessons = (props) => {
 
 const LessonSlot = (props) => {
     const lesson = props.lesson
-    if (Object.keys(lesson).length == 0) { // No lessons
+    if (Object.keys(lesson).length === 0) { // No lessons
         return (<Slot flex={1}></Slot>)
     } else { // lessons
         return (
