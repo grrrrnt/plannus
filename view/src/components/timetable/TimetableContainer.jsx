@@ -4,12 +4,35 @@ import { Alert } from "@material-ui/lab"
 
 import { withFirebase } from "../firebase"
 import Timetable from "./Timetable"
-import ShareButton from "./ShareButton"
-import DownloadButton from "./DownloadButton"
-import DeleteButton from "./DeleteButton"
+import ShareButton from "./share-button/ShareButton"
+import DownloadButton from "./download-button/DownloadButton"
+import DeleteButton from "./delete-button/DeleteButton"
 
 import "./Timetable.scss"
+import SetDefaultButton from "./set-default-button/SetDefaultButton"
 
+/**
+ * Component for displayng timetables. Includes a Timetable component and 
+ *      buttons for performing actions with the timetble.
+ * props:
+ * - json: timetable object to display.
+ * - save: SaveButton appears if set to true. Clicking will save the timetable object as a new copy in the account.
+ * - subscribe: SubscribeButton appears if set to true. Clicking will add the timetable object to subscribed. 
+ *      Ensure the timetable object has a timetableId for this prop to work.
+ * - share: ShareButton appears if set to true. Clicking will display a link for sharing of the timetable. 
+ *      Ensure the timetable object has a timetableId for this prop to work.
+ * - download: DownloadButton appears if set to true. Clicking will download the timetable displayed as a png image.
+ * - unsave: DeleteButton appears if set to true. Clicking will remove the timetable from saved. 
+ *      Ensure the timetable object has a timetableId for this prop to work. 
+ *      This prop should not be used with the save prop.
+ * - unsubscribe: DeleteButton appears if set to true. Clicking will remove the timetable from subscribed. 
+ *      Ensure the timetable object has a timetableId for this prop to work. 
+ *      This prop should not be used with the subscribe prop.
+ * - setDefault: SetDefaultButton appears if this prop is set to true. 
+ *      Clicking will set the timetable object as the default timetable.
+ * - isDefault: Boolean for whether the timetable is seelcted as default
+ * - onSetDefault: A callback to be called after timetable is set as default.
+ */
 class TimetableContainer extends React.Component {
     constructor(props) {
         super(props)
@@ -23,10 +46,17 @@ class TimetableContainer extends React.Component {
             isDeleted: false
         }
         this.timetableRef = React.createRef()
+        // for cancelling of async taks when unmounted
+        this.abortController = new AbortController()
+        this.signal = this.abortController.signal
     }
 
     componentDidMount() {
         this.checkForPropTypes()
+    }
+
+    componentWillUnmount() {
+        this.abortController.abort()
     }
 
     render() {
@@ -45,7 +75,12 @@ class TimetableContainer extends React.Component {
                                     ? <ShareButton className="timetable-button" timetableId={this.state.timetableId}></ShareButton>
                                     : ''
                                 }
-                                {this.state.delete === this.delete.UNSAVE || this.state.delete === this.delete.UNSUBSCRIBE
+                                {this.props.setDefault
+                                ? <SetDefaultButton className="timetable-button" isDefault={this.props.isDefault} onClick={this.onSetDefault} />
+                                : ''}
+                                {this.state.timetableId
+                                    && (this.state.delete === this.delete.UNSAVE
+                                        || this.state.delete === this.delete.UNSUBSCRIBE)
                                     ? (<DeleteButton className="timetable-button" onClick={this.onDelete} />)
                                     : ''
                                 }
@@ -54,8 +89,8 @@ class TimetableContainer extends React.Component {
                     </div>
                     )
                     : (<Alert className="timetable-deleted-alert" severity="info">
-                            <strong>Timetable was {this.state.delete === this.delete.UNSAVE ? "deleted" : "unsubscribed"}.</strong>
-                        </Alert>)
+                        <strong>Timetable was {this.state.delete === this.delete.UNSAVE ? "deleted" : "unsubscribed"}.</strong>
+                    </Alert>)
                 }
             </React.Fragment>
         )
@@ -92,25 +127,7 @@ class TimetableContainer extends React.Component {
         }
     }
 
-    delete = {
-        UNSAVE: 'unsave',
-        UNSUBSCRIBE: 'unsubscribe',
-        NONE: 'none'
-    }
-    checkForDeleteType() {
-        if (this.props.unsave && this.props.unsubscribe) {
-            return console.error("Unable to use both unsave and unsubscribe props")
-        } else if (this.props.unsave && this.props.save) {
-            return console.error("Unable to use both unsave and save props")
-        } else if (this.props.unsubscribe && this.props.subscribe) {
-            return console.error("Unable to use both unsubscribe and subscribe props")
-        } else {
-            this.setState({
-                delete: this.props.unsave ? this.delete.UNSAVE : this.props.unsubscribe ? this.delete.UNSUBSCRIBE : this.delete.NONE
-            })
-        }
-    }
-
+    // MARK: onDelete function
     onDelete = () => {
         var deleteFunc
         switch (this.state.delete) {
@@ -127,12 +144,44 @@ class TimetableContainer extends React.Component {
         if (deleteFunc) {
             deleteFunc(this.state.timetableId)
                 .then((timetableId) => {
+                    if (this.signal?.aborted) return
                     if (timetableId) {
                         this.setState({
                             isDeleted: true
                         }, () => console.log("deleted"))
                     }
                 })
+        }
+    }
+
+    onSetDefault = () => {
+        console.log("calling set default")
+        return this.props.firebase.setDefaultTimetable(this.props.json)
+            .then((timetableId) => {
+                console.log("default set: " + timetableId)
+                if (this.signal?.aborted) return
+                if (timetableId && this.props.onSetDefault) {
+                    this.props.onSetDefault(timetableId)
+                }
+            })
+    }
+
+    delete = {
+        UNSAVE: 'unsave',
+        UNSUBSCRIBE: 'unsubscribe',
+        NONE: 'none'
+    }
+    checkForDeleteType() {
+        if (this.props.unsave && this.props.unsubscribe) {
+            return console.error("Unable to use both unsave and unsubscribe props")
+        } else if (this.props.unsave && this.props.save) {
+            return console.error("Unable to use both unsave and save props")
+        } else if (this.props.unsubscribe && this.props.subscribe) {
+            return console.error("Unable to use both unsubscribe and subscribe props")
+        } else {
+            this.setState({
+                delete: this.props.unsave ? this.delete.UNSAVE : this.props.unsubscribe ? this.delete.UNSUBSCRIBE : this.delete.NONE
+            })
         }
     }
 

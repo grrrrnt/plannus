@@ -68,7 +68,10 @@ class SubscribedTimetables extends Component {
         )
     }
 
-    fetchMoreData = () => {
+    fetchMoreData = () => {        
+        if (this.signal?.aborted) {
+            return
+        }
         const displayedIds = this.state.displayedTimetableIds
         const allIds = this.state.timetableIds
         const maxDisplayed = displayedIds.length + 5 < allIds.length

@@ -74,16 +74,27 @@ class Firebase {
         );
     }
 
-    fetchDefaultTimetable = async () => {
+    fetchDefaultTimetableId = () => {
         if (!this.isLoggedIn) {
             return null
         }
 
         var getDefaultTimetable = this.functions.httpsCallable('getDefaultTimetable');
+        return getDefaultTimetable({})
+            .then((result) => {
+                return result.data
+            }).catch((err) => {
+                return console.error(err);
+            });
+    }
+
+    fetchDefaultTimetable = async () => {
+        if (!this.isLoggedIn) {
+            return null
+        }
 
         try {
-            const result = await getDefaultTimetable({});
-            const timetableId = result.data;
+            const timetableId = await this.fetchDefaultTimetableId();
             if (timetableId) {
                 const timetable = await this.fetchTimetable(timetableId);
                 return timetable;
@@ -91,7 +102,7 @@ class Firebase {
                 return null
             }
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
     }
 
@@ -101,7 +112,7 @@ class Firebase {
             const res = await getTimetable({ timetableId: id });
             return res.data;
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
     }
 
@@ -212,6 +223,56 @@ class Firebase {
         }
     }
 
+    setDefaultTimetable = (timetable) => {
+        const func = async () => {
+            const timetableId = timetable.timetableId
+            if (!timetableId) {
+                timetableId = await this.saveTimetable(timetable)
+            }
+
+            var setDefaultTimetable = this.functions.httpsCallable('setDefaultTimetable')
+            return setDefaultTimetable({ timetableId: timetableId })
+                .then((res) => {
+                    console.log(res)
+                    if (res.data.success) {
+                        return timetableId
+                    } else {
+                        return null
+                    }
+                }).catch((err) => {
+                    return console.error(err);
+                });
+        }
+        // log in anon if no user is logged in
+        if (!this.isLoggedIn) {
+            return this.loginAnonymously(func)
+        } else {
+            return func()
+        }
+    }
+
+    saveTimetable = (timetable) => {
+        const func = () => {
+            var saveTimetable = this.functions.httpsCallable('saveTimetable')
+            return saveTimetable({ timetable: timetable })
+                .then((res) => {
+                    if (res.data) {
+                        return res.data.timetableId
+                    } else {
+                        return null
+                    }
+                }).catch((err) => {
+                    return console.error(err);
+                });
+        }
+        // log in anon if no user is logged in
+        if (!this.isLoggedIn) {
+            return this.loginAnonymously(func)
+        } else {
+            return func()
+        }
+    }
+
     unsaveTimetable = (timetableId) => {
         var saveTimetable = this.functions.httpsCallable('saveTimetable')
         saveTimetable({ timetable: sampleTimetable })
@@ -232,16 +293,40 @@ class Firebase {
             );
     }
 
+    subscribeTimetable = (timetableId) => {
+        const func = () => {
+            var subscribeToTimetable = this.functions.httpsCallable('subscribeToTimetable');
+            return subscribeToTimetable({ timetableId: timetableId })
+                .then((res) => {
+                    if (res.data.success) {
+                        return timetableId
+                    } else {
+                        return null
+                    }
+                }).catch(
+                    (err) => {
+                        return console.error(err);
+                    }
+                );
+        }
+        // log in anon if no user is logged in
+        if (!this.isLoggedIn) {
+            return this.loginAnonymously(func)
+        } else {
+            return func()
+        }
+    }
+
     unsubscribeTimetable = (timetableId) => {
         var unsubscribeFromTimetable = this.functions.httpsCallable('unsubscribeFromTimetable');
         return unsubscribeFromTimetable({ timetableId: timetableId })
             .then(
                 (result) => {
                     if (result.data.timetableId) {
-                    return result.data.timetableId
-                } else {
-                    return null
-                }
+                        return result.data.timetableId
+                    } else {
+                        return null
+                    }
                 }
             ).catch(
                 (err) => {

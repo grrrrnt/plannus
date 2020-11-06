@@ -136,7 +136,7 @@ exports.getTimetable = functions.https.onCall((data, context) => {
 exports.setDefaultTimetable = functions.https.onCall((data, context) => {
     const timetableId = data.timetableId;
     const uid = context.auth.uid;
-    admin.firestore().collection("users").doc(uid).set({
+    return admin.firestore().collection("users").doc(uid).set({
         defaultTimetable: timetableId
     }, {merge: true})
     .then(() => {

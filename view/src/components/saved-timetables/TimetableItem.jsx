@@ -7,7 +7,7 @@ import Timetable from "../timetable"
 function TimetableItem(props) {
     const [loading, setLoading] = React.useState(true)
     const [timetable, setTimetable] = React.useState(null)
-    const { id, firebase, ...rest } = props
+    const { id, firebase, ...other } = props
 
     React.useEffect(() => {
         // for cancelling of async taks when unmounted
@@ -17,15 +17,15 @@ function TimetableItem(props) {
         async function fetchTimetable() {
             firebase.fetchTimetable(id)
                 .then((timetable) => {
+                    if (signal?.aborted) return
+                    
                     setLoading(false)
                     if (timetable) {
                         setTimetable(timetable)
                     }
                 })
         }
-        if (!signal?.aborted) {
-            fetchTimetable()
-        }
+        fetchTimetable()
 
         return () => abortController.abort()
     }, [id, firebase])
@@ -35,7 +35,7 @@ function TimetableItem(props) {
             {(loading)
                 ? <LinearProgress style={{ margin: "1em 0" }} />
                 : (timetable)
-                    ? <Timetable json={timetable} {...rest}></Timetable>
+                    ? <Timetable json={timetable} {...other}></Timetable>
                     : <div />
             }
         </React.Fragment >

@@ -12,6 +12,7 @@ class SavedTimetables extends Component {
 
         this.state = {
             loading: true,
+            defaultTimetableId: null,
             timetableIds: null,
             displayedTimetableIds: []
         };
@@ -20,7 +21,17 @@ class SavedTimetables extends Component {
         this.signal = this.abortController.signal
     }
 
-    componentDidMount() {
+    componentDidMount() {        
+        this.props.firebase.fetchDefaultTimetableId()
+            .then((timetableId) => {
+                if (this.signal.aborted) {
+                    return
+                }
+                if (timetableId) {
+                    this.setState({ defaultTimetableId: timetableId })
+                }
+            })
+
         this.props.firebase.fetchSavedTimetableIds()
             .then((timetableIds) => {
                 if (this.signal.aborted) {
@@ -54,7 +65,7 @@ class SavedTimetables extends Component {
                             scrollableTarget={this.props.parent}
                         >
                             {this.state.displayedTimetableIds.map((id, index) => (
-                                <TimetableItem key={index} id={id} share download unsave />
+                                <TimetableItem key={index} id={id} share download unsave isDefault={id === this.state.defaultTimetableId} setDefault onSetDefault={this.onSetDefault} />
                             )
                             )}
                         </InfiniteScroll>)
@@ -70,6 +81,8 @@ class SavedTimetables extends Component {
     }
 
     fetchMoreData = () => {
+        if (this.signal?.aborted) return
+
         const displayedIds = this.state.displayedTimetableIds
         const allIds = this.state.timetableIds
         const maxDisplayed = displayedIds.length + 5 < allIds.length
@@ -79,6 +92,14 @@ class SavedTimetables extends Component {
         this.setState({
             displayedTimetableIds: displayedIds.concat(allIds.slice(displayedIds.length, maxDisplayed)),
         })
+    }
+
+    onSetDefault = (timetableId) => {
+        if (this.signal?.aborted) return
+        this.setState({
+            defaultTimetableId: timetableId
+        })
+        console.log("setting default timetable id")
     }
 }
 
