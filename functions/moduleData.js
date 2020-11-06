@@ -34,3 +34,20 @@ exports.requestModuleList = year => {
         });
     });
 };
+
+exports.getModule = async (year, code) => {
+    return JSON.parse(await exports.requestModule(year, code));
+}
+
+exports.requestModule = (year, code) => {
+    return new Promise((resolve, reject) => {
+        request(`https://nusmods.com/api/v2/${year}-${year + 1}/modules/${code}.json`, (err, res, body) => {
+            if (err) {
+                console.log(err);
+                reject(err);
+            } else {
+                resolve(body);
+            }
+        });
+    });
+}

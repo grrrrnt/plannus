@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 const moduleData = require('./moduleData');
+const generate = require('./generate');
 const { v4: uuid } = require('uuid');
 
 //const loginUser = require('./users')
@@ -329,4 +330,20 @@ exports.unsubscribeFromTimetable = functions.https.onCall((data, context) => {
         return { success: false };
     });
     return { timetableId: timetableId };
+});
+
+exports.generateTimetables = functions.https.onCall(async (data, context) => {
+    const doc = await admin.firestore().collection("users").doc(context.auth.uid).get();
+    if (!doc.exists) {
+        console.error("No user doc", context.auth);
+        return {success: false};
+    }
+    const userData = doc.data();
+    if (!["year", "semester", "modules"].every(userData.hasOwnProperty)) {
+        console.error("No year/semester/modules", context.auth, data);
+        return {success: false};
+    }
+    const {year, semester, modules} = userData;
+    const moduleDataList = await Promise.all(modules.map(m => moduleData.getModule(year, m)));
+    return {success: true, timetables: generate.generate(moduleDataList, year, semester)};
 });
