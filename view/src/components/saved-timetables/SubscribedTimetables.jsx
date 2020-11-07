@@ -6,13 +6,12 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { withFirebase } from '../firebase';
 import TimetableItem from "./TimetableItem"
 
-class SavedTimetables extends Component {
+class SubscribedTimetables extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             loading: true,
-            defaultTimetableId: null,
             timetableIds: null,
             displayedTimetableIds: []
         };
@@ -21,18 +20,8 @@ class SavedTimetables extends Component {
         this.signal = this.abortController.signal
     }
 
-    componentDidMount() {        
-        this.props.firebase.fetchDefaultTimetableId()
-            .then((timetableId) => {
-                if (this.signal.aborted) {
-                    return
-                }
-                if (timetableId) {
-                    this.setState({ defaultTimetableId: timetableId })
-                }
-            })
-
-        this.props.firebase.fetchSavedTimetableIds()
+    componentDidMount() {
+        this.props.firebase.fetchSubscribedTimetableIds()
             .then((timetableIds) => {
                 if (this.signal.aborted) {
                     return
@@ -65,14 +54,13 @@ class SavedTimetables extends Component {
                             scrollableTarget={this.props.parent}
                         >
                             {this.state.displayedTimetableIds.map((id, index) => (
-                                <TimetableItem key={index} id={id} isDefault={id === this.state.defaultTimetableId} onSetDefault={this.onSetDefault} setDefault share download save isSaved />
+                                <TimetableItem key={index} id={id} subscribe isSubscribed />
                             )
                             )}
                         </InfiniteScroll>)
                         : (
-                            <Alert icon={false} severity="info" key={"no-saved-timetables"}>
-                                <AlertTitle><b>No timetables saved</b></AlertTitle>
-                                        Start generating a timetable!
+                            <Alert icon={false} severity="info" key={"no-subscribed-timetables"}>
+                                <AlertTitle><b>No subscribed timetables</b></AlertTitle>
                             </Alert>
                         )]
                 }
@@ -80,9 +68,10 @@ class SavedTimetables extends Component {
         )
     }
 
-    fetchMoreData = () => {
-        if (this.signal?.aborted) return
-
+    fetchMoreData = () => {        
+        if (this.signal?.aborted) {
+            return
+        }
         const displayedIds = this.state.displayedTimetableIds
         const allIds = this.state.timetableIds
         const maxDisplayed = displayedIds.length + 5 < allIds.length
@@ -93,14 +82,6 @@ class SavedTimetables extends Component {
             displayedTimetableIds: displayedIds.concat(allIds.slice(displayedIds.length, maxDisplayed)),
         })
     }
-
-    onSetDefault = (timetableId) => {
-        if (this.signal?.aborted) return
-        this.setState({
-            defaultTimetableId: timetableId
-        })
-        console.log("setting default timetable id")
-    }
 }
 
-export default withFirebase(SavedTimetables);
+export default withFirebase(SubscribedTimetables);
