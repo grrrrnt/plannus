@@ -333,17 +333,21 @@ exports.unsubscribeFromTimetable = functions.https.onCall((data, context) => {
 });
 
 exports.generateTimetables = functions.https.onCall(async (data, context) => {
-    const doc = await admin.firestore().collection("users").doc(context.auth.uid).get();
+    const docRef = admin.firestore().collection("users").doc(context.auth.uid);
+    const [doc, ] = await Promise.all([docRef.get(), docRef.set({
+        priorities: data.priorities,
+        modules: data.modules
+    }, { merge: true })]);
     if (!doc.exists) {
         console.error("No user doc", context.auth);
         return { success: false };
     }
     const userData = doc.data();
-    if (!["year", "semester", "modules"].every(userData.hasOwnProperty)) {
-        console.error("No year/semester/modules", context.auth, data);
+    if (!("year" in userData && "semester" in userData)) {
+        console.error("No year/semester", context.auth, data);
         return { success: false };
     }
-    const { year, semester, modules } = userData;
-    const moduleDataList = await Promise.all(modules.map(m => moduleData.getModule(year, m)));
+    const { year, semester } = userData;
+    const moduleDataList = await Promise.all(data.modules.map(m => moduleData.getModule(year, m)));
     return { success: true, timetables: generate.generate(moduleDataList, year, semester) };
 });
