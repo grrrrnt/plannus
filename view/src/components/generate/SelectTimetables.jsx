@@ -14,159 +14,159 @@ import Timetable from "../timetable"
 
 
 const sampleTimetable = {
-    timetable: {
-        "score": 50.0,
-        "year": 2020,
-        "semester": 1,
-        "modules": [
-            "CS3219",
-            "CS3203",
-            "CS1010"
-        ],
-        "events": [
-            {
-                "moduleCode": "CS3219",
-                "lessonType": "Lecture",
-                "location": "COM1-01-01",
-                "classNo": "02",
-                "day": 3,
-                "startTime": 1100,
-                "endTime": 1300,
-                "evenWeek": true,
-                "oddWeek": true,
-                "weeks": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ]
-            },
-            {
-                "moduleCode": "CS4211",
-                "lessonType": "Lecture",
-                "location": "COM1-01-01",
-                "classNo": "02",
-                "day": 2,
-                "startTime": 1200,
-                "endTime": 1400,
-                "evenWeek": true,
-                "oddWeek": true,
-                "weeks": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ]
-            }
-        ]
-    }
+    "score": 50.0,
+    "year": 2020,
+    "semester": 1,
+    "modules": [
+        "CS3219",
+        "CS3203",
+        "CS1010"
+    ],
+    "events": [
+        {
+            "moduleCode": "CS3219",
+            "lessonType": "Lecture",
+            "location": "COM1-01-01",
+            "classNo": "02",
+            "day": 3,
+            "startTime": 1100,
+            "endTime": 1300,
+            "evenWeek": true,
+            "oddWeek": true,
+            "weeks": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+            ]
+        },
+        {
+            "moduleCode": "CS4211",
+            "lessonType": "Lecture",
+            "location": "COM1-01-01",
+            "classNo": "02",
+            "day": 2,
+            "startTime": 1200,
+            "endTime": 1400,
+            "evenWeek": true,
+            "oddWeek": true,
+            "weeks": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+            ]
+        }
+    ]
 }
 
 const sampleTimetable2 = {
-    timetable: {
-        "score": 50.0,
-        "year": 2020,
-        "semester": 1,
-        "modules": [
-            "CS1101S",
-            "CS2107",
-            "CS1010"
-        ],
-        "events": [
-            {
-                "moduleCode": "CS1101S",
-                "lessonType": "Lecture",
-                "location": "COM1-01-01",
-                "classNo": "02",
-                "day": 3,
-                "startTime": 1100,
-                "endTime": 1300,
-                "evenWeek": true,
-                "oddWeek": true,
-                "weeks": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ]
-            },
-            {
-                "moduleCode": "CS2107",
-                "lessonType": "Lecture",
-                "location": "COM1-01-01",
-                "classNo": "02",
-                "day": 2,
-                "startTime": 1200,
-                "endTime": 1400,
-                "evenWeek": true,
-                "oddWeek": true,
-                "weeks": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13
-                ]
-            }
-        ]
-    }
+    "score": 50.0,
+    "year": 2020,
+    "semester": 1,
+    "modules": [
+        "CS1101S",
+        "CS2107",
+        "CS1010"
+    ],
+    "events": [
+        {
+            "moduleCode": "CS1101S",
+            "lessonType": "Lecture",
+            "location": "COM1-01-01",
+            "classNo": "02",
+            "day": 3,
+            "startTime": 1100,
+            "endTime": 1300,
+            "evenWeek": true,
+            "oddWeek": true,
+            "weeks": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+            ]
+        },
+        {
+            "moduleCode": "CS2107",
+            "lessonType": "Lecture",
+            "location": "COM1-01-01",
+            "classNo": "02",
+            "day": 2,
+            "startTime": 1200,
+            "endTime": 1400,
+            "evenWeek": true,
+            "oddWeek": true,
+            "weeks": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+            ]
+        }
+    ]
 }
 
-const timetables = [sampleTimetable, sampleTimetable2];
+const timetabless = [sampleTimetable, sampleTimetable2];
 
 const SelectTimetables = (props) => {
     const history = useHistory();
-    const [state, setState] = useState({
-        timetables: [],
-        error: [],
-    });
+    const [timetables, setTimetables] = useState([]);
 
     const [isLoaded, setIsLoaded] = useState(false);
+    const [defaultTimetable, setDefaultTimetable] = useState(null);
 
     useEffect(() => {
-        //const data = props.firebase.generateTimetables();
-        const data = timetables;
-        console.log(data);
-        setState({ ...state, timetables: data });
+        const controller = new AbortController();
+        const { signal } = controller;
+        //const data = props.firebase.generateTimetables(props.mods, props.priorities);
+        if (signal.aborted) {
+            return;
+        }
+        setTimetables(timetabless);
         setIsLoaded(true);
+        
+        return () => {
+            controller.abort()
+        }
     }, []);
 
-    
     function onClick() {
         history.push(ROUTES.HOME)
     }
@@ -176,22 +176,22 @@ const SelectTimetables = (props) => {
             {
                 !isLoaded ? <LinearProgress /> :
                     <Grid>
-                        <Box height={600} overflow="auto">
+                        <Box maxHeight={600} overflow="auto">
                             {
-                                state.timetables.map((t, index) => {
-                                    return <Timetable key={index} json={JSON.parse(JSON.stringify(t))} />
+                                timetables.map((t, index) => {
+                                    return <Timetable key={index} timetable={t} save setDefault />
                                 })
                             }
                         </Box>
-                        <Button style={{ margin: "5px" }} variant="outlined" color="primary" onClick={onClick}>
-                            Done
-                        </Button>
+                        <Box display="flex" flexDirection="row-reverse">
+                            <Button style={{ margin: "5px" }} variant="outlined" color="primary" onClick={onClick}>
+                                Done
+                            </Button>
+                        </Box>
                     </Grid>
             }
 
         </div>
-
-
     );
 
 }

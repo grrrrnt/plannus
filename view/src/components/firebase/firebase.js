@@ -245,7 +245,7 @@ class Firebase {
     }
 
     getPriorities = async () => {
-        const func = () => {
+        const func = async () => {
             var getUserPriorities = this.functions.httpsCallable('getUserPriorities');
             try {
                 const res = await getUserPriorities();
@@ -325,8 +325,6 @@ class Firebase {
     }
 
     unsaveTimetable = (timetableId) => {
-        var saveTimetable = this.functions.httpsCallable('saveTimetable')
-        saveTimetable({ timetable: sampleTimetable })
         var unsaveTimetable = this.functions.httpsCallable('unsaveTimetable');
         return unsaveTimetable({ timetableId: timetableId })
             .then(

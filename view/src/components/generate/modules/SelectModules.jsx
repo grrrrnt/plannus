@@ -8,8 +8,6 @@ import ModuleDisplay from "./ModuleDisplay";
 import SearchBar from './SearchBar'
 import SelectedModules from './SelectedModules'
 import ErrorMsg from '../ErrorMsg'
-
-
 import "./SelectModule.scss"
 
 class SelectModules extends Component {

@@ -68,15 +68,16 @@ class Generate extends Component {
 
     getStepContent = (step) => {
         switch (step) {
-            case 3:
+            case 0:
                 return <SelectSemester nextStep={this.handleNext} init={this.state.sem} setSem={this.setSem} />
             case 1:
                 return <RankPriorities nextStep={this.handleNext} init={this.state.priorities} setPriorities={this.setPriorities} priorityFetched={this.state.priorityFetched} setFetchedPriority={this.setFetchedPriority} />
             case 2:
                 return <SelectModules nextStep={this.handleNext} sem={this.state.sem} init={this.state.selectedModules} setMods={this.setMods} allModules={this.state.allModules} setAllModules={this.setAllModules} />
-            case 0:
+            case 3:
                 return <SelectTimetables mods={this.state.selectedModules} priorities={this.state.priorities} />
-
+            default:
+                return
         }
     }
 
