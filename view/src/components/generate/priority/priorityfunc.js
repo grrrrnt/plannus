@@ -63,7 +63,6 @@ export const initialise = (priorities) => {
 export const reformatForSub = (arr) => {
     for (var i = 0; i < arr.length; i++) {
         arr[i].rank = i + 1;
-        delete arr[i].name;
     }
     return arr;
 }
@@ -71,8 +70,8 @@ export const reformatForSub = (arr) => {
 export const reformatForAdd = (priority, fields) => {
     if (priority.type === 'FreePeriodPriority') {
         priority.fields = {
-            toTime: parseInt(fields.toTime.getHours() + "" + fields.toTime.getMinutes()),
-            fromTime: parseInt(fields.fromTime.getHours() + "" + fields.fromTime.getMinutes())
+            toTime: parseInt(fields.toTime.getHours() + "" + (fields.toTime.getMinutes() < 10 ? '0' : '') + fields.toTime.getMinutes()),
+            fromTime: parseInt(fields.fromTime.getHours() + "" + (fields.fromTime.getMinutes() < 10 ? '0' : '') + fields.fromTime.getMinutes())
         }
 
         priority.name = priority.name.replace('(Time 1)', priority.fields.fromTime);
@@ -80,7 +79,7 @@ export const reformatForAdd = (priority, fields) => {
 
     } else if (priority.type === 'AvoidBeforePriority' || priority.type === 'AvoidAfterPriority') {
         priority.fields = {
-            time: parseInt(fields.time.getHours() + "" + fields.time.getMinutes())
+            time: parseInt(fields.time.getHours() + "" + (fields.time.getMinutes() < 10 ? '0' : '') + fields.time.getMinutes())
         }
 
         priority.name = priority.name.replace('(Time)', priority.fields.time);

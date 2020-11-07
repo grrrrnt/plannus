@@ -1,40 +1,28 @@
 import React, { Component } from "react";
 import { withFirebase } from '../../firebase';
-import { DragDropContext } from "react-beautiful-dnd";
 import './priorities.css';
 import { v4 } from 'uuid';
 import _ from "lodash";
 import PriorityList from './PriorityList';
 import PriorityAdder from './PriorityAdder';
+import ErrorMsg from "../ErrorMsg"
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import { initialise, reformatForSub } from './priorityfunc';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { reformatForSub } from './priorityfunc';
 import Box from '@material-ui/core/Box';
-import Alert from '@material-ui/lab/Alert';
-
-
-
-/*
-format of items
-id: v4(),
-    type: "LunchBreakPriority",
-    name: "",
-    fields: {hours: 2},
-    rank: 7,
-    mustHave: true,
-}
-*/
+import { LinearProgress } from "@material-ui/core"
 
 class RankPriorities extends Component {
     constructor(props) {
         super(props);
         this.state = {
             title: "Priorities",
-            items: [],
+            items: this.props.init,
             loaded: false,
             error: "",
         };
+        this.abortController = new AbortController()
+        this.signal = this.abortController.signal
 
         this.addPriority = this.addPriority.bind(this);
         this.delPriority = this.delPriority.bind(this);
@@ -45,82 +33,95 @@ class RankPriorities extends Component {
     }
 
     componentDidMount() {
-        var priorities = this.props.priorities;
-        const init = initialise(priorities);
-        this.setState({
-            items: init,
-            loaded: true,
-        });
+        if (!this.props.priorityFetched) { //only fetch if component has not fetched from db previously
+            this.props.firebase.getPriorities().then((res) => {
+                if (this.signal.aborted) {
+                    return
+                }
+                this.props.setPriorities(res.priorities)
+                this.setState({ items: res.priorities, loaded: true });
+                this.props.setFetchedPriority();
+            })
+        } else {
+            if (this.signal.aborted) {
+                return
+            }
+            this.setState({ loaded: true });
+        }
+    }
+
+    componentWillUnmount() {
+        this.abortController.abort()
     }
 
     addPriority(priority) {
-        const priorities = this.state.items;
+        let priorities = [...this.state.items];
         const duplicate = priorities.some(p => p.name === priority.name);
         if (duplicate) {
             return "Priority was already selected.";
         }
+        priorities = [{
+            id: v4(),
+            type: priority.type,
+            fields: priority.fields,
+            name: priority.name,
+            rank: 0,
+            mustHave: false
+        },
+        ...this.state.items
+        ];
+
         this.setState({
-            items: [{
-                id: v4(),
-                type: priority.type,
-                fields: priority.fields,
-                name: priority.name,
-                rank: 0,
-                mustHave: false
-            },
-            ...this.state.items
-            ],
+            items: priorities,
             error: "",
         });
+        this.props.setPriorities(priorities);
         return "success";
     }
 
     delPriority(index) {
-        var items = [...this.state.items];
+        let priorities = [
+            ...this.state.items.slice(0, index),
+            ...this.state.items.slice(index + 1)
+        ];
         this.setState({
-            items: [
-                ...items.slice(0, index),
-                ...items.slice(index + 1)
-            ]
+            items: priorities
         })
+
+        this.props.setPriorities(priorities)
     }
 
     toggleMH(index) {
         const items = [...this.state.items];
+        let priorities = [
+            ...items.slice(0, index),
+            {
+                ...items[index],
+                mustHave: !items[index].mustHave,
+            },
+            ...items.slice(index + 1)
+        ];
+
         this.setState({
-            items: [
-                ...items.slice(0, index),
-                {
-                    ...items[index],
-                    mustHave: !items[index].mustHave,
-                },
-                ...items.slice(index + 1)
-            ]
+            items: priorities,
         })
+        this.props.setPriorities(priorities)
     }
 
     handleDragEnd(data) {
         const { source, destination } = data;
         if (!destination) {
-            console.log("not dropped in droppable");
             return;
         }
-
         if (destination.index === source.index && destination.droppableId === source.droppableId) {
-            console.log("dropped in same place")
             return;
         }
-
-        if (destination.index !== source.index && destination.droppableId === source.droppableId) {
-            console.log("dropped in same place but different index")
-        }
-
-        //changing index of items if dropped into different index
-        const pCopy = { ...this.state.items[source.index] };
+        const pCopy = { ...this.state.items[source.index] }; //changing index of items if dropped into different index
         var updatedState = this.state;
         updatedState.items.splice(source.index, 1);
         updatedState.items.splice(destination.index, 0, pCopy);
         this.setState(updatedState);
+        this.props.setPriorities(updatedState.items);
     }
 
     handleSubmit() {
@@ -130,8 +131,8 @@ class RankPriorities extends Component {
         }
         var items = _.cloneDeep(this.state.items);
         const priorities = reformatForSub(items);
+        this.props.setPriorities(items);
         this.props.firebase.setPriorities(priorities);
-        //this.props.setPriorities(toSubmit);
         this.props.nextStep();
     }
 
@@ -140,6 +141,7 @@ class RankPriorities extends Component {
             items: [],
             error: "",
         })
+        this.props.setPriorities([]);
     }
 
 
@@ -147,60 +149,37 @@ class RankPriorities extends Component {
         const { loaded, items, title, error } = this.state;
         return (
             <div>
-                <Grid container justify="center">
-                    <h2> What priorities are important to you?</h2>
-                </Grid>
-                <PriorityAdder addPriority={this.addPriority} />
-
-
-                <Grid container justify="center">
-                    <h3 style={{ whiteSpace: "pre-wrap" }} >
-                        Drag to rank your priorities {"\n"}
-                    </h3>
-                </Grid>
-
                 {
                     loaded ?
-                        <div>
-                            <DragDropContext onDragEnd={this.handleDragEnd}>
-                                <Grid container justify="center">
-                                    <PriorityList priorities={items} title={title} delPriority={this.delPriority} toggleMH={this.toggleMH} />
-                                </Grid>
-                            </DragDropContext>
-                        </div>
-                        :
-                        <Box m={2} pt={3}>
-                            <Grid container justify="center">
-                                <CircularProgress />
+                        <Grid>
+                            <PriorityAdder addPriority={this.addPriority} />
+                            <PriorityList priorities={items} title={title} delPriority={this.delPriority} toggleMH={this.toggleMH} handleDragEnd={this.handleDragEnd} />
+                            <Grid
+                                container
+                                direction="column"
+                                justify="center"
+                                alignItems="center"
+                            >
+                                {
+                                    error !== "" ?
+                                        <Box m={1}>
+                                            <ErrorMsg msg={error} />
+                                        </Box>
+                                        : <div></div>
+                                }
+                                <Box m={1}>
+                                    <Button style={{ margin: "5px" }} variant="outlined" color="secondary" onClick={this.clear}>
+                                        Clear
+                                    </Button>
+                                    <Button style={{ margin: "5px" }} variant="outlined" color="primary" onClick={this.handleSubmit}>
+                                        Next
+                                    </Button>
+                                </Box>
                             </Grid>
-                        </Box>
-                }
-
-                {
-                    error !== "" ?
-                        <Grid container justify="center">
-                            <Box m={1}>
-                                <Alert severity="error">
-                                    {error}
-                                </Alert>
-                            </Box>
                         </Grid>
-                        : <div></div>
+                        :
+                        <LinearProgress />
                 }
-
-                <Grid container justify="center">
-                    <Box m={1}>
-                        <Button variant="outlined" color="secondary" onClick={this.clear}>
-                            Clear
-                        </Button>
-                    </Box>
-                    <Box m={1}>
-                        <Button variant="outlined" color="primary" onClick={this.handleSubmit}>
-                            Next
-                        </Button>
-                    </Box>
-                </Grid>
-
             </div>
 
         )

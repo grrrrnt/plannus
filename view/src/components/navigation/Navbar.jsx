@@ -8,7 +8,6 @@ import * as ROUTES from '../../util/Routes';
 import "./Navbar.scss"
 
 function NavBar(props) {
-    console.log(props.authUser)
     return (
         <React.Fragment>
             <nav className="navbar">
