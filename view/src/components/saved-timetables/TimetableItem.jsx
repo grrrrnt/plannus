@@ -16,12 +16,12 @@ function TimetableItem(props) {
 
         async function fetchTimetable() {
             firebase.fetchTimetable(id)
-                .then((timetable) => {
+                .then((res) => {
                     if (signal?.aborted) return
                     
                     setLoading(false)
-                    if (timetable) {
-                        setTimetable(timetable)
+                    if (res) {
+                        setTimetable(res.timetable)
                     }
                 })
         }
@@ -35,7 +35,7 @@ function TimetableItem(props) {
             {(loading)
                 ? <LinearProgress style={{ margin: "1em 0" }} />
                 : (timetable)
-                    ? <Timetable json={timetable} {...other}></Timetable>
+                    ? <Timetable timetable={timetable} timetableId={id} {...other}></Timetable>
                     : <div />
             }
         </React.Fragment >

@@ -54,7 +54,7 @@ class SubscribedTimetables extends Component {
                             scrollableTarget={this.props.parent}
                         >
                             {this.state.displayedTimetableIds.map((id, index) => (
-                                <TimetableItem key={index} id={id} unsubscribe />
+                                <TimetableItem key={index} id={id} subscribe isSubscribed />
                             )
                             )}
                         </InfiniteScroll>)

@@ -223,9 +223,8 @@ class Firebase {
         }
     }
 
-    setDefaultTimetable = (timetable) => {
+    setDefaultTimetable = (timetableId, timetable) => {
         const func = async () => {
-            const timetableId = timetable.timetableId
             if (!timetableId) {
                 timetableId = await this.saveTimetable(timetable)
             }
@@ -256,7 +255,7 @@ class Firebase {
             var saveTimetable = this.functions.httpsCallable('saveTimetable')
             return saveTimetable({ timetable: timetable })
                 .then((res) => {
-                    if (res.data) {
+                    if (res.data.timetableId) {
                         return res.data.timetableId
                     } else {
                         return null
@@ -298,8 +297,8 @@ class Firebase {
             var subscribeToTimetable = this.functions.httpsCallable('subscribeToTimetable');
             return subscribeToTimetable({ timetableId: timetableId })
                 .then((res) => {
-                    if (res.data.success) {
-                        return timetableId
+                    if (res.data.timetableId) {
+                        return res.data.timetableId
                     } else {
                         return null
                     }

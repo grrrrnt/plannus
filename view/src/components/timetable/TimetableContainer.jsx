@@ -1,33 +1,26 @@
 import React from "react"
 import { exportComponentAsPNG } from 'react-component-export-image'
-import { Alert } from "@material-ui/lab"
 
 import { withFirebase } from "../firebase"
 import Timetable from "./Timetable"
 import ShareButton from "./share-button/ShareButton"
 import DownloadButton from "./download-button/DownloadButton"
-import DeleteButton from "./delete-button/DeleteButton"
 
 import "./Timetable.scss"
 import SetDefaultButton from "./set-default-button/SetDefaultButton"
+import SaveButton from "./save-button/SaveButton"
+import SubscribeButton from "./subscribe-button/SubscribeButton"
 
 /**
  * Component for displayng timetables. Includes a Timetable component and 
  *      buttons for performing actions with the timetble.
  * props:
- * - json: timetable object to display.
- * - save: SaveButton appears if set to true. Clicking will save the timetable object as a new copy in the account.
- * - subscribe: SubscribeButton appears if set to true. Clicking will add the timetable object to subscribed. 
- *      Ensure the timetable object has a timetableId for this prop to work.
- * - share: ShareButton appears if set to true. Clicking will display a link for sharing of the timetable. 
- *      Ensure the timetable object has a timetableId for this prop to work.
- * - download: DownloadButton appears if set to true. Clicking will download the timetable displayed as a png image.
- * - unsave: DeleteButton appears if set to true. Clicking will remove the timetable from saved. 
- *      Ensure the timetable object has a timetableId for this prop to work. 
- *      This prop should not be used with the save prop.
- * - unsubscribe: DeleteButton appears if set to true. Clicking will remove the timetable from subscribed. 
- *      Ensure the timetable object has a timetableId for this prop to work. 
- *      This prop should not be used with the subscribe prop.
+ * - timetable: timetable object to display.
+ * - timetableId: id of timetable object
+ * - save: SaveButton appears if set to true.
+ * - subscribe: SubscribeButton appears if set to true.
+ * - share: ShareButton appears if set to true.
+ * - download: DownloadButton appears if set to true.
  * - setDefault: SetDefaultButton appears if this prop is set to true. 
  *      Clicking will set the timetable object as the default timetable.
  * - isDefault: Boolean for whether the timetable is seelcted as default
@@ -38,21 +31,14 @@ class TimetableContainer extends React.Component {
         super(props)
 
         this.state = {
-            timetable: this.formatTimetable(props.json.timetable),
-            timetableId: props.json.timetableId,
-            delete: this.delete.NONE,
-            download: false,
-            share: false,
-            isDeleted: false
+            timetable: this.formatTimetable(props.timetable),
+            savedId: props.isSaved ? props.timetableId : null,
+            subscribedId: props.isSubscribed ? props.timetableId : null,
         }
         this.timetableRef = React.createRef()
         // for cancelling of async taks when unmounted
         this.abortController = new AbortController()
         this.signal = this.abortController.signal
-    }
-
-    componentDidMount() {
-        this.checkForPropTypes()
     }
 
     componentWillUnmount() {
@@ -62,127 +48,92 @@ class TimetableContainer extends React.Component {
     render() {
         return (
             <React.Fragment>
-                {(!this.state.isDeleted)
-                    ? (<div className="timetable-container">
-                        <div>
-                            <Timetable timetable={this.state.timetable} ref={this.timetableRef} />
-                            <div className="timetable-buttons-container">
-                                {this.state.download
-                                    ? <DownloadButton className="timetable-button" onClick={() => exportComponentAsPNG(this.timetableRef, "Timetable", "#FFFFFF")} />
-                                    : ''
-                                }
-                                {this.state.share && this.state.timetableId
-                                    ? <ShareButton className="timetable-button" timetableId={this.state.timetableId}></ShareButton>
-                                    : ''
-                                }
-                                {this.props.setDefault
+                <div className="timetable-container">
+                    <div>
+                        <Timetable timetable={this.state.timetable} ref={this.timetableRef} />
+                        <div className="timetable-buttons-container">
+                            {this.props.download && this.state.savedId
+                                ? <DownloadButton className="timetable-button" onClick={() => exportComponentAsPNG(this.timetableRef, "Timetable", "#FFFFFF")} />
+                                : ''
+                            }
+                            {this.props.share && this.state.savedId
+                                ? <ShareButton className="timetable-button" timetableId={this.state.savedId}></ShareButton>
+                                : ''
+                            }
+                            {this.props.setDefault
                                 ? <SetDefaultButton className="timetable-button" isDefault={this.props.isDefault} onClick={this.onSetDefault} />
-                                : ''}
-                                {this.state.timetableId
-                                    && (this.state.delete === this.delete.UNSAVE
-                                        || this.state.delete === this.delete.UNSUBSCRIBE)
-                                    ? (<DeleteButton className="timetable-button" onClick={this.onDelete} />)
-                                    : ''
-                                }
-                            </div>
+                                : ''
+                            }
+                            {this.props.save
+                                ? <SaveButton className="timetable-button" isSaved={this.state.savedId !== null} onSave={this.onSave} onUnsave={this.onUnsave} />
+                                : ''
+                            }
+                            {this.props.subscribe
+                                ? <SubscribeButton className="timetable-button" isSubscribed={this.state.subscribedId !== null} onSubscribe={this.onSubscribe} onUnsubscribe={this.onUnsubscribe} />
+                                : ''
+                            }
                         </div>
                     </div>
-                    )
-                    : (<Alert className="timetable-deleted-alert" severity="info">
-                        <strong>Timetable was {this.state.delete === this.delete.UNSAVE ? "deleted" : "unsubscribed"}.</strong>
-                    </Alert>)
-                }
+                </div>
             </React.Fragment>
         )
     }
 
-    // Check for conflicting prop types
-    checkForPropTypes() {
-        this.checkForShareType()
-        this.checkForDownloadType()
-        this.checkForDeleteType()
-    }
-
-    checkForShareType() {
-        if (this.props.share && this.props.save) {
-            return console.error("Unable to use both share and save props")
-        } else if (this.props.share && this.props.save) {
-            return console.error("Unable to use both share and subscribe props")
-        } else if (this.props.share) {
-            this.setState({
-                share: this.props.share
+    // MARK: onSave function
+    onSave = () => {
+        return this.props.firebase.saveTimetable(this.props.timetable)
+            .then((timetableId) => {
+                if (this.signal?.aborted) return
+                if (timetableId) this.setState({ savedId: timetableId })
+                return timetableId;
             })
-        }
     }
 
-    checkForDownloadType() {
-        if (this.props.download && this.props.save) {
-            return console.error("Unable to use both download and save props")
-        } else if (this.props.download && this.props.save) {
-            return console.error("Unable to use both download and subscribe props")
-        } else if (this.props.download) {
-            this.setState({
-                download: this.props.download
+    // MARK: onUnsave function
+    onUnsave = () => {
+        return this.props.firebase.unsaveTimetable(this.state.savedId)
+            .then((timetableId) => {
+                if (this.signal?.aborted) return
+                if (timetableId) this.setState({ savedId: null })
+                return timetableId;
             })
-        }
     }
 
-    // MARK: onDelete function
-    onDelete = () => {
-        var deleteFunc
-        switch (this.state.delete) {
-            case this.delete.UNSAVE:
-                deleteFunc = this.props.firebase.unsaveTimetable
-                break
-            case this.delete.UNSUBSCRIBE:
-                deleteFunc = this.props.firebase.unsubscribeTimetable
-                break
-            default:
-                break
-        }
-
-        if (deleteFunc) {
-            deleteFunc(this.state.timetableId)
-                .then((timetableId) => {
-                    if (this.signal?.aborted) return
-                    if (timetableId) {
-                        this.setState({
-                            isDeleted: true
-                        }, () => console.log("deleted"))
-                    }
-                })
-        }
+    // MARK: onSubscribe function
+    onSubscribe = () => {
+        return this.props.firebase.subscribeTimetable(this.props.timetableId)
+            .then((timetableId) => {
+                if (this.signal?.aborted) return
+                if (timetableId) this.setState({ subscribedId: timetableId })
+                console.log("subscribe id: " + timetableId)
+                return timetableId;
+            })
     }
 
+    // MARK: onUnsubscribe function
+    onUnsubscribe = () => {
+        return this.props.firebase.unsubscribeTimetable(this.state.subscribedId)
+            .then((timetableId) => {
+                if (this.signal?.aborted) return
+                if (timetableId) this.setState({ subscribedId: null })
+                return timetableId;
+            })
+    }
+
+    // MARK: onSetDefault function
     onSetDefault = () => {
         console.log("calling set default")
-        return this.props.firebase.setDefaultTimetable(this.props.json)
+        return this.props.firebase.setDefaultTimetable(this.state.savedId, this.props.timetable)
             .then((timetableId) => {
                 console.log("default set: " + timetableId)
                 if (this.signal?.aborted) return
-                if (timetableId && this.props.onSetDefault) {
-                    this.props.onSetDefault(timetableId)
+                if (timetableId) {
+                    this.setState({ savedId: timetableId })
+                    // execute callback if exists
+                    if (this.props.onSetDefault) this.props.onSetDefault(timetableId)
                 }
+                return timetableId
             })
-    }
-
-    delete = {
-        UNSAVE: 'unsave',
-        UNSUBSCRIBE: 'unsubscribe',
-        NONE: 'none'
-    }
-    checkForDeleteType() {
-        if (this.props.unsave && this.props.unsubscribe) {
-            return console.error("Unable to use both unsave and unsubscribe props")
-        } else if (this.props.unsave && this.props.save) {
-            return console.error("Unable to use both unsave and save props")
-        } else if (this.props.unsubscribe && this.props.subscribe) {
-            return console.error("Unable to use both unsubscribe and subscribe props")
-        } else {
-            this.setState({
-                delete: this.props.unsave ? this.delete.UNSAVE : this.props.unsubscribe ? this.delete.UNSUBSCRIBE : this.delete.NONE
-            })
-        }
     }
 
     // Format timetable for display

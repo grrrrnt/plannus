@@ -16,6 +16,7 @@ class Home extends Component {
         this.state = {
             loading: true,
             timetable: null,
+            timetableId: null,
         };
         // for cancelling of async taks when unmounted
         this.abortController = new AbortController()
@@ -24,13 +25,13 @@ class Home extends Component {
 
     componentDidMount() {
         this.props.firebase.fetchDefaultTimetable()
-            .then((timetable) => {
+            .then((res) => {
                 if (this.signal.aborted) {
                     return
                 }
                 this.setState({ loading: false })
-                if (timetable) {
-                    this.setState({ timetable: timetable })
+                if (res) {
+                    this.setState({ timetable: res.timetable, timetableId: res.timetableId })
                 }
             })
     }
@@ -38,7 +39,7 @@ class Home extends Component {
     componentWillUnmount() {
         this.abortController.abort()
     }
-    
+
     render() {
         return (
             <div>
@@ -51,7 +52,7 @@ class Home extends Component {
                         ? <LinearProgress />
                         : [
                             (this.state.timetable)
-                                ? <Timetable key={"default-timetable"} json={this.state.timetable} share download />
+                                ? <Timetable key={"default-timetable"} timetable={this.state.timetable} timetableId={this.state.timetableId} share download />
                                 : (
                                     <Alert icon={false} severity="info" key={"no-default-timetable"}>
                                         <AlertTitle><strong>No timetable selected</strong></AlertTitle>

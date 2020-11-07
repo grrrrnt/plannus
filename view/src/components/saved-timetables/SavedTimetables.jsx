@@ -65,7 +65,7 @@ class SavedTimetables extends Component {
                             scrollableTarget={this.props.parent}
                         >
                             {this.state.displayedTimetableIds.map((id, index) => (
-                                <TimetableItem key={index} id={id} share download unsave isDefault={id === this.state.defaultTimetableId} setDefault onSetDefault={this.onSetDefault} />
+                                <TimetableItem key={index} id={id} isDefault={id === this.state.defaultTimetableId} onSetDefault={this.onSetDefault} setDefault share download save isSaved />
                             )
                             )}
                         </InfiniteScroll>)
