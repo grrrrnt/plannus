@@ -77,8 +77,9 @@ class Firebase {
         var retrieveModules = this.functions.httpsCallable('retrieveModules');
         try {
             const result = await retrieveModules()
-            console.log(result)
-            return result.data.modules
+            console.log(result);
+            return result.data;
+
         } catch(err) {
             console.error(err);
         }
@@ -98,18 +99,15 @@ class Firebase {
             );
     }
 
-    setSemester = (year, sem) => {
+    setSemester = async (year, sem) => {
         var setUserSemester = this.functions.httpsCallable('setUserSemester');
-        setUserSemester({year: year, semester: sem})
-            .then(
-                (result) => {
-                    console.log(result);
-                }
-            ).catch(
-                (err) => {
-                    console.log(err);
-                }
-            );
+        try {
+            const res = await  setUserSemester({year: year, semester: sem});
+            return res.data.success;
+            
+        } catch(err) {
+            console.error(err);
+        }
     }
 
     setPriorities = (priorities) => {
@@ -125,6 +123,38 @@ class Firebase {
                 }
             );
     }
+
+    getSemester = async () => {
+        var getUserSemester = this.functions.httpsCallable('getUserSemester');  
+        try {
+            const res = await getUserSemester();
+            return res.data;
+            
+        } catch(err) {
+            console.error(err);
+        }
+
+    }
+
+    getUserModules = () => {
+        var getUserModules = this.functions.httpsCallable('getUserModules');
+        getUserModules()
+        .then((res) => {
+            return res.data.modules;
+        }
+        ).catch((err) => {console.log(err)})
+    }
+
+    getPriorities = async () => {
+        var getUserPriorities = this.functions.httpsCallable('getUserPriorities');
+        try{
+            const res = await getUserPriorities();
+            return res.data;
+        } catch(err) {
+            console.error(err);
+        }
+    }
+        
 }
 
 const sampleTimetable = {

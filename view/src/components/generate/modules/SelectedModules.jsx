@@ -8,8 +8,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 
 const SelectedModules = ({ mods, delMod }) => {
     return (
-    
-        <List>
+        <List style={{ width: "100%" }}>
             {
                 mods.map((m, index) => {
                     return (
