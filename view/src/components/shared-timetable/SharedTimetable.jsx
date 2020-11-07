@@ -37,9 +37,9 @@ class SharedTimetable extends Component {
                         ? <LinearProgress />
                         : [
                             (this.state.timetable)
-                                ? <Timetable timetable={this.state.timetable} timetableId={this.state.timetableId} subscribe save setDefault />
+                                ? <Timetable key="shared-timetable" timetable={this.state.timetable} timetableId={this.state.timetableId} subscribe save setDefault />
                                 : (
-                                    <Alert severity="error">
+                                    <Alert key="timetable-not-found" severity="error">
                                         <AlertTitle><strong>Timetable not found</strong></AlertTitle>
                                     </Alert>
                                 )

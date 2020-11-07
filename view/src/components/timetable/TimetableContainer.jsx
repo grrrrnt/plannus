@@ -21,9 +21,8 @@ import SubscribeButton from "./subscribe-button/SubscribeButton"
  * - subscribe: SubscribeButton appears if set to true.
  * - share: ShareButton appears if set to true.
  * - download: DownloadButton appears if set to true.
- * - setDefault: SetDefaultButton appears if this prop is set to true. 
- *      Clicking will set the timetable object as the default timetable.
- * - isDefault: Boolean for whether the timetable is seelcted as default
+ * - setDefault: SetDefaultButton appears if this prop is set to true.
+ * - isDefault: Boolean for whether the timetable is selected as default
  * - onSetDefault: A callback to be called after timetable is set as default.
  */
 class TimetableContainer extends React.Component {
@@ -61,7 +60,7 @@ class TimetableContainer extends React.Component {
                                 : ''
                             }
                             {this.props.setDefault
-                                ? <SetDefaultButton className="timetable-button" isDefault={this.props.isDefault} onClick={this.onSetDefault} />
+                                ? <SetDefaultButton className="timetable-button" onClick={this.onSetDefault} />
                                 : ''
                             }
                             {this.props.save
@@ -122,10 +121,8 @@ class TimetableContainer extends React.Component {
 
     // MARK: onSetDefault function
     onSetDefault = () => {
-        console.log("calling set default")
         return this.props.firebase.setDefaultTimetable(this.state.savedId, this.props.timetable)
             .then((timetableId) => {
-                console.log("default set: " + timetableId)
                 if (this.signal?.aborted) return
                 if (timetableId) {
                     this.setState({ savedId: timetableId })

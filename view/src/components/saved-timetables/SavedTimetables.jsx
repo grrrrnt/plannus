@@ -99,7 +99,6 @@ class SavedTimetables extends Component {
         this.setState({
             defaultTimetableId: timetableId
         })
-        console.log("setting default timetable id")
     }
 }
 

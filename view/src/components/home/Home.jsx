@@ -52,11 +52,11 @@ class Home extends Component {
                         ? <LinearProgress />
                         : [
                             (this.state.timetable)
-                                ? <Timetable key={"default-timetable"} timetable={this.state.timetable} timetableId={this.state.timetableId} share download />
+                                ? <Timetable key={"default-timetable"} timetable={this.state.timetable} timetableId={this.state.timetableId} share download isSaved />
                                 : (
                                     <Alert icon={false} severity="info" key={"no-default-timetable"}>
                                         <AlertTitle><strong>No timetable selected</strong></AlertTitle>
-                                        Choose one from Saved Timetables or generate one!
+                                        Choose one from your <Link style={{color: "#0d3c61"}} to={ROUTES.SAVEDTIMETABLES}>saves</Link> or <Link style={{color: "#0d3c61"}} to={ROUTES.GENERATE}>generate</Link> one!
                                     </Alert>
                                 )
                         ]

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Snackbar, IconButton } from '@material-ui/core';
 import { Close, Save, Delete } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/core/styles';
 
 export default function SaveButton(props) {
     const { isSaved, onSave, onUnsave, ...others } = props
@@ -45,6 +46,17 @@ export default function SaveButton(props) {
         }
     }, [unsaving, onUnsave]);
 
+    const styles = makeStyles({
+        root: {
+            color: "#4CAF50",
+            borderColor: "rgba(76, 175, 80, 0.5)",
+            "&:hover": {
+                borderColor: "#4CAF50",
+                backgroundColor: "rgba(76, 175, 80, 0.05)",
+            }
+        },
+    })();
+
     return (
         <div>
             <Button
@@ -53,7 +65,7 @@ export default function SaveButton(props) {
                 disabled={saving || unsaving}
                 onClick={isSaved ? handleUnsaveClick : handleSaveClick}
                 endIcon={isSaved ? <Delete /> : <Save />}
-                style={{color: !isSaved ? "#81C784": "", borderColor: !isSaved ? "#81C784": ""}} 
+                classes={{ outlinedPrimary: styles.root }}
                 {...others}
             >
                 {isSaved ? "Unsave" : "Save"}

@@ -76,7 +76,7 @@ class Firebase {
 
     fetchDefaultTimetableId = () => {
         if (!this.isLoggedIn) {
-            return null
+            return Promise.resolve(null)
         }
 
         var getDefaultTimetable = this.functions.httpsCallable('getDefaultTimetable');
@@ -120,8 +120,6 @@ class Firebase {
         if (!this.isLoggedIn) {
             return null
         }
-        // var saveTimetable = this.functions.httpsCallable('saveTimetable')
-        // saveTimetable({ timetable: sampleTimetable })
         var getSavedTimetables = this.functions.httpsCallable('getSavedTimetables');
         try {
             const res = await getSavedTimetables();
@@ -135,8 +133,6 @@ class Firebase {
         if (!this.isLoggedIn) {
             return null
         }
-        // var subscribeToTimetable = this.functions.httpsCallable('subscribeToTimetable')
-        // subscribeToTimetable({ timetableId: "6f63aebe-45b3-4122-b054-ce1b83307191" })
         var getSubscribedTimetables = this.functions.httpsCallable('getSubscribedTimetables');
         try {
             const res = await getSubscribedTimetables();
@@ -284,7 +280,6 @@ class Firebase {
             var setDefaultTimetable = this.functions.httpsCallable('setDefaultTimetable')
             return setDefaultTimetable({ timetableId: timetableId })
                 .then((res) => {
-                    console.log(res)
                     if (res.data.success) {
                         return timetableId
                     } else {

@@ -46,39 +46,26 @@ export default function SubscribeButton(props) {
         }
     }, [unsubscribing, onUnsubscribe]);
 
-    // const style = {
-    //     color: !isSubscribed ? "#4CAF50" : "",
-    //     borderColor: !isSubscribed ? "#4CAF50" : "",
-    //     "&:disabled" {
-    //         color: !isSubscribed ? "#C1C1C1" : "",
-    //         borderColor: !isSubscribed ? "#C1C1C1" : "",
-    //     }
-    // }
-
     const styles = makeStyles({
         root: {
-            color: !isSubscribed ? "#4CAF50" : "#DC004E",
-            borderColor: !isSubscribed ? "#4CAF50" : "#DC004E",
+            color: "#4CAF50",
+            borderColor: "rgba(76, 175, 80, 0.5)",
+            "&:hover": {
+                borderColor: "#4CAF50",
+                backgroundColor: "rgba(76, 175, 80, 0.05)",
+            }
         },
-        disabled: {
-            color: "#C1C1C1",
-            borderColor: "#C1C1C1",
-        },
-        hover: {
-            borderColor: !isSubscribed ? "#4CAF50" : "#DC004E",
-            backgroundColor: !isSubscribed ? "rgba(76, 175, 80, 0.4)" : "rgba(227, 51, 113, 0.4)"
-        }
     })();
-
 
     return (
         <div>
             <Button
                 variant="outlined"
+                color={isSubscribed ? "secondary" : "primary"}
                 disabled={subscribing || unsubscribing}
                 onClick={isSubscribed ? handleUnsubscribeClick : handleSubscribeClick}
                 endIcon={isSubscribed ? <Delete /> : <Bookmark />}
-                classes={{root: styles.root, disabled: styles.disabled, hover: styles.hover}}
+                classes={{ outlinedPrimary: styles.root }}
                 {...others}
             >
                 {isSubscribed ? "Unsubscribe" : "Subscribe"}
