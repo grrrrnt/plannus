@@ -12,19 +12,20 @@ import ErrorMsg from '../ErrorMsg'
 
 import "./SelectModule.scss"
 
-const sample = [{ moduleCode: "cs-04343", title: "erewrewrew" }, { moduleCode: "cs-04343", title: "erewrewrew" }, { moduleCode: "cs-2323323", title: "4343434" }, { moduleCode: "cs-3434343", title: "erewrewrew" }, { moduleCode: "cs-344", title: "erewrewrew" }]
-
 class SelectModules extends Component {
     constructor(props) {
         super(props);
         this.state = {
             error: "",
             isLoaded: false,
-            modules: [],
-            selected: this.props.mods,
-            display: sample,
+            modules: this.props.allModules,
+            selected: this.props.init,
+            display: this.props.allModules,
             sem: this.props.sem,
         };
+
+        this.abortController = new AbortController()
+        this.signal = this.abortController.signal
 
         this.filterDisplay = this.filterDisplay.bind(this);
         this.selectMod = this.selectMod.bind(this);
@@ -33,21 +34,40 @@ class SelectModules extends Component {
         this.clear = this.clear.bind(this);
     }
 
-    /*
-    componentDidMount() {
-        this.props.firebase.fetchModules()
-            .then((modules) => {
-                this.setState({
-                    isLoaded: true,
-                    modules: modules,
-                    display: modules,
-                });
-            }).catch(
-                (err) => { console.log(err); }
-            );
 
+    componentDidMount() {
+        if (this.state.modules.length === 0) {
+            const { sem } = this.state;
+            const year = parseInt(sem.split(" ")[0]);
+            const semester = parseInt(sem.split(" ")[1]);
+
+            this.props.firebase.fetchModules(year, semester)
+                .then((res) => {
+                    if (this.signal.aborted) {
+                        return
+                    }
+                    this.setState({
+                        isLoaded: true,
+                        modules: res.modules,
+                        display: res.modules,
+                    });
+                    this.props.setAllModules(res.modules);
+                }).catch(
+                    (err) => { console.log(err); }
+                );
+        } else {
+            if (this.signal.aborted) {
+                return
+            }
+            this.setState({
+                isLoaded: true,
+            });
+        }
     }
-    */
+
+    componentWillUnmount() {
+        this.abortController.abort()
+    }
 
     render() {
         return (

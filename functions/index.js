@@ -12,15 +12,15 @@ const { v4: uuid } = require('uuid');
 exports.retrieveModules = functions.https.onCall(async (data, context) => {
     if (!("year" in data) || !("semester" in data)) {
         console.log(data, new Error("data does not have year or semester"));
-        return {success: false};
+        return { success: false };
     }
     const setSemester = admin.firestore().collection("users").doc(context.auth.uid).set({
         year: data.year,
         semester: data.semester
-    }, {merge: true});
+    }, { merge: true });
     const getModules = moduleData.getModuleListSemester(data.year, data.semester);
     const modules = (await Promise.all([setSemester, getModules]))[1];
-    return {success: true, modules: modules};
+    return { success: true, modules: modules };
 });
 
 exports.setUserModules = functions.https.onCall((data, context) => {
@@ -28,16 +28,16 @@ exports.setUserModules = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     admin.firestore().collection("users").doc(uid).set({
         modules: modules
-    }, {merge: true})
-    .then(() => {
-        console.log("Modules updated for user " + uid);
-        return { success: true };
-    })
-    .catch((error) => {
-        console.error(error);
-        console.log("Error updating modules for user " + uid);
-        return { success: false };
-    });
+    }, { merge: true })
+        .then(() => {
+            console.log("Modules updated for user " + uid);
+            return { success: true };
+        })
+        .catch((error) => {
+            console.error(error);
+            console.log("Error updating modules for user " + uid);
+            return { success: false };
+        });
 });
 
 exports.setUserPriorities = functions.https.onCall((data, context) => {
@@ -45,16 +45,16 @@ exports.setUserPriorities = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     admin.firestore().collection("users").doc(uid).set({
         priorities: priorities
-    }, {merge: true})
-    .then(() => {
-        console.log("Priorities updated for user " + uid);
-        return { success: true };
-    })
-    .catch((error) => {
-        console.error(error);
-        console.log("Error updating priorities for user " + uid);
-        return { success: false };
-    });
+    }, { merge: true })
+        .then(() => {
+            console.log("Priorities updated for user " + uid);
+            return { success: true };
+        })
+        .catch((error) => {
+            console.error(error);
+            console.log("Error updating priorities for user " + uid);
+            return { success: false };
+        });
 });
 
 exports.getUserSemester = functions.https.onCall((data, context) => {
@@ -107,16 +107,16 @@ exports.createUser = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     admin.firestore().collection("users").doc(uid).set({
         dateCreated: admin.firestore.FieldValue.serverTimestamp()
-    }, {merge: true})
-    .then(() => {
-        console.log("User record created: " + uid);
-        return { success: true };
-    })
-    .catch((error) => {
-        console.error(error);
-        console.log("Error creating user record " + uid);
-        return { success: false };
-    });
+    }, { merge: true })
+        .then(() => {
+            console.log("User record created: " + uid);
+            return { success: true };
+        })
+        .catch((error) => {
+            console.error(error);
+            console.log("Error creating user record " + uid);
+            return { success: false };
+        });
 });
 
 exports.getTimetable = functions.https.onCall((data, context) => {
@@ -138,16 +138,16 @@ exports.setDefaultTimetable = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     admin.firestore().collection("users").doc(uid).set({
         defaultTimetable: timetableId
-    }, {merge: true})
-    .then(() => {
-        console.log("User default timetable set: " + uid);
-        return { success: true };
-    })
-    .catch((error) => {
-        console.error(error);
-        console.log("Error setting default timetable for user " + uid);
-        return { success: false };
-    });
+    }, { merge: true })
+        .then(() => {
+            console.log("User default timetable set: " + uid);
+            return { success: true };
+        })
+        .catch((error) => {
+            console.error(error);
+            console.log("Error setting default timetable for user " + uid);
+            return { success: false };
+        });
 });
 
 exports.getDefaultTimetable = functions.https.onCall((data, context) => {
@@ -204,28 +204,28 @@ exports.saveTimetable = functions.https.onCall((data, context) => {
         owner: uid,
         dateModified: admin.firestore.FieldValue.serverTimestamp()
     })
-    .then(() => {
-        console.log("Timetable saved with ID: " + timetableId);
-    })
-    .catch((error) => {
-        console.error(error);
-        console.log("Error saving timetable " + timetableId);
-        return { success: false };
-    });
+        .then(() => {
+            console.log("Timetable saved with ID: " + timetableId);
+        })
+        .catch((error) => {
+            console.error(error);
+            console.log("Error saving timetable " + timetableId);
+            return { success: false };
+        });
 
     // Save timetableId to users collection
     admin.firestore().collection("users").doc(uid).set({
         savedTimetables: admin.firestore.FieldValue.arrayUnion(timetableId)
-    }, {merge: true})
-    .then(() => {
-        console.log("Timetable saved for user " + uid);
-        return { success: true };
-    })
-    .catch((error) => {
-        console.error(error);
-        console.log("Error saving timetable for user " + uid);
-        return { success: false };
-    });
+    }, { merge: true })
+        .then(() => {
+            console.log("Timetable saved for user " + uid);
+            return { success: true };
+        })
+        .catch((error) => {
+            console.error(error);
+            console.log("Error saving timetable for user " + uid);
+            return { success: false };
+        });
     return { timetableId: timetableId };
 });
 
@@ -235,15 +235,15 @@ exports.unsaveTimetable = functions.https.onCall((data, context) => {
 
     // Delete timetable document timetables collection
     admin.firestore().collection("timetables").doc(timetableId).delete()
-    .then(() => {
-        console.log("Timetable deleted: " + timetableId);
-        return { success: true };
-    })
-    .catch((error) => {
-        console.error(error);
-        console.log("Error deleting timetable " + timetableId);
-        return { success: false };
-    });
+        .then(() => {
+            console.log("Timetable deleted: " + timetableId);
+            return { success: true };
+        })
+        .catch((error) => {
+            console.error(error);
+            console.log("Error deleting timetable " + timetableId);
+            return { success: false };
+        });
 
     // Remove timetableId from users savedTimetables
     admin.firestore().collection("users").where("savedTimetables", "array-contains", timetableId).get()
@@ -251,17 +251,17 @@ exports.unsaveTimetable = functions.https.onCall((data, context) => {
             querySnapshot.forEach((doc) => {
                 doc.ref.set({
                     savedTimetables: admin.firestore.FieldValue.arrayRemove(timetableId)
-                }, {merge: true})
-                .then(() => {
-                    console.log("Saved timetable " + timetableId + " removed for user " + uid);
-                    return { success: true };
-                })
+                }, { merge: true })
+                    .then(() => {
+                        console.log("Saved timetable " + timetableId + " removed for user " + uid);
+                        return { success: true };
+                    })
             })
-            .catch((error) => {
-                console.error(error);
-                console.log("Error removing saved timetable " + timetableId + " for user " + uid);
-                return { success: false };
-            });;
+                .catch((error) => {
+                    console.error(error);
+                    console.log("Error removing saved timetable " + timetableId + " for user " + uid);
+                    return { success: false };
+                });;
             return timetableId;
         })
         .catch((error) => {
@@ -275,17 +275,17 @@ exports.unsaveTimetable = functions.https.onCall((data, context) => {
             querySnapshot.forEach((doc) => {
                 doc.ref.set({
                     subscribedTimetables: admin.firestore.FieldValue.arrayRemove(timetableId)
-                }, {merge: true})
-                .then(() => {
-                    console.log("Subscribed timetable " + timetableId + " removed for user " + uid);
-                    return { success: true };
-                })
+                }, { merge: true })
+                    .then(() => {
+                        console.log("Subscribed timetable " + timetableId + " removed for user " + uid);
+                        return { success: true };
+                    })
             })
-            .catch((error) => {
-                console.error(error);
-                console.log("Error removing subscribed timetable " + timetableId + " for user " + uid);
-                return { success: false };
-            });;
+                .catch((error) => {
+                    console.error(error);
+                    console.log("Error removing subscribed timetable " + timetableId + " for user " + uid);
+                    return { success: false };
+                });;
             return timetableId;
         })
         .catch((error) => {
@@ -301,16 +301,16 @@ exports.subscribeToTimetable = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     admin.firestore().collection("users").doc(uid).set({
         subscribedTimetables: admin.firestore.FieldValue.arrayUnion(timetableId)
-    }, {merge: true})
-    .then(() => {
-        console.log("User " + uid + " subscribed to timetable " + timetableId);
-        return { success: true };
-    })
-    .catch((error) => {
-        console.error(error);
-        console.log("Error subscribing to timetable " + timetableId);
-        return { success: false };
-    });
+    }, { merge: true })
+        .then(() => {
+            console.log("User " + uid + " subscribed to timetable " + timetableId);
+            return { success: true };
+        })
+        .catch((error) => {
+            console.error(error);
+            console.log("Error subscribing to timetable " + timetableId);
+            return { success: false };
+        });
     return { timetableId: timetableId };
 });
 
@@ -320,15 +320,15 @@ exports.unsubscribeFromTimetable = functions.https.onCall((data, context) => {
     admin.firestore().collection("users").doc(uid).update({
         subscribedTimetables: admin.firestore.FieldValue.arrayRemove(timetableId)
     })
-    .then(() => {
-        console.log("User " + uid + " unsubscribed from timetable " + timetableId);
-        return { success: true };
-    })
-    .catch((error) => {
-        console.error(error);
-        console.log("Error unsubscribing from timetable " + timetableId);
-        return { success: false };
-    });
+        .then(() => {
+            console.log("User " + uid + " unsubscribed from timetable " + timetableId);
+            return { success: true };
+        })
+        .catch((error) => {
+            console.error(error);
+            console.log("Error unsubscribing from timetable " + timetableId);
+            return { success: false };
+        });
     return { timetableId: timetableId };
 });
 
@@ -336,14 +336,14 @@ exports.generateTimetables = functions.https.onCall(async (data, context) => {
     const doc = await admin.firestore().collection("users").doc(context.auth.uid).get();
     if (!doc.exists) {
         console.error("No user doc", context.auth);
-        return {success: false};
+        return { success: false };
     }
     const userData = doc.data();
     if (!["year", "semester", "modules"].every(userData.hasOwnProperty)) {
         console.error("No year/semester/modules", context.auth, data);
-        return {success: false};
+        return { success: false };
     }
-    const {year, semester, modules} = userData;
+    const { year, semester, modules } = userData;
     const moduleDataList = await Promise.all(modules.map(m => moduleData.getModule(year, m)));
-    return {success: true, timetables: generate.generate(moduleDataList, year, semester)};
+    return { success: true, timetables: generate.generate(moduleDataList, year, semester) };
 });

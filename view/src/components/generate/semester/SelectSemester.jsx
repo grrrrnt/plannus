@@ -17,7 +17,7 @@ class SelectSemester extends Component {
         this.state = {
             semester: this.props.init,
             error: "",
-            loaded: false
+            loaded: true,
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -27,31 +27,15 @@ class SelectSemester extends Component {
         this.setState({ semester: val, error: "" })
     }
 
-
-    componentDidMount() { //only fetch from db if Generate don't have data.
-        if (this.state.semester === "") {
-            this.props.firebase.getSemester().then((res) => {
-                if (res.year !== null) { //if user did not have any saved data
-                    this.setState({ semester: res.year + " " + res.semester, loaded: true })
-                } else {
-                    this.setState({ loaded: true })
-                }
-            });
-        } else {
-            this.setState({ loaded: true })
-        }
-    }
-
-
     handleSubmit() {
         const { semester } = this.state;
         if (this.state.semester === '') {
             this.setState({ error: "Please Select a Valid Semester" });
             return;
         }
-        this.props.setSem(semester);
-        this.props.firebase.setSemester(parseInt(semester.split(" ")[0]), parseInt(semester.split(" ")[1]));
-        this.props.nextStep();
+        this.props.setSem(semester); //save semester state in stepper
+        this.props.firebase.setSemester(parseInt(semester.split(" ")[0]), parseInt(semester.split(" ")[1])); //save semester into db
+        this.props.nextStep(); 
     }
 
     render() {

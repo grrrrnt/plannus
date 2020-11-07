@@ -7,7 +7,6 @@ import SelectTimetables from "./SelectTimetables"
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
@@ -19,7 +18,6 @@ class Generate extends Component {
             allModules: [],
             priorities: [],
             selectedModules: [],
-            modFetched: false,
             priorityFetched: false,
             activeStep: 0,
             steps: ['Select Semester', 'Rank Priorities', 'Select Modules', 'Select Timetables'],
@@ -29,11 +27,17 @@ class Generate extends Component {
         this.getStepContent = this.getStepContent.bind(this);
         this.handleBack = this.handleBack.bind(this);
         this.handleNext = this.handleNext.bind(this);
-        this.handleReset = this.handleReset.bind(this);
         this.setPriorities = this.setPriorities.bind(this);
         this.setMods = this.setMods.bind(this);
         this.setSem = this.setSem.bind(this);
-        this.setFetchedDb = this.setFetchedDb.bind(this);
+        this.setAllModules = this.setAllModules.bind(this);
+        this.setFetchedPriority = this.setFetchedPriority.bind(this);
+    }
+
+    setAllModules(modules) {
+        this.setState({
+            allModules: modules,
+        })
     }
 
     setPriorities(priorities) {
@@ -46,7 +50,8 @@ class Generate extends Component {
         if (s !== this.state.sem) {
             this.setState({
                 sem: s,
-                selectedModules: []
+                selectedModules: [],
+                allModules: [],
             })
         }
     }
@@ -57,24 +62,20 @@ class Generate extends Component {
         });
     }
 
-    setFetchedDb(s) {
-        if (s === "mod") {
-            this.setState({ modFetched: true })
-        } else if (s === "priority") {
-            this.setState({ priorityFetched: true });
-        }
+    setFetchedPriority() {
+        this.setState({ priorityFetched: true });
     }
 
     getStepContent = (step) => {
         switch (step) {
-            case 0:
-                return <SelectSemester nextStep={this.handleNext} setCanGoBack={this.setCanGoBack} init={this.state.sem} setSem={this.setSem} />
-            case 1:
-                return <RankPriorities nextStep={this.handleNext} init={this.state.priorities} setPriorities={this.setPriorities} priorityFetched={this.state.priorityFetched} setFetchedDb={this.setFetchedDb} />
-            case 2:
-                return <SelectModules nextStep={this.handleNext} sem={this.state.sem} mods={this.state.selectedModules} setMods={this.setMods} />
             case 3:
-                return <SelectTimetables />
+                return <SelectSemester nextStep={this.handleNext} init={this.state.sem} setSem={this.setSem} />
+            case 1:
+                return <RankPriorities nextStep={this.handleNext} init={this.state.priorities} setPriorities={this.setPriorities} priorityFetched={this.state.priorityFetched} setFetchedPriority={this.setFetchedPriority} />
+            case 2:
+                return <SelectModules nextStep={this.handleNext} sem={this.state.sem} init={this.state.selectedModules} setMods={this.setMods} allModules={this.state.allModules} setAllModules={this.setAllModules} />
+            case 0:
+                return <SelectTimetables mods={this.state.selectedModules} priorities={this.state.priorities} />
 
         }
     }
@@ -93,9 +94,6 @@ class Generate extends Component {
         this.setActiveStep(this.state.activeStep - 1);
     };
 
-    handleReset = () => {
-        this.setActiveStep(0);
-    };
 
     render() {
         const { activeStep, steps } = this.state;
@@ -112,27 +110,16 @@ class Generate extends Component {
                         </Step>
                     ))}
                 </Stepper>
-
                 <div>
-                    {activeStep === steps.length ? (
-                        <div>
-                            <Typography> All steps completed </Typography>
-                            <Button onClick={this.handleReset}>Reset</Button>
-                        </div>
-                    ) : (
-                            <div>
-                                {this.getStepContent(activeStep)}
-                                <div>
-                                    <Button
-                                        disabled={activeStep === 0}
-                                        onClick={this.handleBack}
-                                    >
-                                        Back
+                    {this.getStepContent(activeStep)}
+                    <div>
+                        <Button
+                            disabled={activeStep === 0}
+                            onClick={this.handleBack}
+                        >
+                            Back
                         </Button>
-                                </div>
-                            </div>
-                        )}
-
+                    </div>
                 </div>
             </div>
         )

@@ -24,6 +24,7 @@ class PriorityAdder extends Component {
                 hours: "1",
             },
             error: "",
+            
         }
         this.handleOptionChange = this.handleOptionChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);

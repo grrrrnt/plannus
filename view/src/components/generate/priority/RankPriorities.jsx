@@ -8,7 +8,7 @@ import PriorityAdder from './PriorityAdder';
 import ErrorMsg from "../ErrorMsg"
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import { initialise, reformatForSub } from './priorityfunc';
+import { reformatForSub } from './priorityfunc';
 import Box from '@material-ui/core/Box';
 import { LinearProgress } from "@material-ui/core"
 
@@ -21,6 +21,8 @@ class RankPriorities extends Component {
             loaded: false,
             error: "",
         };
+        this.abortController = new AbortController()
+        this.signal = this.abortController.signal
 
         this.addPriority = this.addPriority.bind(this);
         this.delPriority = this.delPriority.bind(this);
@@ -33,18 +35,23 @@ class RankPriorities extends Component {
     componentDidMount() {
         if (!this.props.priorityFetched) { //only fetch if component has not fetched from db previously
             this.props.firebase.getPriorities().then((res) => {
-                if (res.priorities !== null) {
-                    const init = initialise(res.priorities);
-                    this.props.setPriorities(init)
-                    this.setState({ items: init, loaded: true });
-                } else {
-                    this.setState({ loaded: true });
+                if (this.signal.aborted) {
+                    return
                 }
-                this.props.setFetchedDb("priority");   
+                this.props.setPriorities(res.priorities)
+                this.setState({ items: res.priorities, loaded: true });
+                this.props.setFetchedPriority();
             })
         } else {
+            if (this.signal.aborted) {
+                return
+            }
             this.setState({ loaded: true });
         }
+    }
+
+    componentWillUnmount() {
+        this.abortController.abort()
     }
 
     addPriority(priority) {
@@ -124,6 +131,7 @@ class RankPriorities extends Component {
         }
         var items = _.cloneDeep(this.state.items);
         const priorities = reformatForSub(items);
+        this.props.setPriorities(items);
         this.props.firebase.setPriorities(priorities);
         this.props.nextStep();
     }
@@ -160,10 +168,10 @@ class RankPriorities extends Component {
                                         : <div></div>
                                 }
                                 <Box m={1}>
-                                    <Button style={{margin: "5px"}} variant="outlined" color="secondary" onClick={this.clear}>
+                                    <Button style={{ margin: "5px" }} variant="outlined" color="secondary" onClick={this.clear}>
                                         Clear
                                     </Button>
-                                    <Button style={{margin: "5px"}} variant="outlined" color="primary" onClick={this.handleSubmit}>
+                                    <Button style={{ margin: "5px" }} variant="outlined" color="primary" onClick={this.handleSubmit}>
                                         Next
                                     </Button>
                                 </Box>

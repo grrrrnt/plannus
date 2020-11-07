@@ -120,10 +120,10 @@ class Firebase {
         }
     }
 
-    fetchModules = async () => {
+    fetchModules = async (year, sem) => {
         var retrieveModules = this.functions.httpsCallable('retrieveModules');
         try {
-            const result = await retrieveModules()
+            const result = await retrieveModules({year: year, semester: sem})
             console.log(result);
             return result.data;
 
@@ -212,6 +212,18 @@ class Firebase {
         var getUserPriorities = this.functions.httpsCallable('getUserPriorities');
         try{
             const res = await getUserPriorities();
+            console.log(res);
+            return res.data;
+        } catch(err) {
+            console.error(err);
+        }
+    }
+
+    generateTimetables = async () => {
+        var generateTimetables = this.functions.httpsCallable('generateTimetables');
+        try{
+            const res = await generateTimetables();
+            console.log(res);
             return res.data;
         } catch(err) {
             console.error(err);
