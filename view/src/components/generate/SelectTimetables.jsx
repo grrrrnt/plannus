@@ -156,11 +156,21 @@ const SelectTimetables = (props) => {
         const controller = new AbortController();
         const { signal } = controller;
         //const data = props.firebase.generateTimetables(props.mods, props.priorities);
-        if (signal.aborted) {
-            return;
+        let toSubmit = [];
+        for (var x of props.mods) {
+            toSubmit.push(x.moduleCode);
         }
-        setTimetables(timetabless);
-        setIsLoaded(true);
+        props.firebase.generateTimetables(props.priorities, toSubmit)
+        .then(res => {
+            if (signal.aborted) {
+                return;
+            }
+            setTimetables(res.timetables);
+            setIsLoaded(true);
+        });       
+        
+        //setTimetables(timetabless);
+        
         
         return () => {
             controller.abort()
