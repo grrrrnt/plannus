@@ -1,13 +1,14 @@
 import React from "react";
 
 import RouterLinkButton from "./RouterLinkButton";
-import { LogoutButton, AuthUserContext } from "../authentication"
+import { withAuthUserConsumer } from "../authentication"
 
 import logo from "../../assets/logo.png";
 import * as ROUTES from '../../util/Routes';
 import "./Navbar.scss"
 
-export default function NavBar() {
+function NavBar(props) {
+    console.log(props.authUser)
     return (
         <React.Fragment>
             <nav className="navbar">
@@ -32,11 +33,10 @@ export default function NavBar() {
                             Compare
                         </RouterLinkButton>
 
-                        <AuthUserContext.Consumer>
-                            {authUser =>
-                                (authUser && !authUser.isAnonymous) ? <NavigationAuth /> : <NavigationNonAuth />
-                            }
-                        </AuthUserContext.Consumer>
+                        {
+                            (props.authUser.loggedIn && !props.authUser.isUserAnonymous)
+                            ? <NavigationAuth /> : <NavigationNonAuth />
+                        }
                     </div>
                 </div>
             </nav>
@@ -58,3 +58,4 @@ const NavigationNonAuth = () => (
     </RouterLinkButton>
 );
 
+export default withAuthUserConsumer(NavBar)

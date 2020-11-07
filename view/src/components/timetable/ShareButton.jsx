@@ -29,7 +29,7 @@ export default function ShareButton(props) {
     const link = window.location.origin + "/timetable/" + props.timetableId
 
     return (
-        <div className="share-button-container">
+        <div className={props.className}>
             <Button
                 variant="outlined"
                 color="primary"

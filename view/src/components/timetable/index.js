@@ -1,7 +1,3 @@
-import Timetable from "./Timetable"
-import formatTimetable from "./timetable-formatter"
+import TimetableContainer from "./TimetableContainer"
 
-export default Timetable
-export {
-    formatTimetable
-}
+export default TimetableContainer

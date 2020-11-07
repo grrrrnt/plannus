@@ -29,3 +29,15 @@
     font-weight: bold;
   }
 }
+
+.timetable-buttons-container {
+  display: flex;
+  padding-top: 1em;
+  justify-content: flex-end;
+  text-align: center;
+  font-weight: bolder;
+}
+
+.timetable-button {
+  margin-left: 0.5em;
+}

@@ -1,39 +1,22 @@
+import { auth } from 'firebase';
 import React from 'react';
 import { withFirebase } from '../firebase';
 
 const AuthUserContext = React.createContext(null);
 
-const withAuthenticationProvider = Component => {
-    class WithAuthentication extends React.Component {
+const withAuthUserProvider = Component => {
+    class WithAuthUser extends React.Component {
         constructor(props) {
             super(props);
 
             this.state = {
-                authUser: null,
+                loggedIn: props.firebase.isLoggedIn,
+                isUserAnonymous: localStorage.getItem("plannus-anonUser")
             };
         }
 
         componentDidMount() {
-            this.listener = this.props.firebase.auth.onAuthStateChanged(
-                authUser => {
-                    if (authUser) {
-                        var createUser = this.props.firebase.functions.httpsCallable('createUser');
-                        createUser()
-                            .then(
-                                (result) => {
-                                    // console.log(result);
-                                }
-                            ).catch(
-                                (err) => {
-                                    console.error(err);
-                                }
-                            );
-                            this.setState({ authUser });
-                    } else {
-                        this.setState({ authUser: null });
-                    }
-                },
-            );
+            this.listener = this.props.firebase.setAuthStateCallback(this.onAuthStateChanged)
         }
 
         componentWillUnmount() {
@@ -42,23 +25,38 @@ const withAuthenticationProvider = Component => {
 
         render() {
             return (
-                <AuthUserContext.Provider value={this.state.authUser}>
+                <AuthUserContext.Provider value={this.state}>
                     <Component {...this.props} />
                 </AuthUserContext.Provider>
             );
         }
+
+        onAuthStateChanged = (authUser) => {
+            if (authUser) {
+                this.setState({
+                    loggedIn: true,
+                    isUserAnonymous: authUser.isAnonymous
+                });
+                localStorage.setItem("plannus-anonUser", authUser.isAnonymous)
+            } else {
+                this.setState({
+                    loggedIn: false,
+                    isUserAnonymous: null
+                });
+                localStorage.removeItem("plannus-anonUser")
+            }
+        }
     }
 
-    return withFirebase(WithAuthentication);
+    return withFirebase(WithAuthUser);
 };
 
-const withAuthenticationConsumer = Component => props => (
+const withAuthUserConsumer = Component => props => (
     <AuthUserContext.Consumer>
-        {authUser =>
+        {authUser => 
             <Component {...props} authUser={authUser} />
         }
     </AuthUserContext.Consumer>
 );
 
-export default AuthUserContext;
-export { withAuthenticationProvider, withAuthenticationConsumer };
+export { withAuthUserProvider, withAuthUserConsumer };

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import Main from "./Main"
-import { Login, withAuthenticationProvider } from "../authentication";
+import { Login, withAuthUserProvider } from "../authentication";
 
 import * as ROUTES from '../../util/Routes';
 import "./App.scss"
@@ -20,4 +20,4 @@ class App extends Component {
   }
 }
 
-export default withAuthenticationProvider(App);
+export default withAuthUserProvider(App);

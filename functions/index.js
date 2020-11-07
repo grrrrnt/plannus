@@ -3,36 +3,24 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 const moduleData = require('./moduleData');
+const generate = require('./generate');
 const { v4: uuid } = require('uuid');
 
 //const loginUser = require('./users')
 //app.post('/login', loginUser);
 
-exports.setUserSemester = functions.https.onCall(async (data, context) => {
+exports.retrieveModules = functions.https.onCall(async (data, context) => {
     if (!("year" in data) || !("semester" in data)) {
         console.log(data, new Error("data does not have year or semester"));
         return {success: false};
     }
-    await admin.firestore().collection("users").doc(context.auth.uid).set({
+    const setSemester = admin.firestore().collection("users").doc(context.auth.uid).set({
         year: data.year,
         semester: data.semester
     }, {merge: true});
-    return {success: true};
-});
-
-exports.retrieveModules = functions.https.onCall(async (data, context) => {
-    const userDocRef = admin.firestore().collection("users").doc(context.auth.uid);
-    const userDoc = await userDocRef.get();
-    if (!userDoc.exists) {
-        console.log(new Error("userDoc does not exist"));
-        return {success: false};
-    }
-    const user = userDoc.data();
-    if (!("year" in user) || !("semester" in user)) {
-        console.log(new Error("userDoc does not have year or semester"));
-        return {success: false};
-    }
-    return {success: true, modules: await moduleData.getModuleListSemester(user.year, user.semester)};
+    const getModules = moduleData.getModuleListSemester(data.year, data.semester);
+    const modules = (await Promise.all([setSemester, getModules]))[1];
+    return {success: true, modules: modules};
 });
 
 exports.setUserModules = functions.https.onCall((data, context) => {
@@ -342,4 +330,20 @@ exports.unsubscribeFromTimetable = functions.https.onCall((data, context) => {
         return { success: false };
     });
     return { timetableId: timetableId };
+});
+
+exports.generateTimetables = functions.https.onCall(async (data, context) => {
+    const doc = await admin.firestore().collection("users").doc(context.auth.uid).get();
+    if (!doc.exists) {
+        console.error("No user doc", context.auth);
+        return {success: false};
+    }
+    const userData = doc.data();
+    if (!["year", "semester", "modules"].every(userData.hasOwnProperty)) {
+        console.error("No year/semester/modules", context.auth, data);
+        return {success: false};
+    }
+    const {year, semester, modules} = userData;
+    const moduleDataList = await Promise.all(modules.map(m => moduleData.getModule(year, m)));
+    return {success: true, timetables: generate.generate(moduleDataList, year, semester)};
 });
