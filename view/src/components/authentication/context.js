@@ -1,4 +1,3 @@
-import { auth } from 'firebase';
 import React from 'react';
 import { withFirebase } from '../firebase';
 

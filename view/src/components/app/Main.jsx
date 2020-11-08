@@ -7,7 +7,7 @@ import Generate from "../generate";
 import Compare from "../compare/Compare";
 import Account from "../account/Account";
 import SharedTimetable from '../shared-timetable/SharedTimetable';
-import SavedTimetables from '../saved-timetables/SavedTimetables';
+import SavedTimetables from '../saved-timetables';
 
 import { withFirebase } from "../firebase"
 

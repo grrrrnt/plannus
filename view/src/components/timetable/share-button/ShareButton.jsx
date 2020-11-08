@@ -65,7 +65,7 @@ export default function ShareButton(props) {
                     </CopyToClipboard>
                     <Snackbar
                         anchorOrigin={{
-                            vertical: 'middle',
+                            vertical: 'bottom',
                             horizontal: 'center',
                         }}
                         open={snackbarOpen}

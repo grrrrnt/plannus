@@ -12,6 +12,7 @@ class SharedTimetable extends Component {
         this.state = {
             loading: true,
             timetable: null,
+            timetableId: null,
         };
     }
 
@@ -19,10 +20,10 @@ class SharedTimetable extends Component {
         let id = this.props.match.params.id
         if (id) {
             this.props.firebase.fetchTimetable(id)
-            .then((timetable) => {
+            .then((res) => {
                 this.setState({ loading: false })
-                if (timetable) {
-                    this.setState({ timetable: timetable })
+                if (res) {
+                    this.setState({ timetable: res.timetable, timetableId: res.timetableId })
                 }
             })
         }
@@ -36,9 +37,9 @@ class SharedTimetable extends Component {
                         ? <LinearProgress />
                         : [
                             (this.state.timetable)
-                                ? <Timetable json={this.state.timetable} />
+                                ? <Timetable key="shared-timetable" timetable={this.state.timetable} timetableId={this.state.timetableId} subscribe save setDefault />
                                 : (
-                                    <Alert severity="error">
+                                    <Alert key="timetable-not-found" severity="error">
                                         <AlertTitle><strong>Timetable not found</strong></AlertTitle>
                                     </Alert>
                                 )
