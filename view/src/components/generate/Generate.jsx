@@ -20,8 +20,10 @@ class Generate extends Component {
             selectedModules: [],
             priorityFetched: false,
             activeStep: 0,
-            steps: ['Select Semester', 'Rank Priorities', 'Select Modules', 'Select Timetables'],
+            steps: ['Select Semester', 'Select Modules', 'Rank Priorities', 'Select Timetables'],
         }
+        this.abortController = new AbortController()
+        this.signal = this.abortController.signal
 
         this.setActiveStep = this.setActiveStep.bind(this);
         this.getStepContent = this.getStepContent.bind(this);
@@ -31,7 +33,19 @@ class Generate extends Component {
         this.setMods = this.setMods.bind(this);
         this.setSem = this.setSem.bind(this);
         this.setAllModules = this.setAllModules.bind(this);
-        this.setFetchedPriority = this.setFetchedPriority.bind(this);
+    }
+
+    componentDidMount() {
+        this.props.firebase.getPriorities().then((res) => {
+            if (this.signal.aborted) {
+                return
+            }
+            this.setState({ priorities: res.priorities, priorityFetched: true });
+        })
+    }
+
+    componentWillUnmount() {
+        this.abortController.abort()
     }
 
     setAllModules(modules) {
@@ -62,18 +76,15 @@ class Generate extends Component {
         });
     }
 
-    setFetchedPriority() {
-        this.setState({ priorityFetched: true });
-    }
 
     getStepContent = (step) => {
         switch (step) {
             case 0:
                 return <SelectSemester nextStep={this.handleNext} init={this.state.sem} setSem={this.setSem} />
             case 1:
-                return <RankPriorities nextStep={this.handleNext} init={this.state.priorities} setPriorities={this.setPriorities} priorityFetched={this.state.priorityFetched} setFetchedPriority={this.setFetchedPriority} />
-            case 2:
                 return <SelectModules nextStep={this.handleNext} sem={this.state.sem} init={this.state.selectedModules} setMods={this.setMods} allModules={this.state.allModules} setAllModules={this.setAllModules} />
+            case 2:
+                return <RankPriorities nextStep={this.handleNext} init={this.state.priorities} priorityFetched={this.state.priorityFetched} setPriorities={this.setPriorities}/>
             case 3:
                 return <SelectTimetables mods={this.state.selectedModules} priorities={this.state.priorities} />
             default:
