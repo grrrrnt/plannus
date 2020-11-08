@@ -15,9 +15,8 @@ const config = {
 };
 
 class Firebase {
-    currentUser = null
+    _currentUser = null
     isLoggedIn = localStorage.getItem("plannus-login")
-    authStateCallback = null
 
     constructor() {
         firebase.initializeApp(config);
@@ -27,10 +26,6 @@ class Firebase {
 
         this.auth.onAuthStateChanged(
             authUser => {
-                this.currentUser = authUser
-                if (this.authStateCallback) {
-                    this.authStateCallback(authUser)
-                }
                 if (authUser) {
                     if (authUser.metadata.creationTime === authUser.metadata.lastSignInTime) {
                         this.createUser()
@@ -41,13 +36,27 @@ class Firebase {
                     localStorage.removeItem("plannus-login")
                     this.isLoggedIn = false
                 }
+                this.currentUser = authUser
             }
         )
     }
 
-    setAuthStateCallback(callback) {
-        this.authStateCallback = callback
-        return () => this.authStateCallback = null
+    currentUserObservers = []
+
+    observeCurrentUser = (callback) => {
+        this.currentUserObservers.push(callback)
+        return () => {
+            this.currentUserObservers = this.currentUserObservers.filter(observer => observer !== callback)
+        }
+    }
+
+    get currentUser() {
+        return this._currentUser
+    }
+
+    set currentUser(newValue) {
+        this._currentUser = newValue
+        this.currentUserObservers.forEach(observer => observer(newValue))
     }
 
     loginAnonymously = (callback) =>
@@ -64,6 +73,65 @@ class Firebase {
 
     doPasswordUpdate = password =>
         this.auth.currentUser.updatePassword(password);
+
+    // Only for EmailAuthProvider
+    reauthenticateWithPassword = (password) => {
+        const providerId = this.auth.currentUser.providerData[0].providerId
+        var credential = firebase.auth.EmailAuthProvider.credential(this.currentUser.email, password)
+        return this.auth.currentUser.reauthenticateWithCredential(credential)
+    }
+
+    // Only for GoogleAuthProvider
+    reauthenticateWithPopup = () => {
+        const providerId = this.auth.currentUser.providerData[0].providerId
+        var provider = new firebase.auth.GoogleAuthProvider()
+        return this.auth.currentUser.reauthenticateWithPopup(provider)
+    }
+
+    updateAccount = (details) => {
+        var response = {
+            success: false,
+            message: ""
+        }
+        if (!this.isLoggedIn) {
+            response.message = "User not logged in."
+            return Promise.resolve(response)
+        }
+
+        const update = async () => {
+            if (details.displayName) {
+                try {
+                    await this.auth.currentUser.updateProfile({ displayName: details.displayName })
+                } catch (err) {
+                    console.error(err)
+                    response.message = "Unable to update display name."
+                    return response;
+                }
+            }
+            console.log(details)
+            if (details.email) {
+                try {
+                    await this.auth.currentUser.updateEmail(details.email)
+                } catch (err) {
+                    response.message = "Unable to update email."
+                    return response;
+                }
+            }
+            if (details.newPassword) {
+                try {
+                    await this.auth.currentUser.updatePassword(details.newPassword)
+                } catch (err) {
+                    console.error(err)
+                    response.message = "Unable to update password."
+                    return response;
+                }
+            }
+            response.success = true
+            return response
+        }
+
+        return Promise.resolve(update())
+    }
 
     createUser = () => {
         var createUser = this.functions.httpsCallable('createUser');
@@ -251,7 +319,7 @@ class Firebase {
                 console.error(err);
             }
         }
-    
+
         // log in anon if no user is logged in
         if (!this.isLoggedIn) {
             return this.loginAnonymously(func)
@@ -263,7 +331,7 @@ class Firebase {
     generateTimetables = async (priorities, modules) => {
         var generateTimetables = this.functions.httpsCallable('generateTimetables');
         try {
-            const res = await generateTimetables({priorities: priorities, modules: modules});
+            const res = await generateTimetables({ priorities: priorities, modules: modules });
             console.log(res);
             return res.data;
         } catch (err) {
