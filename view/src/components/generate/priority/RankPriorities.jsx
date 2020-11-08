@@ -18,7 +18,7 @@ class RankPriorities extends Component {
         this.state = {
             title: "Priorities",
             items: this.props.init,
-            loaded: false,
+            loaded: this.props.priorityFetched,
             error: "",
         };
         this.abortController = new AbortController()
@@ -32,6 +32,7 @@ class RankPriorities extends Component {
         this.clear = this.clear.bind(this);
     }
 
+    /*
     componentDidMount() {
         if (!this.props.priorityFetched) { //only fetch if component has not fetched from db previously
             this.props.firebase.getPriorities().then((res) => {
@@ -53,6 +54,7 @@ class RankPriorities extends Component {
     componentWillUnmount() {
         this.abortController.abort()
     }
+    */
 
     addPriority(priority) {
         let priorities = [...this.state.items];

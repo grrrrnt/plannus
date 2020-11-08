@@ -66,7 +66,7 @@ exports.getUserSemester = functions.https.onCall((data, context) => {
             var year = doc.data().year;
             return { year: year, semester: semester };
         } else {
-            return console.error("No year and semester saved for user " + uid);
+            return { year: 0, semester: 0 };
         }
     }).catch((error) => {
         console.log("No year and semester saved for user " + uid);
@@ -81,7 +81,7 @@ exports.getUserModules = functions.https.onCall((data, context) => {
             var modules = doc.data().modules;
             return { modules: modules };
         } else {
-            return console.error("No modules saved for user " + uid);
+            return { modules: [] };
         }
     }).catch((error) => {
         console.log("No modules saved for user " + uid);
@@ -96,7 +96,7 @@ exports.getUserPriorities = functions.https.onCall((data, context) => {
             var priorities = doc.data().priorities;
             return { priorities: priorities };
         } else {
-            return console.error("No priorities saved for user " + uid);
+            return { priorities: [] };
         }
     }).catch((error) => {
         console.log("No priorities saved for user " + uid);
@@ -126,7 +126,7 @@ exports.getTimetable = functions.https.onCall((data, context) => {
         if (doc.exists) {
             return doc.data();
         } else {
-            return console.error("No such timetable");
+            return null;
         }
     }).catch((error) => {
         console.log("Error getting timetable: " + error);
@@ -157,7 +157,7 @@ exports.getDefaultTimetable = functions.https.onCall((data, context) => {
         if (doc.exists && doc.data().defaultTimetable !== null) {
             return doc.data().defaultTimetable;
         } else {
-            return console.error("No default timetable");
+            return null;
         }
     }).catch((error) => {
         console.log("No default timetable: " + error);
@@ -171,7 +171,7 @@ exports.getSavedTimetables = functions.https.onCall((data, context) => {
         if (doc.exists && doc.data().savedTimetables !== null) {
             return doc.data().savedTimetables;
         } else {
-            return console.error("No saved timetables");
+            return [];
         }
     }).catch((error) => {
         console.log("No saved timetables: " + error);
@@ -185,7 +185,7 @@ exports.getSubscribedTimetables = functions.https.onCall((data, context) => {
         if (doc.exists && doc.data().subscribedTimetables !== null) {
             return doc.data().subscribedTimetables;
         } else {
-            return console.error("No subscribed timetables");
+            return [];
         }
     }).catch((error) => {
         console.log("No subscribed timetables: " + error);
