@@ -33,7 +33,7 @@ const TimetableClasses = (props) => {
     )
 }
 
-const days = { 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun" }
+const days = { 0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun" }
 // A row of day
 const DayLessons = (props) => {
     const day = props.day
@@ -67,7 +67,7 @@ const LessonSlot = (props) => {
 
 const Slot = (props) => {
     return (
-        <Box {...props} className={`timetable-slot ${props.className}`} component="span">
+        <Box {...props} className={`timetable-slot ${props.className}`} p={0.5 * props.flex} component="span">
             <div>
                 {props.children}
             </div>

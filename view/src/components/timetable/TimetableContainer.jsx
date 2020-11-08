@@ -148,6 +148,11 @@ class TimetableContainer extends React.Component {
         return formattedTimetable
     }
 
+    toHour = (mins) => {
+        const hours = mins / 60
+        return 0 + (hours * 100)
+    }
+
     getTimings = (timetable, timings) => {
         var earlestTime = 1000
         var latestTime = 1800
@@ -155,11 +160,13 @@ class TimetableContainer extends React.Component {
         if (timetable.events.length > 0) {
             for (var i in timetable.events) {
                 const module = timetable.events[i]
-                if (module.startTime < earlestTime) {
-                    earlestTime = module.startTime
+                const startTime = this.toHour(module.startTime)
+                const endTime = this.toHour(module.endTime)
+                if (startTime < earlestTime) {
+                    earlestTime = startTime
                 }
-                if (module.endTime > latestTime) {
-                    latestTime = module.endTime
+                if (endTime > latestTime) {
+                    latestTime = endTime
                 }
             }
         }
@@ -181,10 +188,10 @@ class TimetableContainer extends React.Component {
                 lessonType: lesson.lessonType,
                 location: lesson.location,
                 classNo: lesson.classNo,
-                hours: (lesson.endTime - lesson.startTime) / 100,
+                hours: (lesson.endTime - lesson.startTime) / 60,
                 color: moduleColors[lesson.moduleCode]
             }
-            const index = (lesson.startTime - startTime) / 100 // Slot # of day
+            const index = (this.toHour(lesson.startTime) - startTime) / 100 // Slot # of day
             if (classes[lesson.day] === undefined) {
                 classes[lesson.day] = [] // Set empty array
             }
@@ -194,10 +201,10 @@ class TimetableContainer extends React.Component {
 
     fillInEmptySlots = (timings, classes) => {
         const totalHrs = timings.length
-        const includesWkends = () => Object.keys(classes).filter(x => x === 6 || x === 7).length > 0
+        const includesWkends = () => Object.keys(classes).filter(x => x === 5 || x === 6).length > 0
         const daysCount = includesWkends() ? 7 : 5
         // Fill other slots with empty {}
-        for (var day = 1; day <= daysCount; day++) {
+        for (var day = 0; day < daysCount; day++) {
             if (!classes[day]) {
                 classes[day] = []
             }
