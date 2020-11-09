@@ -76,14 +76,12 @@ class Firebase {
 
     // Only for EmailAuthProvider
     reauthenticateWithPassword = (password) => {
-        const providerId = this.auth.currentUser.providerData[0].providerId
         var credential = firebase.auth.EmailAuthProvider.credential(this.currentUser.email, password)
         return this.auth.currentUser.reauthenticateWithCredential(credential)
     }
 
     // Only for GoogleAuthProvider
     reauthenticateWithPopup = () => {
-        const providerId = this.auth.currentUser.providerData[0].providerId
         var provider = new firebase.auth.GoogleAuthProvider()
         return this.auth.currentUser.reauthenticateWithPopup(provider)
     }

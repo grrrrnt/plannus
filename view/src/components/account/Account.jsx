@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom"
 import { Button, TextField, IconButton, Snackbar, Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { Visibility, VisibilityOff, Close } from '@material-ui/icons';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
 
 import { withFirebase } from "../firebase";
 import { withAuthUserConsumer } from "../authentication"

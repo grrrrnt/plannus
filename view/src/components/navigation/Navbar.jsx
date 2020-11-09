@@ -25,13 +25,12 @@ function NavBar(props) {
                         <RouterLinkButton activeClassName="nav-button-active" className="nav-button" to={ROUTES.HOME}>
                             Home
                         </RouterLinkButton>
+                        <RouterLinkButton activeClassName="nav-button-active" className="nav-button" to={ROUTES.SAVEDTIMETABLES}>
+                            Saved
+                        </RouterLinkButton>
                         <RouterLinkButton activeClassName="nav-button-active" className="nav-button" to={ROUTES.GENERATE}>
                             Generate
                         </RouterLinkButton>
-                        <RouterLinkButton activeClassName="nav-button-active" className="nav-button" to={ROUTES.COMPARE}>
-                            Compare
-                        </RouterLinkButton>
-
                         {
                             (props.authUser.loggedIn && !props.authUser.isUserAnonymous)
                             ? <NavigationAuth /> : <NavigationNonAuth />
