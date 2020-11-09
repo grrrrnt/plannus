@@ -15,7 +15,7 @@ const withAuthUserProvider = Component => {
         }
 
         componentDidMount() {
-            this.listener = this.props.firebase.setAuthStateCallback(this.onAuthStateChanged)
+            this.listener = this.props.firebase.observeCurrentUser(this.onAuthStateChanged)
         }
 
         componentWillUnmount() {
