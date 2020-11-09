@@ -61,7 +61,7 @@ exports.getUserSemester = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     var userRef = admin.firestore().collection("users").doc(uid);
     return userRef.get().then((doc) => {
-        if (doc.exists && doc.data().semester !== null && doc.data().year !== null) {
+        if (doc.exists && doc.data().hasOwnProperty("semester") && doc.data().hasOwnProperty("year")) {
             var semester = doc.data().semester;
             var year = doc.data().year;
             return { year: year, semester: semester };
@@ -77,7 +77,7 @@ exports.getUserModules = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     var userRef = admin.firestore().collection("users").doc(uid);
     return userRef.get().then((doc) => {
-        if (doc.exists && doc.data().modules !== null) {
+        if (doc.exists && doc.data().hasOwnProperty("modules")) {
             var modules = doc.data().modules;
             return { modules: modules };
         } else {
@@ -92,7 +92,7 @@ exports.getUserPriorities = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     var userRef = admin.firestore().collection("users").doc(uid);
     return userRef.get().then((doc) => {
-        if (doc.exists && doc.data().priorities !== null) {
+        if (doc.exists && doc.data().hasOwnProperty("priorities")) {
             var priorities = doc.data().priorities;
             return { priorities: priorities };
         } else {
@@ -154,7 +154,7 @@ exports.getDefaultTimetable = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     var userRef = admin.firestore().collection("users").doc(uid);
     return userRef.get().then((doc) => {
-        if (doc.exists && doc.data().defaultTimetable !== null) {
+        if (doc.exists && doc.data().hasOwnProperty("defaultTimetable")) {
             return doc.data().defaultTimetable;
         } else {
             return null;
@@ -168,7 +168,7 @@ exports.getSavedTimetables = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     var userRef = admin.firestore().collection("users").doc(uid);
     return userRef.get().then((doc) => {
-        if (doc.exists && doc.data().savedTimetables !== null) {
+        if (doc.exists && doc.data().hasOwnProperty("savedTimetables")) {
             return doc.data().savedTimetables;
         } else {
             return [];
@@ -182,7 +182,7 @@ exports.getSubscribedTimetables = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
     var userRef = admin.firestore().collection("users").doc(uid);
     return userRef.get().then((doc) => {
-        if (doc.exists && doc.data().subscribedTimetables !== null) {
+        if (doc.exists && doc.data().hasOwnProperty("subscribedTimetables")) {
             return doc.data().subscribedTimetables;
         } else {
             return [];
