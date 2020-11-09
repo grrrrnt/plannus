@@ -36,10 +36,10 @@ function getScore(count, priority, timetable) {
         case "MinTravellingPriority":
             multiplier = minTravellingPriorityMultiplier(rank, timetable);
     }
-    return getScore(count, rank, multiplier);
+    return calculateScore(count, rank, multiplier);
 }
 
-function getScore(count, rank, multiplier) {
+function calculateScore(count, rank, multiplier) {
     var max = count + 1 - rank;
     var score = multiplier * max;
     return score;
