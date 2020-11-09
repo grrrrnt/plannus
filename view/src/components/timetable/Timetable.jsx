@@ -26,13 +26,13 @@ const TimeLabels = (props) => {
     var offsetRef = React.useRef()
 
     React.useEffect(() => {
-        if (slotRef) onresize(slotRef.current.getBoundingClientRect().width / 60)
-        if (offsetRef) setOffset(offsetRef.current.offsetWidth)
-    }, [offsetRef, slotRef, onresize, setOffset])
+        if (slotRef.current) onresize(slotRef.current.getBoundingClientRect().width / 60)
+        if (offsetRef.current) setOffset(offsetRef.current.offsetWidth)
+    }, [offsetRef.current, slotRef.current, onresize, setOffset])
 
     window.addEventListener("resize", () => {
-        if (slotRef) onresize(slotRef.current.getBoundingClientRect().width / 60)
-        if (offsetRef) setOffset(offsetRef.current.offsetWidth)
+        if (slotRef.current) onresize(slotRef.current.getBoundingClientRect().width / 60)
+        if (offsetRef.current) setOffset(offsetRef.current.offsetWidth)
     })
     return (
         <Box display="flex">
