@@ -136,11 +136,11 @@ class TimetableContainer extends React.Component {
     // Format timetable for display
     formatTimetable = (timetable) => {
         const timings = []
-        const classes = {}
+        const classes = {0: [], 1: [], 2: [], 3: [], 4: []}
         this.getTimings(timetable, timings)
         const moduleColors = this.assignModuleColor(timetable)
         this.formatClassDetails(timetable, timings, moduleColors, classes)
-        this.fillInEmptySlots(timings, classes)
+        // this.fillInEmptySlots(timings, classes)
         const formattedTimetable = {
             timings: timings,
             classes: classes
@@ -148,24 +148,28 @@ class TimetableContainer extends React.Component {
         return formattedTimetable
     }
 
+    // Timings calculated in mins
     getTimings = (timetable, timings) => {
-        var earlestTime = 1000
-        var latestTime = 1800
+        var earlestTime = 600
+        var latestTime = 1080
 
         if (timetable.events.length > 0) {
             for (var i in timetable.events) {
                 const module = timetable.events[i]
-                if (module.startTime < earlestTime) {
-                    earlestTime = module.startTime
+                const startTime = module.startTime
+                const endTime = module.endTime
+                if (startTime < earlestTime) {
+                    earlestTime = startTime
                 }
-                if (module.endTime > latestTime) {
-                    latestTime = module.endTime
+                if (endTime > latestTime) {
+                    latestTime = endTime
                 }
             }
         }
+         // Make timings hourly marked (For display to be timings like 1000 instead of 1030)
+        earlestTime = earlestTime - (earlestTime % 60)
 
-
-        for (var time = earlestTime; time < latestTime; time += 100) {
+        for (var time = earlestTime; time < latestTime; time += 60) {
             timings.push(time)
         }
     }
@@ -181,23 +185,39 @@ class TimetableContainer extends React.Component {
                 lessonType: lesson.lessonType,
                 location: lesson.location,
                 classNo: lesson.classNo,
-                hours: (lesson.endTime - lesson.startTime) / 100,
-                color: moduleColors[lesson.moduleCode]
+                mins: lesson.endTime - lesson.startTime,
+                oddWeek: lesson.oddWeek,
+                evenWeek: lesson.evenWeek,
+                offset: lesson.startTime - startTime,
+                color: moduleColors[lesson.moduleCode],
+                overlap: 0 // no of lessons with overlapping timeslot as it
             }
-            const index = (lesson.startTime - startTime) / 100 // Slot # of day
             if (classes[lesson.day] === undefined) {
                 classes[lesson.day] = [] // Set empty array
             }
-            classes[lesson.day][index] = details
+            this.checkOverlappingLesson(classes[lesson.day], details)
+            classes[lesson.day].push(details)
+        }
+    }
+
+    checkOverlappingLesson = (dayLessons, lesson) => {
+        for (var i in dayLessons) {
+            var otherLesson = dayLessons[i]
+            const otherEnd = otherLesson.offset + otherLesson.mins
+            const lessonEnd = lesson.offset + lesson.mins
+            if (otherLesson.offset < lessonEnd || lesson.offset < otherEnd) {
+                lesson.overlap = lesson.overlap + 1
+                otherLesson.overlap = otherLesson.overlap + 1
+            }
         }
     }
 
     fillInEmptySlots = (timings, classes) => {
         const totalHrs = timings.length
-        const includesWkends = () => Object.keys(classes).filter(x => x === 6 || x === 7).length > 0
+        const includesWkends = () => Object.keys(classes).filter(x => x === 5 || x === 6).length > 0
         const daysCount = includesWkends() ? 7 : 5
         // Fill other slots with empty {}
-        for (var day = 1; day <= daysCount; day++) {
+        for (var day = 0; day < daysCount; day++) {
             if (!classes[day]) {
                 classes[day] = []
             }

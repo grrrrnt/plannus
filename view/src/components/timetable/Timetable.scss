@@ -3,19 +3,12 @@
   margin-bottom: 1em;
 }
 
-.timetable-deleted-alert {
-  margin-bottom: 1em;
-}
-
 .timetable-slot {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   border-bottom: 0.5px solid #c4c4c4;
   border-right: 0.5px solid #c4c4c4;
   overflow: hidden;
-  div {
-    margin: 0.5em;
-  }
 }
 
 .timetable-time-slot {
@@ -27,8 +20,8 @@
 
 .timetable-day-slot {
   border-left: 0.5px solid #c4c4c4;
-  text-align: center;
-  justify-items: center;
+  // text-align: center;
+  justify-content: center;
   div {
     position: relative;
     font-weight: bold;
