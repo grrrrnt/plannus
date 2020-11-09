@@ -4,7 +4,7 @@
 }
 
 .timetable-slot {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   border-bottom: 0.5px solid #c4c4c4;
   border-right: 0.5px solid #c4c4c4;
@@ -20,8 +20,8 @@
 
 .timetable-day-slot {
   border-left: 0.5px solid #c4c4c4;
-  text-align: center;
-  justify-items: center;
+  // text-align: center;
+  justify-content: center;
   div {
     position: relative;
     font-weight: bold;
