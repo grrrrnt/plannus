@@ -205,7 +205,8 @@ class TimetableContainer extends React.Component {
             var otherLesson = dayLessons[i]
             const otherEnd = otherLesson.offset + otherLesson.mins
             const lessonEnd = lesson.offset + lesson.mins
-            if (otherLesson.offset < lessonEnd || lesson.offset < otherEnd) {
+            if ((otherLesson.offset > lesson.offset && otherLesson.offset < lessonEnd) 
+            || (lesson.offset > otherLesson.offset && lesson.offset < otherEnd)) {
                 lesson.overlap = lesson.overlap + 1
                 otherLesson.overlap = otherLesson.overlap + 1
             }

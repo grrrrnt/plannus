@@ -92,7 +92,7 @@ const DayLessons = (props) => {
                             top={top * height}
                             bgcolor={lesson.color}
                         >
-                            <Box m={lesson.mins / 60 * 0.5}>
+                            <Box m={lesson.mins / 60 * 0.5} fontSize="2vh">
                                 <b>{lesson.moduleCode}</b><br />
                                 {lesson.lessonType} {lesson.classNo}<br />
                                 {lesson.location}
