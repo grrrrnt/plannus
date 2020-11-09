@@ -22,6 +22,7 @@ const SelectTimetables = (props) => {
         for (var x of props.mods) {
             toSubmit.push(x.moduleCode);
         }
+        
         props.firebase.generateTimetables(props.priorities, toSubmit)
             .then(res => {
                 if (signal.aborted) {
@@ -57,21 +58,14 @@ const SelectTimetables = (props) => {
                                     <div> No timetable can be generated. Please reselect your modules and/or priorities!</div>
 
                                     :
-                                    <Box display="flex"
-                                        flexDirection="column"
-                                        alignItems="center"
-                                        justifyContent="flex-start" maxHeight={600} width="100%" overflow="auto">
+                                    <Box maxHeight={600} overflow="auto">
                                         <div> Timetables are ordered according to how well they satisfy your priorities. Click on the 'Save' button to save or unsave timetables.</div>
                                         {
                                             timetables.map((t, index) => {
                                                 return (
-                                                    <Box display="flex"
-                                                        flexDirection="column"
-                                                        alignItems="center"
-                                                        justifyContent="flex-start"
-                                                        width="100%">
+                                                    <Box key={index}>
                                                         <h4>Timetable Score = {t.score}</h4>
-                                                        <Timetable key={index} timetable={t} save setDefault />
+                                                        <Timetable timetable={t} save setDefault />
                                                     </Box>
                                                 );
                                             })
