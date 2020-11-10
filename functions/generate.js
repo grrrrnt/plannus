@@ -1,21 +1,12 @@
 exports.generate = (moduleData, year, semester) => {
     const moduleEvents = toEvents(moduleData, semester);
     const eventList = product(moduleEvents);
-    return formatGenerate(eventList, {
+    return eventList.map(t => ({
         year: year,
         semester: semester,
-        modules: moduleData.map(m => m.moduleCode)
-    });
-}
-
-function formatGenerate(eventList, header) {
-    return eventList.map(t => Object.assign({
-        events: t.flatMap(ev => {
-            const {lessons} = ev;
-            delete ev.lessons;
-            return lessons.map(lesson => Object.assign(lesson, ev));
-        }),
-    }, header));
+        modules: moduleData.map(m => m.moduleCode),
+        events: t
+    }));
 }
 
 function product(moduleEvents) {
@@ -28,13 +19,14 @@ function product(moduleEvents) {
             const choiceIdx = pos % data.choices.length;
             pos = (pos - choiceIdx) / data.choices.length;
             const choice = data.choices[choiceIdx];
-            const event = {
+            choice.lessons.forEach(lesson => events.push({
                 moduleCode: data.moduleCode,
                 lessonType: data.lessonType,
-            };
-            Object.entries(choice).forEach(([k, v]) => {event[k] = v});
-            events.push(event);
+                classNo: choice.classNo,
+                ...lesson
+            }));
         }
+        events.sort((a, b) => startMin(a) - startMin(b));
         if (!clashes(events)) {
             eventsList.push(events);
         }
@@ -82,8 +74,4 @@ function toEvents(moduleData, semester) {
 
 function startMin(lesson) { return lesson.day * 1440 + lesson.startTime; }
 function endMin(lesson) { return lesson.day * 1440 + lesson.endTime; }
-
-function clashes(events) {
-    return events.flatMap(e => e.lessons).sort((a, b) => startMin(a) - startMin(b))
-        .reduce((acc, cur) => startMin(cur) < acc ? 10080 : endMin(cur), 0) === 10080;
-}
+function clashes(events) { return events.reduce((acc, cur) => startMin(cur) < acc ? 10080 : endMin(cur), 0) === 10080; }
