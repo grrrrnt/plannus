@@ -1,3 +1,12 @@
+export const defaultDate = new Date('2014-08-18T21:11:54');
+
+export const defaultFields = {
+    time: defaultDate,
+    fromTime: defaultDate,
+    toTime: defaultDate,
+    hours: "1",
+};
+
 export const options = [
 
     {
@@ -31,34 +40,6 @@ export const options = [
 ]
 
 export const durationOp = ['1', '2', '3', '4'];
-
-export const initialise = (priorities) => {
-    for (var x of priorities) {
-        for (var i of options) {
-            if (x.type === i.type) {
-                var name = i.value;
-                if (x.type === 'AvoidBeforePriority' || x.type === 'AvoidAfterPriority') {
-                    x.name = name.replace('(Time)', x.fields.time);
-                }
-
-                if (x.type === 'FreePeriodPriority') {
-                    x.name = name.replace('(Time 1)', x.fields.fromTime);
-                    x.name = x.name.replace('(Time 2)', x.fields.toTime);
-                }
-
-                if (x.type === 'LunchBreakPriority') {
-                    x.name = name.replace('(duration)', x.fields.hours + " hours");
-                }
-
-                if (x.type === 'MaxFreeDaysPriority' || x.type === 'MinTravellingPriority' || x.type === 'MinBreaksPriority') {
-                    x.name = name;
-                }
-            }
-        }
-    }
-    return priorities;
-
-}
 
 export const reformatForSub = (arr) => {
     for (var i = 0; i < arr.length; i++) {

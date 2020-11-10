@@ -8,6 +8,7 @@ import * as ROUTES from '../../util/Routes';
 import { withRouter } from 'react-router-dom'
 import { useHistory } from 'react-router-dom';
 import Timetable from "../timetable"
+import SelectedModules from "./modules/SelectedModules"
 
 const SelectTimetables = (props) => {
     const history = useHistory();

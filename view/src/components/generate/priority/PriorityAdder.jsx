@@ -1,15 +1,16 @@
 import React, { Component } from "react";
-import { KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-import 'date-fns';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import { options, durationOp, reformatForAdd } from './priorityfunc'
+import { options, reformatForAdd } from './priorityfunc'
 import './priorities.css'
 import ErrorMsg from '../ErrorMsg'
+import TimeSelect from './TimeSelect';
+import FreePeriodSelect from './FreePeriodSelect';
+import DurationSelect from './DurationSelect';
+import PrioritySelect from './PrioritySelect';
+import { defaultFields } from './priorityfunc'
+
 
 class PriorityAdder extends Component {
     constructor(props) {
@@ -17,19 +18,13 @@ class PriorityAdder extends Component {
         this.state = {
             name: "",
             type: "",
-            fields: {
-                time: defaultDate,
-                fromTime: defaultDate,
-                toTime: defaultDate,
-                hours: "1",
-            },
+            fields: defaultFields,
             error: "",
-            
         }
+
         this.handleOptionChange = this.handleOptionChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleTimeChange = this.handleTimeChange.bind(this);
-        this.handleDurationChange = this.handleDurationChange.bind(this);
+        this.handleFieldsChange = this.handleFieldsChange.bind(this);
     }
 
     handleOptionChange(selected) {
@@ -42,30 +37,9 @@ class PriorityAdder extends Component {
         this.setState({ name: selected, type: selectedType, error: "" });
     }
 
-    handleTimeChange = id => (changedTime) => {
-        if (id === 1) {
-            this.setState({
-                fields: { ...this.state.fields, time: changedTime },
-                error: "",
-            });
-        }
-        if (id === 2) {
-            this.setState({
-                fields: { ...this.state.fields, fromTime: changedTime },
-                error: "",
-            });
-        }
-        if (id === 3) {
-            this.setState({
-                fields: { ...this.state.fields, toTime: changedTime, },
-                error: "",
-            });
-        }
-    };
-
-    handleDurationChange(d) {
+    handleFieldsChange(fields) {
         this.setState({
-            fields: { ...this.state.fields, hours: d },
+            fields: fields,
             error: "",
         });
     }
@@ -89,104 +63,48 @@ class PriorityAdder extends Component {
     render() {
         const { name, type, fields, error } = this.state;
         return (
-                <Grid
-                    container
-                    direction="column"
-                    justify="center"
-                    alignItems="center"
-                >
-                    <h2> What priorities are important to you?</h2>
-                    <PrioritySelect name={name} handleOptionChange={this.handleOptionChange} />
-                    {
-                        (type === 'AvoidBeforePriority' || type === 'AvoidAfterPriority') ?
-                            <TimeSelect t={fields.time} handleTimeChange={this.handleTimeChange(1)} label={"Time"} />
-                            : (type === 'FreePeriodPriority') ?
-                                <FreePeriodSelect toTime={fields.toTime} fromTime={fields.fromTime} handleTimeChange={this.handleTimeChange} />
-                                : (type === 'LunchBreakPriority') ?
-                                    <DurationSelect handleDurationChange={this.handleDurationChange} val={fields.hours} />
-                                    :
-                                    <div></div>
-                    }
-                    {
-                        error !== "" ?
-                            <Box m={1}>
-                                <ErrorMsg msg={error} />
-                            </Box>
-                            : <div></div>
-                    }
-                    <Box m={1}>
-                        <Button variant="outlined" color="primary" onClick={this.handleSubmit}>
-                            Add Priority
+            <Grid
+                container
+                direction="column"
+                justify="center"
+                alignItems="center"
+            >
+                <h2> What priorities are important to you?</h2>
+                <PrioritySelect name={name} handleOptionChange={this.handleOptionChange} />
+                {
+                    (type === 'AvoidBeforePriority' || type === 'AvoidAfterPriority') ?
+                        <TimeSelect fields={fields} handleFieldsChange={this.handleFieldsChange} />
+                        : (type === 'FreePeriodPriority') ?
+                            <FreePeriodSelect fields={fields} handleFieldsChange={this.handleFieldsChange} />
+                            : (type === 'LunchBreakPriority') ?
+                                <DurationSelect fields={fields} handleFieldsChange={this.handleFieldsChange} />
+                                :
+                                <div></div>
+                }
+                {
+                    error !== "" ?
+                        <Box m={1}>
+                            <ErrorMsg msg={error} />
+                        </Box>
+                        : <div></div>
+                }
+                <Box m={1}>
+                    <Button variant="outlined" color="primary" onClick={this.handleSubmit}>
+                        Add Priority
                         </Button>
-                    </Box>
-                </Grid>
+                </Box>
+            </Grid>
         )
     }
 }
 
-const defaultDate = new Date('2014-08-18T21:11:54');
-
 const initialState = {
     name: "",
     type: "",
-    fields: {
-        time: defaultDate,
-        fromTime: defaultDate,
-        toTime: defaultDate,
-        hours: "1",
-    },
+    fields: defaultFields,
     error: ""
 }
 
-const DurationSelect = ({ handleDurationChange, val }) => {
-    return (
-        <Box m={1}>
-            <TextField
-                select label="Select"
-                onChange={(e) => handleDurationChange(e.target.value)}
-                helperText="Please select duration (in hours)"
-                variant="outlined"
-                value={val}
-            >
-                {durationOp.map((d) => <MenuItem key={d} value={d}> {d} </MenuItem>)}
-            </TextField>
-        </Box>
-    )
-}
-
-const FreePeriodSelect = ({ handleTimeChange, fromTime, toTime }) => {
-    return (
-        <div>
-            <TimeSelect handleTimeChange={handleTimeChange(2)} t={fromTime} label={"Time 1"} />
-            <TimeSelect handleTimeChange={handleTimeChange(3)} t={toTime} label={"Time 2"} />
-        </div>
-    );
-}
-
-const TimeSelect = ({ handleTimeChange, t, label }) => {
-    return (
-        <Box m={1}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardTimePicker label={label} value={t} onChange={(time) => handleTimeChange(time)} />
-            </MuiPickersUtilsProvider>
-        </Box>
-    )
-}
-
-const PrioritySelect = ({ handleOptionChange, name }) => {
-    return (
-        <TextField style={{ width: "50%" }}
-            select label="Select"
-            onChange={(e) => handleOptionChange(e.target.value)}
-            helperText="Please select your priority"
-            variant="outlined"
-            value={name}
-        >
-            {options.map((op) => <MenuItem key={op.value} value={op.value}> {op.value} </MenuItem>)}
-
-        </TextField>
-    )
-}
 
 
 export default PriorityAdder
