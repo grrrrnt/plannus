@@ -14,11 +14,15 @@ const SelectedModules = ({ mods, delMod }) => {
                     return (
                         <ListItem key={m.moduleCode} dense button >
                             <ListItemText primary={m.moduleCode} secondary={m.title} />
-                            <ListItemSecondaryAction>
-                                <IconButton edge="end" onClick={() => delMod(index)}>
-                                    <ClearIcon fontSize="default" />
-                                </IconButton>
-                            </ListItemSecondaryAction>
+                            {
+                                delMod ?
+                                    <ListItemSecondaryAction>
+                                        <IconButton edge="end" onClick={() => delMod(index)}>
+                                            <ClearIcon fontSize="default" />
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
+                                : <div></div>
+                            }
                         </ListItem>
                     )
                 })
