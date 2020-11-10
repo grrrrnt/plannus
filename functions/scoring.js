@@ -7,7 +7,7 @@ exports.scoring = (priorities, timetable, minMaxValues) => {
     return score;
 }
 
-exports.getMaxMinValues = (priorities, timetables) => {
+exports.getMinMaxValues = (priorities, timetables) => {
     const SAMPLE_PERIOD = 10;
 
     let maxPossibleFreeDays = 0;
