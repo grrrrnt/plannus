@@ -59,7 +59,7 @@ const SelectTimetables = (props) => {
                                 </Grid>
                                 :
 
-                                <div style={{ height: "30em" }}>
+                                <div style={{ height: "37em" }}>
                                     <Grid container justify="center">
                                         <div> Timetables are sorted according to how well they satisfy your priorities. </div>
                                     </Grid>
