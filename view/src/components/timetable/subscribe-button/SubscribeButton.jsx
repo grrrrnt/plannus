@@ -9,6 +9,9 @@ export default function SubscribeButton(props) {
     const [unsubscribing, setUnsubscribing] = React.useState(false);
     const [subscribeSuccess, setSubscribeSuccess] = React.useState(false);
     const [unsubscribeSuccess, setUnsubscribeSuccess] = React.useState(false);
+    // for cancelling of async taks when unmounted
+    const abortController = new AbortController()
+    const signal = abortController.signal
 
     // Click subscribe
     const handleSubscribeClick = () => {
@@ -23,10 +26,12 @@ export default function SubscribeButton(props) {
         if (subscribing) {
             onSubscribe()
                 .then((timetableId) => {
+                    if (signal?.aborted) return
                     setSubscribing(false)
                     if (timetableId) setSubscribeSuccess(true)
                 })
         }
+        return () => abortController.abort()
     }, [subscribing, onSubscribe]);
 
     // Click unsubscribe
@@ -40,10 +45,12 @@ export default function SubscribeButton(props) {
         if (unsubscribing) {
             onUnsubscribe()
                 .then((timetableId) => {
+                    if (signal?.aborted) return
                     setUnsubscribing(false)
                     if (timetableId) setUnsubscribeSuccess(true)
                 })
         }
+        return () => abortController.abort()
     }, [unsubscribing, onUnsubscribe]);
 
     const styles = makeStyles({

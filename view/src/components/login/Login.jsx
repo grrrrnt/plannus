@@ -1,9 +1,10 @@
 import React from 'react';
 import { Redirect, Link } from "react-router-dom"
-import { withAuthUserConsumer } from "./context"
-import { FirebaseAuth } from '../firebase';
-import * as ROUTES from "../../util/Routes"
 
+import { withAuthUserConsumer } from "../../context"
+import { FirebaseAuth } from '../../firebase';
+
+import * as ROUTES from "../../util/Routes"
 import "./Login.scss"
 import logo from "../../assets/logo.png";
 

@@ -28,7 +28,7 @@ const TimeLabels = (props) => {
     React.useEffect(() => {
         if (slotRef.current) onresize(slotRef.current.getBoundingClientRect().width / 60)
         if (offsetRef.current) setOffset(offsetRef.current.offsetWidth)
-    }, [offsetRef.current, slotRef.current, onresize, setOffset])
+    }, [offsetRef, slotRef, onresize, setOffset])
 
     window.addEventListener("resize", () => {
         if (slotRef.current) onresize(slotRef.current.getBoundingClientRect().width / 60)
@@ -92,7 +92,7 @@ const DayLessons = (props) => {
                             top={top * height}
                             bgcolor={lesson.color}
                         >
-                            <Box m={lesson.mins / 60 * 0.5} fontSize="2vh">
+                            <Box m={lesson.mins / 60 * 0.5} fontSize="2vmin" overflow="hidden">
                                 <b>{lesson.moduleCode}</b><br />
                                 {lesson.lessonType} {lesson.classNo}<br />
                                 {lesson.location}

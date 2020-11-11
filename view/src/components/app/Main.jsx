@@ -8,8 +8,7 @@ import Account from "../account/Account";
 import SharedTimetable from '../shared-timetable/SharedTimetable';
 import SavedTimetables from '../saved-timetables';
 
-import { withFirebase } from "../firebase"
-
+import { withFirebase } from "../../context"
 import * as ROUTES from '../../util/Routes';
 
 class Main extends Component {

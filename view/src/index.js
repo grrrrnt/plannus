@@ -4,7 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { StylesProvider } from '@material-ui/core/styles';
 
 import App from './components/app/App';
-import Firebase, { FirebaseContext } from './components/firebase';
+import Firebase from './firebase';
+import { FirebaseContext } from "./context"
 import * as serviceWorker from './serviceWorker';
 import './index.css';
 

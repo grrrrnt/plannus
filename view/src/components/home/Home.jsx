@@ -3,7 +3,7 @@ import { LinearProgress } from "@material-ui/core"
 import { Alert, AlertTitle } from "@material-ui/lab"
 import { Link } from "react-router-dom"
 
-import { withFirebase } from '../firebase';
+import { withFirebase } from "../../context";
 import Timetable from "../timetable"
 
 import * as ROUTES from "../../util/Routes"

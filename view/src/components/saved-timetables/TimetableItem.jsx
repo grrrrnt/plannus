@@ -1,7 +1,7 @@
 import React from "react"
 import {LinearProgress} from "@material-ui/core"
 
-import {withFirebase} from "../firebase"
+import {withFirebase} from "../../context"
 import Timetable from "../timetable"
 
 function TimetableItem(props) {

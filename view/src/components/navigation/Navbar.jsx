@@ -1,7 +1,7 @@
 import React from "react";
 
 import RouterLinkButton from "./RouterLinkButton";
-import { withAuthUserConsumer } from "../authentication"
+import { withAuthUserConsumer } from "../../context"
 
 import logo from "../../assets/logo.png";
 import * as ROUTES from '../../util/Routes';

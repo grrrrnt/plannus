@@ -106,7 +106,7 @@ exports.getUserPriorities = functions.https.onCall((data, context) => {
 
 exports.createUser = functions.https.onCall((data, context) => {
     const uid = context.auth.uid;
-    admin.firestore().collection("users").doc(uid).set({
+    return admin.firestore().collection("users").doc(uid).set({
         dateCreated: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true })
         .then(() => {
@@ -116,6 +116,18 @@ exports.createUser = functions.https.onCall((data, context) => {
         .catch((error) => {
             console.error(error);
             console.log("Error creating user record " + uid);
+            return { success: false };
+        });
+});
+
+exports.deleteUser = functions.https.onCall((data, context) => {
+    const uid = data.userId;
+    return admin.firestore().collection("users").doc(uid).delete()
+        .then(() => {
+            console.log("User with id " + uid + " successfully deleted!");
+            return { success: true };
+        }).catch((error) => {
+            console.error("Error deleting user with id " + uid + ": ", error);
             return { success: false };
         });
 });
@@ -339,7 +351,7 @@ exports.generateTimetables = functions.https.onCall(async (data, context) => {
         return { success: false };
     }
     const docRef = admin.firestore().collection("users").doc(context.auth.uid);
-    const [doc, ] = await Promise.all([docRef.get(), docRef.set({
+    const [doc,] = await Promise.all([docRef.get(), docRef.set({
         priorities: data.priorities,
         modules: data.modules
     }, { merge: true })]);

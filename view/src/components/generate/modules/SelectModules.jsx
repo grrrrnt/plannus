@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import { LinearProgress } from "@material-ui/core"
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import { withFirebase } from "../../firebase";
+import { withFirebase } from "../../../context";
 import ModuleDisplay from "./ModuleDisplay";
 import SearchBar from './SearchBar'
 import SelectedModules from './SelectedModules'

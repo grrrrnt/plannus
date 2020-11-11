@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withFirebase } from '../../firebase';
+import { withFirebase } from '../../../context';
 import './priorities.css';
 import { v4 } from 'uuid';
 import _ from "lodash";
@@ -31,30 +31,6 @@ class RankPriorities extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.clear = this.clear.bind(this);
     }
-
-    /*
-    componentDidMount() {
-        if (!this.props.priorityFetched) { //only fetch if component has not fetched from db previously
-            this.props.firebase.getPriorities().then((res) => {
-                if (this.signal.aborted) {
-                    return
-                }
-                this.props.setPriorities(res.priorities)
-                this.setState({ items: res.priorities, loaded: true });
-                this.props.setFetchedPriority();
-            })
-        } else {
-            if (this.signal.aborted) {
-                return
-            }
-            this.setState({ loaded: true });
-        }
-    }
-
-    componentWillUnmount() {
-        this.abortController.abort()
-    }
-    */
 
     addPriority(priority) {
         let priorities = [...this.state.items];

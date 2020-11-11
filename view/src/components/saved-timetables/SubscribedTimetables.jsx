@@ -3,7 +3,7 @@ import { LinearProgress } from "@material-ui/core"
 import { Alert, AlertTitle } from "@material-ui/lab"
 import InfiniteScroll from "react-infinite-scroll-component";
 
-import { withFirebase } from '../firebase';
+import { withFirebase } from '../../context';
 import TimetableItem from "./TimetableItem"
 
 class SubscribedTimetables extends Component {

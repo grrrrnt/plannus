@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-import { withFirebase } from "../firebase"
-import SelectSemester from "./semester/SelectSemester";
-import RankPriorities from "./priority/RankPriorities";
-import SelectModules from "./modules/SelectModules"
-import SelectTimetables from "./SelectTimetables"
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+
+import { withFirebase } from "../../context"
+import SelectSemester from "./semester/SelectSemester";
+import RankPriorities from "./priority/RankPriorities";
+import SelectModules from "./modules/SelectModules"
+import SelectTimetables from "./SelectTimetables"
 
 class Generate extends Component {
     constructor(props) {

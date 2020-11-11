@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { withFirebase } from '../firebase';
+import { withFirebase } from '../../context';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -30,6 +30,7 @@ const SelectTimetables = (props) => {
                 if (signal.aborted) {
                     return;
                 }
+                console.log(res)
                 setTimetables(res.timetables);
                 setIsLoaded(true);
             });

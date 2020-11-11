@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withFirebase } from '../../firebase';
+import { withFirebase } from '../../../context';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';

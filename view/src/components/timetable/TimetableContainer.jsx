@@ -1,15 +1,15 @@
 import React from "react"
 import { exportComponentAsPNG } from 'react-component-export-image'
 
-import { withFirebase } from "../firebase"
+import { withFirebase } from "../../context"
 import Timetable from "./Timetable"
 import ShareButton from "./share-button/ShareButton"
 import DownloadButton from "./download-button/DownloadButton"
-
-import "./Timetable.scss"
 import SetDefaultButton from "./set-default-button/SetDefaultButton"
 import SaveButton from "./save-button/SaveButton"
 import SubscribeButton from "./subscribe-button/SubscribeButton"
+
+import "./Timetable.scss"
 
 /**
  * Component for displayng timetables. Includes a Timetable component and 
@@ -52,7 +52,7 @@ class TimetableContainer extends React.Component {
                         <Timetable timetable={this.state.timetable} ref={this.timetableRef} />
                         <div className="timetable-buttons-container">
                             {this.props.download && this.state.savedId
-                                ? <DownloadButton className="timetable-button" onClick={() => exportComponentAsPNG(this.timetableRef, "Timetable", "#FFFFFF")} />
+                                ? <DownloadButton className="timetable-button" onClick={this.onDownload} />
                                 : ''
                             }
                             {this.props.share && this.state.savedId
@@ -77,6 +77,9 @@ class TimetableContainer extends React.Component {
             </React.Fragment>
         )
     }
+
+    // MARK: onDownload function
+    onDownload = () => exportComponentAsPNG(this.timetableRef, "Timetable", "#FFFFFF")
 
     // MARK: onSave function
     onSave = () => {
@@ -140,7 +143,6 @@ class TimetableContainer extends React.Component {
         this.getTimings(timetable, timings)
         const moduleColors = this.assignModuleColor(timetable)
         this.formatClassDetails(timetable, timings, moduleColors, classes)
-        // this.fillInEmptySlots(timings, classes)
         const formattedTimetable = {
             timings: timings,
             classes: classes
@@ -210,30 +212,6 @@ class TimetableContainer extends React.Component {
                 lesson.overlap = lesson.overlap + 1
                 otherLesson.overlap = otherLesson.overlap + 1
             }
-        }
-    }
-
-    fillInEmptySlots = (timings, classes) => {
-        const totalHrs = timings.length
-        const includesWkends = () => Object.keys(classes).filter(x => x === 5 || x === 6).length > 0
-        const daysCount = includesWkends() ? 7 : 5
-        // Fill other slots with empty {}
-        for (var day = 0; day < daysCount; day++) {
-            if (!classes[day]) {
-                classes[day] = []
-            }
-            var noHrs = totalHrs
-            var i = 0
-            var daylessons = classes[day]
-
-            do {
-                if (daylessons[i] === undefined) {
-                    daylessons[i] = {}
-                }
-
-                noHrs -= ((Object.keys(daylessons[i]).length === 0) ? 1 : daylessons[i].hours)
-                i++
-            } while (noHrs > 0)
         }
     }
 

@@ -6,6 +6,9 @@ export default function SetDefaultButton(props) {
     const { isDefault, onClick, ...others } = props
     const [loading, setLoading] = React.useState(false);
     const [success, setSuccess] = React.useState(false);
+    // for cancelling of async taks when unmounted
+    const abortController = new AbortController()
+    const signal = abortController.signal
 
     const handleButtonClick = () => {
         if (onClick) {
@@ -19,10 +22,12 @@ export default function SetDefaultButton(props) {
         if (loading) {
             onClick()
                 .then((timetableId) => {
+                    if (signal.aborted) return
                     setLoading(false)
                     if (timetableId) setSuccess(true)
                 })
         }
+        return () => abortController.abort()
     }, [loading, onClick]);
 
     return (

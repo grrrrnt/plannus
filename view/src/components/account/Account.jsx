@@ -4,9 +4,8 @@ import { Button, TextField, IconButton, Snackbar, Box } from '@material-ui/core'
 import { Alert } from '@material-ui/lab';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 
-import { withFirebase } from "../firebase";
-import { withAuthUserConsumer } from "../authentication"
-import { LogoutButton } from "../authentication";
+import { withFirebase, withAuthUserConsumer } from "../../context"
+import LogoutButton from "./LogoutButton"
 
 import { LOGIN } from "../../util/Routes"
 

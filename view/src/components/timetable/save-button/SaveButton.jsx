@@ -9,6 +9,9 @@ export default function SaveButton(props) {
     const [unsaving, setUnsaving] = React.useState(false);
     const [savedSuccess, setSavedSuccess] = React.useState(false);
     const [unsavedSuccess, setUnsavedSuccess] = React.useState(false);
+    // for cancelling of async taks when unmounted
+    const abortController = new AbortController()
+    const signal = abortController.signal
 
     // Click save
     const handleSaveClick = () => {
@@ -23,10 +26,12 @@ export default function SaveButton(props) {
         if (saving) {
             onSave()
                 .then((timetableId) => {
+                    if (signal?.aborted) return
                     setSaving(false)
                     if (timetableId) setSavedSuccess(true)
                 })
         }
+        return () => abortController.abort()
     }, [saving, onSave]);
 
     // Click unsave
@@ -40,10 +45,12 @@ export default function SaveButton(props) {
         if (unsaving) {
             onUnsave()
                 .then((timetableId) => {
+                    if (signal?.aborted) return
                     setUnsaving(false)
                     if (timetableId) setUnsavedSuccess(true)
                 })
         }
+        return () => abortController.abort()
     }, [unsaving, onUnsave]);
 
     const styles = makeStyles({

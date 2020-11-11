@@ -2,7 +2,7 @@ import React from 'react'
 import firebase from 'firebase'
 import { StyledFirebaseAuth } from 'react-firebaseui';
 
-import { withFirebase } from './context';
+import { withFirebase } from '../context';
 
 class FirebaseAuth extends React.Component {
     constructor(props) {
@@ -36,9 +36,10 @@ class FirebaseAuth extends React.Component {
                     }
                     const cred = error.credential; // credential the user tried to sign in with
                     const anonUser = auth.currentUser;
-                    // TODO: Copy data from anon user to acct user
-
                     return auth.signInWithCredential(cred)
+                        .then(() => {
+                            props.firebase.deleteUser(anonUser.uid)
+                        })
                         .then((function () {
                             anonUser.delete()
                         }));

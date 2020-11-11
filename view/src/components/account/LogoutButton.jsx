@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
 
-import { withFirebase } from '../firebase';
+import { withFirebase } from '../../context';
 
 const LogoutButton = ({ firebase, ...others }) => {
     const [dialogOpen, setDialogOpen] = React.useState(false)
