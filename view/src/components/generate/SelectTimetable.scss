@@ -22,7 +22,9 @@
 
 #generated-timetable-list {
   width: 100%;
-  height: 100%;
+  height: 90%;
   overflow: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
   @include scrollbars(2px, #283350,  #dcdcdc);
 }
