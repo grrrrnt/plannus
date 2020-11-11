@@ -4,6 +4,7 @@ admin.initializeApp();
 
 const moduleData = require('./moduleData');
 const generate = require('./generate');
+const scoring = require("./scoring");
 const { v4: uuid } = require('uuid');
 
 //const loginUser = require('./users')
@@ -333,6 +334,10 @@ exports.unsubscribeFromTimetable = functions.https.onCall((data, context) => {
 });
 
 exports.generateTimetables = functions.https.onCall(async (data, context) => {
+    if (!("modules" in data && "priorities" in data)) {
+        console.error("No modules/priorities received", context.auth, data);
+        return { success: false };
+    }
     const docRef = admin.firestore().collection("users").doc(context.auth.uid);
     const [doc, ] = await Promise.all([docRef.get(), docRef.set({
         priorities: data.priorities,
@@ -342,12 +347,19 @@ exports.generateTimetables = functions.https.onCall(async (data, context) => {
         console.error("No user doc", context.auth);
         return { success: false };
     }
-    const userData = doc.data();
-    if (!("year" in userData && "semester" in userData)) {
+    const userDoc = doc.data();
+    if (!("year" in userDoc && "semester" in userDoc)) {
         console.error("No year/semester", context.auth, data);
         return { success: false };
     }
-    const { year, semester } = userData;
-    const moduleDataList = await Promise.all(data.modules.map(m => moduleData.getModule(year, m)));
-    return { success: true, timetables: generate.generate(moduleDataList, year, semester) };
+    const timetables = await generateTimetables(userDoc.year, userDoc.semester, data.modules, data.priorities);
+    return { success: true, timetables: timetables };
 });
+
+async function generateTimetables(year, semester, modules, priorities) {
+    const moduleDataList = await Promise.all(modules.map(m => moduleData.getModule(year, m)));
+    const possibilities = generate.generate(moduleDataList, year, semester);
+    const minMaxValues = scoring.getMinMaxValues(priorities, possibilities);
+    possibilities.forEach(t => (t.score = scoring.scoring(priorities, t, minMaxValues)));
+    return possibilities.sort((a, b) => b.score - a.score).slice(0, 50);
+}
