@@ -1,3 +1,4 @@
-import SavedTimetablesContainer from "./SavedTimetablesContainer"
+import SavedTimetables from "./SavedTimetables"
+import Saved from "./Saved"
 
-export default SavedTimetablesContainer
+export default Saved

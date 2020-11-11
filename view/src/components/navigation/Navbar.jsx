@@ -25,7 +25,7 @@ function NavBar(props) {
                         <RouterLinkButton activeClassName="nav-button-active" className="nav-button" to={ROUTES.HOME}>
                             Home
                         </RouterLinkButton>
-                        <RouterLinkButton activeClassName="nav-button-active" className="nav-button" to={ROUTES.SAVEDTIMETABLES}>
+                        <RouterLinkButton activeClassName="nav-button-active" className="nav-button" to={ROUTES.SAVED}>
                             Saved
                         </RouterLinkButton>
                         <RouterLinkButton activeClassName="nav-button-active" className="nav-button" to={ROUTES.GENERATE}>

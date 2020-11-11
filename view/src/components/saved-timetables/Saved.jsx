@@ -32,7 +32,7 @@ TabPanel.propTypes = {
     value: PropTypes.any.isRequired,
 };
 
-export default function SavedTimetablesContainer() {
+export default function Saved() {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {

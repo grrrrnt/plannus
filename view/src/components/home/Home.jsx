@@ -45,7 +45,7 @@ class Home extends Component {
             <div>
                 <div className="header-container">
                     <h1>Home</h1>
-                    <Link to={ROUTES.SAVEDTIMETABLES} className="saved-timetable-link">View Saved Timetables</Link>
+                    <Link to={ROUTES.SAVED} className="saved-timetable-link">View Saved Timetables</Link>
                 </div>
                 {
                     (this.state.loading)
@@ -56,7 +56,7 @@ class Home extends Component {
                                 : (
                                     <Alert icon={false} severity="info" key={"no-default-timetable"}>
                                         <AlertTitle><strong>No timetable selected</strong></AlertTitle>
-                                        Choose one from your <Link style={{color: "#0d3c61"}} to={ROUTES.SAVEDTIMETABLES}>saves</Link> or <Link style={{color: "#0d3c61"}} to={ROUTES.GENERATE}>generate</Link> one!
+                                        Choose one from your <Link style={{color: "#0d3c61"}} to={ROUTES.SAVED}>saves</Link> or <Link style={{color: "#0d3c61"}} to={ROUTES.GENERATE}>generate</Link> one!
                                     </Alert>
                                 )
                         ]
