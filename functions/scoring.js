@@ -9,6 +9,50 @@ exports.scoring = (priorities, timetable, minMaxValues) => {
     return score / max * 100;
 }
 
+exports.checkMustHaveFulfilled = (priorities, timetable, minMaxValues) => {
+    let fulfilled = true;
+    for (let p = 0; p < priorities.length; p++) {
+        if (priorities[p].mustHave) {
+            let multiplier = 0;
+            switch(priorities[p].type) {
+                case "AvoidAfterPriority":
+                    const afterTime = priorities[p].fields.time;
+                    multiplier = avoidLessonsAfterPriorityMultiplier(afterTime, timetable);
+                    break;
+                case "AvoidBeforePriority":
+                    const beforeTime = priorities[p].fields.time;
+                    multiplier = avoidLessonsBeforePriorityMultiplier(beforeTime, timetable);
+                    break;
+                case "FreePeriodPriority":
+                    const fromTime = priorities[p].fields.fromTime;
+                    const toTime = priorities[p].fields.toTime;
+                    multiplier = freePeriodPriorityMultiplier(fromTime, toTime, timetable);
+                    break;
+                case "LunchBreakPriority":
+                    const hours = priorities[p].fields.hours;
+                    multiplier = lunchBreakPriorityMultiplier(hours, timetable);
+                    break;
+                case "MaxFreeDaysPriority":
+                    const maxPossibleFreeDays = minMaxValues.maxPossibleFreeDays;
+                    multiplier = maxFreeDaysPriorityMultiplier(timetable, maxPossibleFreeDays);
+                    break;
+                case "MinBreaksPriority":
+                    const minPossibleHours = minMaxValues.minPossibleHours;
+                    const maxPossibleHours = minMaxValues.maxPossibleHours;
+                    multiplier = minBreaksPriorityMultiplier(timetable, minPossibleHours, maxPossibleHours);
+                    break;
+                case "MinTravellingPriority":
+                    const minPossibleDist = minMaxValues.minPossibleDist;
+                    const maxPossibleDist = minMaxValues.minPossibleDist;
+                    multiplier = minTravellingPriorityMultiplier(timetable, minPossibleDist, maxPossibleDist);
+            }
+            fulfilled = (multiplier === 1);
+        }
+        if (!fulfilled) { break; }
+    }
+    return fulfilled;
+}
+
 exports.getMinMaxValues = (priorities, timetables) => {
     const SAMPLE_PERIOD = 10;
 
