@@ -1,12 +1,3 @@
-.saved-timetables-container {
-    flex-grow: 1;
-    display: flex;
-  }
-
-.saved-timetables-tabs {
-  border-right: 1px solid #dcdcdc;
-}
-
 @mixin scrollbars($size, $foreground-color, $background-color: mix($foreground-color, white,  50%)) {
     // For Google Chrome
     &::-webkit-scrollbar {
@@ -29,9 +20,9 @@
     }
   }
 
-.saved-timetables-tab-panels {
+#generated-timetable-list {
   width: 100%;
-  height: 80vh;
+  height: 100%;
   overflow: auto;
   @include scrollbars(2px, #283350,  #dcdcdc);
 }

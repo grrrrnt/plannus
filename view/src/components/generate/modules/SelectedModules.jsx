@@ -8,7 +8,7 @@ const SelectedModules = ({ mods, delMod }) => {
             {
                 mods.map((m, index) => {
                     return (
-                        <Module m = {m} delMod={() => delMod(index)}/>
+                        <Module m = {m} delMod={() => delMod(index)} key={m.moduleCode}/>
                     )
                 })
             }

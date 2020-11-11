@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { withFirebase } from '../../context';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import { LinearProgress } from "@material-ui/core"
-import * as ROUTES from '../../util/Routes';
-import { withRouter } from 'react-router-dom'
-import { useHistory } from 'react-router-dom';
+import LinearProgress from "@material-ui/core/LinearProgress"
+import InfiniteScroll from "react-infinite-scroll-component";
+
+import { withFirebase } from '../../context';
+import { withRouter, useHistory } from 'react-router-dom'
 import Timetable from "../timetable"
-import { FixedSizeList } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
+
+import "./SelectTimetable.scss"
+import * as ROUTES from '../../util/Routes';
 
 const SelectTimetables = (props) => {
     const history = useHistory();
@@ -64,28 +65,24 @@ const SelectTimetables = (props) => {
                                     <Grid container justify="center">
                                         <div> Timetables are sorted according to how well they satisfy your priorities. </div>
                                     </Grid>
-                                    <AutoSizer>
-                                        {({ height, width }) => (
-                                            <FixedSizeList
-                                                height={height}
-                                                itemCount={timetables.length}
-                                                itemSize={height / 1}
-                                                width={width}
-                                            >
-                                                {
-                                                    ({ index, style }) => {
-                                                        const t = timetables[index]
-                                                        return (
-                                                            <Box key={index} style={style}>
-                                                                <h4>Timetable Score = {t.score}</h4>
-                                                                <Timetable timetable={t} save setDefault />
-                                                            </Box>
-                                                        )
-                                                    }
-                                                }
-                                            </FixedSizeList>
-                                        )}
-                                    </AutoSizer>
+                                    <div id="generated-timetable-list" >
+                                        <InfiniteScroll
+                                            dataLength={timetables.length}
+                                            hasMore={false}
+                                            scrollableTarget="generated-timetable-list"
+                                        >
+                                            {timetables.map((t, index) => {
+                                                return (
+                                                    <Box key={index} >
+                                                        <h4>Timetable Score = {Math.round(t.score)}%</h4>
+                                                        <Timetable timetable={t} save setDefault />
+                                                    </Box>
+                                                )
+                                            })}
+
+                                        </InfiniteScroll>
+
+                                    </div>
                                 </div>
                         }
                         <Box display="flex" flexDirection="row-reverse">
