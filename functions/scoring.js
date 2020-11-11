@@ -1,10 +1,12 @@
 exports.scoring = (priorities, timetable, minMaxValues) => {
     let score = 0;
+    let max = 0;
     const length = priorities.length;
     for (let p = 0; p < length; p++) {
         score += getScore(length, priorities[p], timetable, minMaxValues);
+        max += p+1;
     }
-    return score;
+    return score / max * 100;
 }
 
 exports.getMinMaxValues = (priorities, timetables) => {
@@ -230,6 +232,7 @@ function findDistance(timetable) {
             }
         }
     }
+    return totalDist;
 }
 
 function findStartingLocationOfDay(timetable, day) {
