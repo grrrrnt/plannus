@@ -1,4 +1,5 @@
 exports.scoring = (priorities, timetable, minMaxValues) => {
+    if (timetable.events.length === 0) { return 0; }
     let score = 0;
     let max = 0;
     const length = priorities.length;
@@ -239,6 +240,7 @@ function findMaxFreeDays(timetable) {
 }
 
 function findHoursOfBreaks(timetable) {
+    if (timetable.events.length === 0) { return 0; }
     let hoursOfBreaks = 0;
     let prevDay = timetable.events[0].day;
     let prevEndTime = timetable.events[0].endTime;
@@ -260,6 +262,7 @@ function findHoursOfBreaks(timetable) {
 }
 
 function findDistance(timetable) {
+    if (timetable.events.length === 0) { return 0; }
     let totalDist = 0;
     let prevDay = timetable.events[0].day;
     let prevLocation = findStartingLocationOfDay(timetable, 0);
