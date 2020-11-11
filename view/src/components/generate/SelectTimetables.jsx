@@ -8,7 +8,8 @@ import * as ROUTES from '../../util/Routes';
 import { withRouter } from 'react-router-dom'
 import { useHistory } from 'react-router-dom';
 import Timetable from "../timetable"
-import SelectedModules from "./modules/SelectedModules"
+import { FixedSizeList } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 const SelectTimetables = (props) => {
     const history = useHistory();
@@ -23,7 +24,7 @@ const SelectTimetables = (props) => {
         for (var x of props.mods) {
             toSubmit.push(x.moduleCode);
         }
-        
+
         props.firebase.generateTimetables(props.priorities, toSubmit)
             .then(res => {
                 if (signal.aborted) {
@@ -42,40 +43,52 @@ const SelectTimetables = (props) => {
         history.push(ROUTES.HOME)
     }
 
+
     return (
         <div>
             {
                 !isLoaded ? <LinearProgress /> :
                     <div>
-                        <Grid
-                            container
-                            direction="column"
-                            justify="flex-start"
-                            alignItems="center"
-                        >
+                        <Grid container justify="center">
                             <h2> Select Timetables</h2>
-                            {
-                                timetables.length === 0 ?
-                                    <div> No timetable can be generated. Please reselect your modules and/or priorities!</div>
-
-                                    :
-                                    <Box maxHeight={600} overflow="auto">
-                                        <div> Timetables are ordered according to how well they satisfy your priorities. Click on the 'Save' button to save or unsave timetables.</div>
-                                        {
-                                            timetables.map((t, index) => {
-                                                return (
-                                                    <Box key={index}>
-                                                        <h4>Timetable Score = {t.score}</h4>
-                                                        <Timetable timetable={t} save setDefault />
-                                                    </Box>
-                                                );
-                                            })
-                                        }
-                                    </Box>
-                            }
                         </Grid>
+                        {
+                            timetables.length === 0 ?
+                                <Grid container justify="center">
+                                    <div> No timetable can be generated. Please reselect your modules and/or priorities!</div>
+                                </Grid>
+                                :
+
+                                <div style={{ height: "30em" }}>
+                                    <Grid container justify="center">
+                                        <div> Timetables are sorted according to how well they satisfy your priorities. </div>
+                                    </Grid>
+                                    <AutoSizer>
+                                        {({ height, width }) => (
+                                            <FixedSizeList
+                                                height={height}
+                                                itemCount={timetables.length}
+                                                itemSize={height / 1}
+                                                width={width}
+                                            >
+                                                {
+                                                    ({ index, style }) => {
+                                                        const t = timetables[index]
+                                                        return (
+                                                            <Box key={index} style={style}>
+                                                                <h4>Timetable Score = {t.score}</h4>
+                                                                <Timetable timetable={t} save setDefault />
+                                                            </Box>
+                                                        )
+                                                    }
+                                                }
+                                            </FixedSizeList>
+                                        )}
+                                    </AutoSizer>
+                                </div>
+                        }
                         <Box display="flex" flexDirection="row-reverse">
-                            <Button style={{ margin: "10px" }} variant="outlined" color="primary" onClick={onClick}>
+                            <Button style={{ margin: "20px" }} variant="outlined" color="primary" onClick={onClick}>
                                 Done
                             </Button>
                         </Box>
