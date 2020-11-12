@@ -10,7 +10,10 @@ exports.generate = (moduleData, year, semester) => {
 }
 
 function product(moduleEvents) {
-    const max = moduleEvents.map(m => m.choices.length).reduce((acc, cur) => acc * cur, 1);
+    let max = moduleEvents.map(m => m.choices.length).reduce((acc, cur) => acc * cur, 1);
+    if (max > 100000) {
+        max = 100000;
+    }
     const eventsList = [];
     for (let i = 0; i < max; i++) {
         const events = [];

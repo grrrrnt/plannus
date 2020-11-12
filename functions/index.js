@@ -4,11 +4,8 @@ admin.initializeApp();
 
 const moduleData = require('./moduleData');
 const generate = require('./generate');
-const scoring = require("./scoring");
+const scoring = require('./scoring');
 const { v4: uuid } = require('uuid');
-
-//const loginUser = require('./users')
-//app.post('/login', loginUser);
 
 exports.retrieveModules = functions.https.onCall(async (data, context) => {
     if (!("year" in data) || !("semester" in data)) {
@@ -370,8 +367,9 @@ exports.generateTimetables = functions.https.onCall(async (data, context) => {
 
 async function generateTimetables(year, semester, modules, priorities) {
     const moduleDataList = await Promise.all(modules.map(m => moduleData.getModule(year, m)));
-    const possibilities = generate.generate(moduleDataList, year, semester);
+    let possibilities = generate.generate(moduleDataList, year, semester);
     const minMaxValues = scoring.getMinMaxValues(priorities, possibilities);
+    possibilities = possibilities.filter(t => scoring.checkMustHaveFulfilled(priorities, t, minMaxValues));
     possibilities.forEach(t => (t.score = scoring.scoring(priorities, t, minMaxValues)));
-    return possibilities.sort((a, b) => b.score - a.score).slice(0, 50);
+    return possibilities.sort((a, b) => b.score - a.score).slice(0, 20);
 }
