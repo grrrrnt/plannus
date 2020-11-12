@@ -9,4 +9,14 @@
 ## How does it work?
 All that a student needs to do is select a semester, the modules they intend to take for that semester, and their priorities ranked from most to least important. *PlanNUS* will process all of this information using its algorithm and output a list of personally tailored timetables. Students can then save the timetables they like, and even share these timetables with friends should they wish to coordinate their classes together.
 
-# Try *PlanNUS* out [here](https://plannus-cfd18.firebaseapp.com)
+## How to run PlanNUS
+### Run on Firebase Hosting
+  Navigate your browser to the following URL: https://plannus-cfd18.web.app/
+
+### Run locally
+1. Clone from the repository.
+2. Navigate to the local repository in a terminal window.
+3. Change directory to the view folder: `cd view`
+4. Install dependencies with: `npm install`
+5. Start running the application with: `npm start`
+
