@@ -20,6 +20,7 @@ class Account extends Component {
             showUpdatePassword: false,
             showConfirmPassword: false,
             showPassword: false,
+            passwordCharacterText: "",
             passwordMismatchText: "",
             requirePasswordText: "",
             errorMsg: "",
@@ -91,14 +92,14 @@ class Account extends Component {
                             {this.state.emailProvider
                                 ? (<React.Fragment>
                                     <TextField
-                                        error={this.state.passwordMismatchText !== ""}
+                                        error={this.state.passwordMismatchText !== "" || this.state.passwordCharacterText !== ""}
                                         autoComplete="off"
                                         name="updatePassword"
                                         type={this.state.showUpdatePassword ? "text" : "password"}
                                         id="update-password"
                                         label="Update password"
                                         placeholder="Enter a password to update"
-                                        helperText={this.state.passwordMismatchText}
+                                        helperText={this.state.passwordMismatchText || this.state.passwordCharacterText}
                                         fullWidth
                                         margin="normal"
                                         InputLabelProps={{
@@ -208,6 +209,10 @@ class Account extends Component {
 
     onSaveChanges = (event) => {
         event.preventDefault()
+        if (event.target.updatePassword.value.length < 6) {
+            this.setState({ errorMsg: "Please ensure your new password is at least 6 characters long" })
+            return
+        }
         if (this.state.emailProvider && event.target.updatePassword.value !== event.target.confirmPassword.value) {
             this.setState({ errorMsg: "Please ensure the new password matches" })
             return
@@ -247,7 +252,15 @@ class Account extends Component {
     }
 
     onNewPasswordChange = () => {
-        if (document.getElementById("update-password").value !== document.getElementById("confirm-password").value) {
+        const updatePassword = document.getElementById("update-password").value
+        const confirmPassword = document.getElementById("confirm-password").value
+        if (updatePassword.length < 6) {
+            this.setState({ passwordCharacterText: "Please ensure your password is at least 6 characters long" })
+            return
+        } else {
+            this.setState({ passwordCharacterText: "" })
+        }
+        if (updatePassword !== confirmPassword) {
             this.setState({ passwordMismatchText: "Please ensure your password matches" })
         } else {
             this.setState({ passwordMismatchText: "" })
