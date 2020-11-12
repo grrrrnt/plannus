@@ -318,7 +318,6 @@ class Firebase {
         var generateTimetables = this.functions.httpsCallable('generateTimetables');
         try {
             const res = await generateTimetables({ priorities: priorities, modules: modules });
-            console.log(res)
             return res.data;
         } catch (err) {
             console.error(err);

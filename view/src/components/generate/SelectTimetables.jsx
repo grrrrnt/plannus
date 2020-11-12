@@ -31,7 +31,6 @@ const SelectTimetables = (props) => {
                 if (signal.aborted) {
                     return;
                 }
-                console.log(res)
                 setTimetables(res.timetables);
                 setIsLoaded(true);
             });
