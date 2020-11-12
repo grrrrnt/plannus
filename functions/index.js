@@ -4,11 +4,8 @@ admin.initializeApp();
 
 const moduleData = require('./moduleData');
 const generate = require('./generate');
-const scoring = require("./scoring");
+const scoring = require('./scoring');
 const { v4: uuid } = require('uuid');
-
-//const loginUser = require('./users')
-//app.post('/login', loginUser);
 
 exports.retrieveModules = functions.https.onCall(async (data, context) => {
     if (!("year" in data) || !("semester" in data)) {

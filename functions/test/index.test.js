@@ -1,9 +1,9 @@
 const assert = require('assert');
 const admin = require('firebase-admin');
 const test = require('firebase-functions-test')({
-    databaseURL: "https://plannus-cfd18.firebaseio.com",
-    projectId: "plannus-cfd18",
-    storageBucket: "plannus-cfd18.appspot.com",
+    databaseURL: 'https://plannus-cfd18.firebaseio.com',
+    projectId: 'plannus-cfd18',
+    storageBucket: 'plannus-cfd18.appspot.com',
 }, '../../serviceAccountKey.json');
 
 const myFunctions = require('../index');
@@ -36,7 +36,7 @@ describe("generateTimetables()", () => {
     beforeEach(() => docRef.set(userDoc));
     after(() => docRef.delete());
     it("checks for priorities", () => {
-        return wrapped({ modules: ["CS3203", "CS3219"]}).then(result =>
+        return wrapped({ modules: ["CS3203", "CS3219"] }).then(result =>
             assert.deepEqual(result, { success: false })
         );
     });
