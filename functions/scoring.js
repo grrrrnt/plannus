@@ -294,15 +294,29 @@ function findStartingLocationOfDay(timetable, day) {
 }
 
 function getDistanceBetween(start, dest) {
-    const distances = [[0, 457, 520.9], [390.9, 0, 404.7], [503.2, 471.5, 0]];
-    const maxDist = 520.9;
+    const distances = [[  0, 1.7, 0.9, 1.3, 1.6, 2.1, 2.3, 0.7, 1.7, 1.2, 7.4, 0.6,   0, 1.5, 2.5],
+                       [1.7,   0,   1, 0.5, 1.7, 0.3, 0.5, 1.2, 1.8, 1.3, 8.2,   2, 1.7, 0.4, 0.7],
+                       [0.9,   1,   0, 0.5, 1.3, 1.3, 1.5, 0.3, 1.4, 0.9, 7.9, 1.3, 0.8, 0.6, 1.2],
+                       [1.3, 0.5, 0.5,   0, 1.4,   1,   1, 0.7, 1.5,   1,   8, 1.8, 1.2, 0.1, 0.7],
+                       [1.6, 1.7, 1.3, 1.4,   0,   2, 2.2, 1.4, 0.1, 0.4, 6.6, 1.8, 1.6, 1.3, 1.8],
+                       [2.1, 0.3, 1.3,   1,   2,   0, 0.1, 1.7, 2.3, 1.8, 7.8, 2.6, 2.3,   1, 0.6],
+                       [2.3, 0.5, 1.5,   1, 2.2, 0.1,   0, 1.7, 2.3, 1.8, 7.8, 2.6, 2.3,   1, 0.6],
+                       [0.7, 1.2, 0.3, 0.7, 1.4, 1.7, 1.7,   0, 1.5,   1, 7.9, 1.1, 0.5, 0.8, 1.5],
+                       [1.7, 1.8, 1.4, 1.5, 0.1, 2.3, 2.3, 1.5,   0, 0.5, 6.8, 1.9, 1.7, 1.4, 2.1],
+                       [1.2, 1.3, 0.9,   1, 0.4, 1.8, 1.8,   1, 0.5,   0, 6.9, 1.5, 1.2,   1, 1.6],
+                       [7.4, 8.2, 7.9,   8, 6.6, 7.8, 7.8, 7.9, 6.8, 6.9,   0, 7.1, 7.1, 7.9, 8.5],
+                       [0.6,   2, 1.3, 1.8, 1.8, 2.6, 2.6, 1.1, 1.9, 1.5, 7.1,   0, 0.4, 1.7, 2.7],
+                       [  0, 1.7, 0.8, 1.2, 1.6, 2.3, 2.3, 0.5, 1.7, 1.2, 7.1, 0.4,   0, 1.3, 2.4],
+                       [1.5, 0.4, 0.6, 0.1, 1.3,   1,   1, 0.8, 1.4,   1, 7.9, 1.7, 1.3,   0, 0.7],
+                       [2.5, 0.7, 1.2, 0.7, 1.8, 0.6, 0.6, 1.5, 2.1, 1.6, 8.5, 2.7, 2.4, 0.7,   0]];
+    const avgDist = 1.5;
     const UNKNOWN = -1;
 
     const startIndex = getDistanceIndex(start);
     const destIndex = getDistanceIndex(dest);
 
     if (startIndex === UNKNOWN || destIndex === UNKNOWN) {
-        return maxDist;
+        return avgDist;
     } else {
         return distances[startIndex][destIndex];
     }
@@ -312,13 +326,71 @@ function getDistanceIndex(location) {
     const locationCode = location.substring(0, 3);
     switch (locationCode) {
         case "UT-":
-            return 0;
         case "ERC":
-            return 0;
         case "TP-":
+        case "UTS":
             return 0;
+        case "AS1":
+        case "AS2":
+        case "AS3":
+        case "AS4":
+        case "AS5":
+        case "AS6":
+        case "AS7":
+        case "AS8":
+            return 1;
+        case "E1-":
+        case "E2-":
+        case "E3-":
+        case "E4-":
+        case "E5-":
+        case "ENG":
+            return 2
+        case "SDE":
+            return 3;
+        case "S1A":
+        case "S2-":
+        case "S4-":
+        case "S5-":
+        case "S6-":
+        case "S7-":
+        case "S8-":
+        case "S11":
+        case "S12":
+        case "S13":
+        case "S14":
+        case "S16":
+        case "S17":
+            return 4;
+        case "BIZ":
+            return 5;
+        case "I3-":
+            return 6;
+        case "YST":
+            return 7;
+        case "MD1":
+            return 8;
+        case "RVR":
+            return 9;
+        case "LKY":
+            return 10;
+        case "CAP":
+        case "USP":
+        case "TC-":
+        case "RC4":
+            return 11;
+        case "Y-C":
+        case "Y-G":
+        case "Y-P":
+        case "Y-K":
+        case "Y-A":
+        case "Y-T":
+        case "Y-L":
+            return 12;
+        case "CEL":
+            return 13;
         case "COM":
-            return 2;
+            return 14;
         default:
             return -1;
     }
