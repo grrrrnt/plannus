@@ -142,11 +142,16 @@ function calculateScore(count, rank, multiplier) {
     return multiplier * max;
 }
 
+function toMinutes(time) {
+    return parseInt(time.toString().slice(0, 2)) * 60 + parseInt(time.toString().slice(2));
+}
+
 function avoidLessonsAfterPriorityMultiplier(time, timetable) {
+    const timeInMin = toMinutes(time);
     let multiplier = 1;
     for (let day = 0; day <= 4; day++) {
         for (let e = 0; e < timetable.events.length; e++) {
-            if (timetable.events[e].endTime > time && timetable.events[e].day === day) {
+            if (timetable.events[e].endTime > timeInMin && timetable.events[e].day === day) {
                 multiplier = multiplier - 0.2;
                 break;
             }
@@ -156,10 +161,11 @@ function avoidLessonsAfterPriorityMultiplier(time, timetable) {
 }
 
 function avoidLessonsBeforePriorityMultiplier(time, timetable) {
+    const timeInMin = toMinutes(time);
     let multiplier = 1;
     for (let day = 0; day <= 4; day++) {
         for (let e = 0; e < timetable.events.length; e++) {
-            if (timetable.events[e].startTime < time && timetable.events[e].day === day) {
+            if (timetable.events[e].startTime < timeInMin && timetable.events[e].day === day) {
                 multiplier = multiplier - 0.2;
                 break;
             }
@@ -169,10 +175,12 @@ function avoidLessonsBeforePriorityMultiplier(time, timetable) {
 }
 
 function freePeriodPriorityMultiplier(fromTime, toTime, timetable) {
+    const fromTimeInMin = toMinutes(fromTime);
+    const toTimeInMin = toMinutes(toTime);
     let multiplier = 1;
     for (let day = 0; day <= 4; day++) {
         for (let e = 0; e < timetable.events.length; e++) {
-            if (timetable.events[e].day === day && timetable.events[e].startTime < toTime && timetable.events[e].endTime > fromTime) {
+            if (timetable.events[e].day === day && timetable.events[e].startTime < toTimeInMin && timetable.events[e].endTime > fromTimeInMin) {
                 multiplier = multiplier - 0.2;
                 break;
             }
@@ -185,14 +193,17 @@ function lunchBreakPriorityMultiplier(hours, timetable) {
     let multiplier = 1;
     let isFree = false;
     for (let day = 0; day <= 4; day++) {
+        isFree = true;
         for (let from = 10; from + hours <= 15; from++) {
-            if (isFree) { break; } else {
-                for (let e = 0; e < timetable.events.length; e++) {
-                    if (timetable.events[e].day !== day) { continue; }
-                    if (timetable.events[e].startTime < (from + hours) * 60 && timetable.events[e].endTime > from * 60) { break; }
-                    isFree = true;
+            for (let e = 0; e < timetable.events.length - 1; e++) {
+                if (timetable.events[e].day !== day) { continue; }
+                if (timetable.events[e].day !== timetable.events[e+1].day) { continue; }
+                if (timetable.events[e].endTime > from * 60 && timetable.events[e+1].startTime < (from + hours) * 60) {
+                    isFree = false;
+                    break;
                 }
             }
+            if (isFree) { break; }
         }
         if (!isFree) { multiplier = multiplier - 0.2; }
     }
@@ -248,7 +259,7 @@ function findHoursOfBreaks(timetable) {
     for (let e = 0; e < timetable.events.length; e++) {
         if (timetable.events[e].day === prevDay) {
             if (timetable.events[e].startTime > prevEndTime) {
-                hoursOfBreaks += (timetable.events[e].startTime - prevEndTime)/60;
+                hoursOfBreaks += (toMinutes(timetable.events[e].startTime) - toMinutes(prevEndTime))/60;
             }
 
             prevEndTime = timetable.events[e].endTime;
